@@ -2,6 +2,7 @@ package com.arena.testing;
 
 import com.arena.engine.cards.Card;
 import com.arena.engine.match.GameView;
+import com.arena.engine.match.MinionView;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ public final class ViewBuilder {
     private boolean heroPower;
     private int boardSize;
     private int armor;
+    private List<MinionView> opponentMinions = List.of();
+    private String opponentWords = "";
 
     private ViewBuilder() {
     }
@@ -52,13 +55,48 @@ public final class ViewBuilder {
         return this;
     }
 
+    public ViewBuilder withOpponentMinions(MinionView... minions) {
+        this.opponentMinions = List.of(minions);
+        return this;
+    }
+
+    public ViewBuilder withOpponentWords(String words) {
+        this.opponentWords = words;
+        return this;
+    }
+
     public GameView build() {
-        return new Snapshot(hp, mana, hand, heroPower, boardSize, armor);
+        return new Snapshot(hp, mana, hand, heroPower, boardSize, armor, opponentMinions, opponentWords);
     }
 
     private record Snapshot(int myHp, int myMana, List<Card> myHand, boolean heroPowerAvailable, int myBoardSize,
-                            int myArmor)
+                            int myArmor, List<MinionView> opponentMinions, String opponentLastWords)
             implements GameView {
+        @Override
+        public String myClass() {
+            return "Mage";
+        }
+
+        @Override
+        public String opponentClass() {
+            return "Tank";
+        }
+
+        @Override
+        public int myMaxMana() {
+            return myMana;
+        }
+
+        @Override
+        public int myDeckSize() {
+            return 10;
+        }
+
+        @Override
+        public List<MinionView> myMinions() {
+            return List.of();
+        }
+
         @Override
         public int turn() {
             return 1;
@@ -86,7 +124,7 @@ public final class ViewBuilder {
 
         @Override
         public int opponentBoardSize() {
-            return 0;
+            return opponentMinions.size();
         }
     }
 }

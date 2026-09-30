@@ -317,7 +317,15 @@ public final class Match {
         int powerCost = seat.contender.heroClass().heroPower().cost();
         return new SeatView(round, me.hp(), me.defenses().armor(), me.mana(), me.hand(),
                 !powerUsed && me.mana() >= powerCost, powerCost, me.board().minions().size(), foe.hp(),
-                foe.defenses().armor(), foe.hand().size(), foe.board().minions().size());
+                foe.defenses().armor(), foe.hand().size(), foe.board().minions().size(),
+                seat.contender.heroClass().name(), other(seat).contender.heroClass().name(), me.maxMana(),
+                me.deck().size(), minions(me), minions(foe), other(seat).lastWords);
+    }
+
+    private List<MinionView> minions(Champion champion) {
+        return champion.board().minions().stream()
+                .map(m -> new MinionView(m.name(), m.attack(), m.health(), m.taunt(), m.canAttack(round)))
+                .toList();
     }
 
     private void checkDeath() {
@@ -332,7 +340,16 @@ public final class Match {
         return seat == seat1 ? seat2 : seat1;
     }
 
-    private record Seat(Contender contender, Champion champion) {
+    private static final class Seat {
+        private final Contender contender;
+        private final Champion champion;
+        private String lastWords = "";
+
+        private Seat(Contender contender, Champion champion) {
+            this.contender = contender;
+            this.champion = champion;
+        }
+
         String name() {
             return contender.name();
         }

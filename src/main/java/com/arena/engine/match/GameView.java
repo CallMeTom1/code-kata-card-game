@@ -42,4 +42,25 @@ public interface GameView {
 
     /** Number of enemy minions, to value area effects. */
     int opponentBoardSize();
+
+    /** Own class name, so a bot can reason about its hero power and class cards. */
+    String myClass();
+
+    /** Enemy class name: public in Hearthstone, and it tells which cards to expect. */
+    String opponentClass();
+
+    /** Own max mana, to plan the next turns. */
+    int myMaxMana();
+
+    /** Cards left in the own deck, to anticipate fatigue. */
+    int myDeckSize();
+
+    /** Own minions in attack order, to judge the board. */
+    List<MinionView> myMinions();
+
+    /** Enemy minions in board order: Taunts and threats are public information. */
+    List<MinionView> opponentMinions();
+
+    /** Last thing the opponent said ("" if nothing), so talking bots can answer each other. */
+    String opponentLastWords();
 }
