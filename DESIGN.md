@@ -271,6 +271,12 @@ field: `DamageDealt` now carries the armor left after the hit. The JS log format
 reproduces the console lines exactly; a test compares it with `docs/sample-match.log`.
 We chose plain files over a web server or a framework because the team's work PCs
 cannot install Node, and because opening a file needs no setup.
+Every card also has a rules text (`Card.text`, exported in `PlayerSetUp`) so the replay can
+show it. Sounds and the background music are synthesized (Web Audio): the music is an
+original loop in D minor whose layers follow the match (setup, battle, climax at 10 HP or
+less, silence at the end). Animations use the Web Animations API:
+no asset files, no library. Both only run when the replay moves one event forward, get
+shorter at high speed, and animations are skipped when the OS asks for reduced motion.
 
 ## Later: LLM bots
 Once the required deliverables are done, an `LlmBot` (another `Bot`

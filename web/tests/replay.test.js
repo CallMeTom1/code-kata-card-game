@@ -42,10 +42,17 @@
   test("given_an_opening_hand_with_the_coin_when_applied_then_cards_have_their_cost_and_the_deck_shrinks", () => {
     const state = replay([...START, { type: "OpeningHand", player: "Alice", cards: ["Strike", "The Coin"] }]);
     eq(state.players.Alice.hand, [
-      { name: "Strike", cost: 2, category: "ATTACK" },
-      { name: "The Coin", cost: 0, category: "RESOURCE" },
+      { name: "Strike", cost: 2, category: "ATTACK", text: "" },
+      { name: "The Coin", cost: 0, category: "RESOURCE", text: "Gain 1 mana this turn only." },
     ]);
     eq(state.players.Alice.deckCount, 2);
+  });
+
+  test("given_deck_entries_with_text_when_a_card_is_drawn_then_the_hand_card_keeps_its_text", () => {
+    const setup = START.map((e) => (e.type === "PlayerSetUp" && e.player === "Alice"
+      ? { ...e, deck: [{ name: "Strike", cost: 2, category: "ATTACK", text: "Deal 4 damage." }] } : e));
+    const state = replay([...setup, { type: "OpeningHand", player: "Alice", cards: ["Strike"] }]);
+    eq(state.players.Alice.hand[0].text, "Deal 4 damage.");
   });
 
   test("given_a_draw_then_a_play_when_applied_then_hand_deck_and_mana_follow", () => {

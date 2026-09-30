@@ -37,7 +37,11 @@
 
       <div id="replay" class="replay" hidden>
         <div class="arena">
-          <div class="board" id="board" aria-live="polite"></div>
+          <div class="board-wrap">
+            <div class="board" id="board" aria-live="polite"></div>
+            <div class="fx-layer" id="fx-layer" aria-hidden="true"></div>
+          </div>
+          <div class="hp-chart" id="hp-chart" title="Cliquez pour aller à ce moment de la partie"></div>
           <div class="controls" id="controls">
             <div class="buttons">
               <button class="ctl" data-action="start" title="Début (Home)" aria-label="Début">⏮</button>
@@ -48,6 +52,7 @@
               <button class="ctl" data-action="next-turn" title="Tour suivant (Maj+→)" aria-label="Tour suivant">⏩</button>
               <button class="ctl" data-action="end" title="Fin (End)" aria-label="Fin">⏭</button>
               <div class="sound">
+                <button class="ctl" id="music-toggle" aria-pressed="true" title="Musique activée (B)" aria-label="Couper la musique">🎵</button>
                 <button class="ctl" id="sound-toggle" aria-pressed="true" title="Son activé (M)" aria-label="Couper le son">🔊</button>
                 <input type="range" id="volume" min="0" max="100" value="60" aria-label="Volume">
               </div>
@@ -87,11 +92,14 @@
 
   <div class="toast" id="toast" role="alert" hidden></div>
   <div class="tooltip" id="tooltip" hidden></div>
+  <div class="card-zoom" id="card-zoom" hidden></div>
 
   <script src="js/replay.js"></script>
   <script src="js/logformat.js"></script>
   <script src="js/stats.js"></script>
   <script src="js/sound.js"></script>
+  <script src="js/visuals.js"></script>
+  <script src="js/fx.js"></script>
   <script src="js/view-replay.js"></script>
   <script src="js/view-stats.js"></script>
   <script src="data/sample-match.js"></script>

@@ -3,7 +3,7 @@
   const Arena = root.Arena;
   const doc = root.document;
   const sound = createSoundController();
-  const replay = Arena.ReplayView.create({ onStep: (event) => sound.onStep(event) });
+  const replay = Arena.ReplayView.create({ onStep: (event) => sound.onStep(event), onFrame: (state) => sound.onFrame(state) });
   const stats = Arena.StatsView.create();
   const toast = doc.getElementById("toast");
   let toastTimer = null;
@@ -24,6 +24,7 @@
     doc.getElementById("tab-replay").hidden = name !== "replay";
     doc.getElementById("tab-stats").hidden = name !== "stats";
     if (name !== "replay" && replay.isLoaded()) replay.action("pause");
+    sound.onTab(name);
   }
 
   /** A match export is JSON lines of events; a stats export is one object with "results". */
@@ -77,6 +78,7 @@
   doc.addEventListener("keydown", (e) => {
     sound.unlock();
     if ((e.key === "m" || e.key === "M") && !e.target.closest("input, select, textarea")) sound.toggle();
+    if ((e.key === "b" || e.key === "B") && !e.target.closest("input, select, textarea")) sound.toggleMusic();
     if (doc.getElementById("tab-replay").hidden || !replay.isLoaded()) return;
     if (e.target.closest("input, select, textarea")) return;
     const keys = { " ": "play", ArrowRight: e.shiftKey ? "next-turn" : "next", ArrowLeft: e.shiftKey ? "prev-turn" : "prev",
@@ -88,11 +90,15 @@
     }
   });
 
-  /** Owns the audio context (browsers only allow sound after a click or key press) and the user's settings. */
+  /** Owns the audio context (browsers only allow sound after a click or key press), music and the user's settings. */
   function createSoundController() {
     const toggleButton = doc.getElementById("sound-toggle");
+    const musicButton = doc.getElementById("music-toggle");
     const volume = doc.getElementById("volume");
-    const settings = { enabled: true, volume: 60 };
+    const settings = { enabled: true, music: true, volume: 60 };
+    let music = null;
+    let lastState = null;
+    let tab = "replay";
     try {
       Object.assign(settings, JSON.parse(root.localStorage.getItem("arena.sound") || "{}"));
     } catch (e) {
@@ -116,6 +122,18 @@
       toggleButton.title = settings.enabled ? "Son activé (M)" : "Son coupé (M)";
       volume.value = String(settings.volume);
       if (synth) synth.setVolume(settings.volume / 100);
+      if (music) music.setVolume((settings.volume / 100) * 0.7);
+      musicButton.textContent = "🎵";
+      musicButton.setAttribute("aria-pressed", String(settings.music));
+      musicButton.setAttribute("aria-label", settings.music ? "Couper la musique" : "Activer la musique");
+      musicButton.title = settings.music ? "Musique activée (B)" : "Musique coupée (B)";
+      updateMusic();
+    }
+
+    function updateMusic() {
+      if (!music) return;
+      const playing = settings.music && tab === "replay" && replay && replay.isLoaded();
+      music.setLevel(playing ? Arena.Sound.musicLevelFor(lastState) : -1);
     }
 
     function unlock() {
@@ -125,8 +143,27 @@
         ctx = new AudioContextClass();
         synth = Arena.Sound.createSynth(ctx);
         synth.setVolume(settings.volume / 100);
+        music = Arena.Sound.createMusic(ctx);
+        music.setVolume((settings.volume / 100) * 0.7);
       }
       if (ctx.state === "suspended") ctx.resume();
+      updateMusic();
+    }
+
+    function onFrame(state) {
+      lastState = state;
+      updateMusic();
+    }
+
+    function onTab(name) {
+      tab = name;
+      updateMusic();
+    }
+
+    function toggleMusic() {
+      settings.music = !settings.music;
+      save();
+      show();
     }
 
     function onStep(event) {
@@ -146,6 +183,10 @@
       unlock();
       toggle();
     });
+    musicButton.addEventListener("click", () => {
+      unlock();
+      toggleMusic();
+    });
     volume.addEventListener("input", () => {
       settings.volume = Number(volume.value);
       if (settings.volume > 0 && !settings.enabled) settings.enabled = true;
@@ -153,7 +194,7 @@
       show();
     });
     show();
-    return { unlock, onStep, toggle };
+    return { unlock, onStep, onFrame, onTab, toggle, toggleMusic };
   }
 
   if (new URLSearchParams(root.location.search).has("sample")) {

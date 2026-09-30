@@ -4,7 +4,7 @@
  */
 (function (root) {
   const Arena = (root.Arena = root.Arena || {});
-  const COIN = { name: "The Coin", cost: 0, category: "RESOURCE" };
+  const COIN = { name: "The Coin", cost: 0, category: "RESOURCE", text: "Gain 1 mana this turn only." };
 
   /** One JSON object per line; blank lines are ignored; errors name the line. */
   function parseJsonl(text) {
@@ -40,7 +40,8 @@
   function card(player, name) {
     if (name === COIN.name) return { ...COIN };
     const known = player.catalog[name];
-    return known ? { name, cost: known.cost, category: known.category } : { name, cost: 0, category: "UTILITY" };
+    return known ? { name, cost: known.cost, category: known.category, text: known.text }
+      : { name, cost: 0, category: "UTILITY", text: "" };
   }
 
   function findMinion(player, name, prefer) {
@@ -65,7 +66,7 @@
         Object.assign(pl, { bot: event.bot, heroClass: event.heroClass, classChoice: event.classChoice,
           deckSource: event.deckSource, heroPower: event.heroPower, heroPowerCost: event.heroPowerCost,
           heroPowerText: event.heroPowerText, deck: event.deck, deckCount: event.deck.length });
-        event.deck.forEach((c) => (pl.catalog[c.name] = { cost: c.cost, category: c.category }));
+        event.deck.forEach((c) => (pl.catalog[c.name] = { cost: c.cost, category: c.category, text: c.text || "" }));
         break;
       }
       case "FirstPlayerChosen":

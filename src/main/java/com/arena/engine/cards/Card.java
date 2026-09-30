@@ -11,9 +11,10 @@ import java.util.Objects;
  * @param immediate true when the effect must apply during the play phase (mana, draw),
  *                  false when it waits for the resolve phase
  * @param traits    numbers the bots use to rank cards
+ * @param text      rules text shown by the web replay
  */
 public record Card(String name, int cost, CardCategory category, Effect effect, boolean immediate,
-                   CardTraits traits) {
+                   CardTraits traits, String text) {
 
     /** Rejects impossible cards early, so a typo in a card list fails at startup, not mid-match. */
     public Card {
@@ -26,6 +27,12 @@ public record Card(String name, int cost, CardCategory category, Effect effect, 
         Objects.requireNonNull(category, "category");
         Objects.requireNonNull(effect, "effect");
         Objects.requireNonNull(traits, "traits");
+        text = text == null ? "" : text;
+    }
+
+    /** For cards whose rules text is not needed (tests). */
+    public Card(String name, int cost, CardCategory category, Effect effect, boolean immediate, CardTraits traits) {
+        this(name, cost, category, effect, immediate, traits, "");
     }
 
     /** For tests and simple cards that bots do not need to rank. */

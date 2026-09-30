@@ -244,7 +244,7 @@ body.dragging .empty-card { outline: 3px dashed var(--gold-1); outline-offset: 8
 .ctl-play { min-width: 64px; color: var(--gold-1); }
 .sound { display: flex; align-items: center; gap: 6px; margin-left: auto; }
 .sound input { width: 90px; accent-color: var(--gold-2); }
-#sound-toggle[aria-pressed="false"] { filter: grayscale(1); opacity: 0.7; }
+#sound-toggle[aria-pressed="false"], #music-toggle[aria-pressed="false"] { filter: grayscale(1); opacity: 0.6; text-decoration: line-through; }
 .speed { color: var(--text-secondary); display: flex; gap: 6px; align-items: center; }
 .speed select { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--gold-3); border-radius: 6px; padding: 3px 6px; }
 #scrubber { width: 100%; accent-color: var(--gold-2); }
@@ -355,3 +355,94 @@ body.dragging .empty-card { outline: 3px dashed var(--gold-1); outline-offset: 8
   .minion { width: 54px; height: 74px; font-size: 9px; }
   .loaders { margin-left: 0; }
 }
+
+/* ---------- Icons, card zoom ---------- */
+.card-icon { font-size: 22px; line-height: 1; }
+.card { padding-top: 12px; }
+.minion { grid-template-rows: auto auto; align-content: center; }
+.minion-icon { display: block; font-size: 24px; line-height: 1.1; text-shadow: none; }
+.card-zoom { position: fixed; z-index: 70; pointer-events: none; }
+.big-card {
+  position: relative; width: 190px; min-height: 260px; padding: 22px 14px 12px; text-align: center; color: var(--ink);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  background: radial-gradient(ellipse at 50% 25%, #fff6de, var(--parchment-1) 40%, var(--parchment-2));
+  border: 4px solid var(--gold-2); border-radius: 16px; box-shadow: 0 0 0 2px var(--gold-3), 0 16px 34px rgba(0, 0, 0, 0.7);
+}
+.big-card .cost { width: 40px; height: 40px; top: -14px; left: -14px; font-size: 22px; }
+.big-card-art {
+  width: 150px; height: 96px; display: grid; place-items: center; font-size: 58px; border-radius: 50% / 40%;
+  background: radial-gradient(circle at 50% 40%, #fffaf0, #c9b28a); border: 3px solid var(--gold-3);
+  box-shadow: inset 0 0 18px rgba(80, 50, 10, 0.5);
+}
+.big-card-name { font-family: var(--font-title); font-weight: 800; font-size: 18px; line-height: 1.1; }
+.big-card-text { font-size: 16px; line-height: 1.25; min-height: 40px; }
+.big-card-cat { margin-top: auto; font-family: var(--font-mono); font-size: 11px; color: #fff; padding: 2px 10px; border-radius: 8px; background: var(--gold-3); }
+.big-card[data-cat="ATTACK"] .big-card-cat { background: var(--cat-attack); }
+.big-card[data-cat="DEFENSE"] .big-card-cat { background: var(--cat-defense); }
+.big-card[data-cat="RESOURCE"] .big-card-cat { background: var(--cat-resource); }
+.big-card[data-cat="UTILITY"] .big-card-cat { background: var(--cat-utility); }
+
+/* ---------- Effects layer ---------- */
+.board-wrap { position: relative; }
+.fx-layer { position: absolute; inset: 0; pointer-events: none; z-index: 8; }
+.fx-layer > * { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); will-change: transform, opacity; }
+.fx-reveal { z-index: 3; }
+.fx-reveal .big-card { box-shadow: 0 0 0 2px var(--gold-3), 0 0 40px rgba(244, 213, 141, 0.8), 0 16px 34px rgba(0, 0, 0, 0.7); }
+.fx-banner { z-index: 4; white-space: nowrap; }
+.fx-banner span {
+  display: block; padding: 10px 60px; font-family: var(--font-title); font-weight: 800; font-size: 34px; color: var(--ink);
+  background: linear-gradient(90deg, transparent, var(--gold-1) 15%, var(--gold-2) 50%, var(--gold-1) 85%, transparent);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.fx-projectile { width: 34px; height: 34px; border-radius: 50%; z-index: 2; }
+.fx-fire { background: radial-gradient(circle, #fff6b0, #ff9d2e 45%, #d9380f 70%, transparent 72%); box-shadow: 0 0 22px 10px rgba(255, 110, 20, 0.75), -18px 0 26px rgba(255, 60, 0, 0.4); }
+.fx-frost { background: radial-gradient(circle, #ffffff, #9fe0ff 45%, #3a8ee6 70%, transparent 72%); box-shadow: 0 0 22px 8px rgba(120, 200, 255, 0.8); border-radius: 30%; }
+.fx-holy { background: radial-gradient(circle, #ffffff, #ffe98a 50%, transparent 72%); box-shadow: 0 0 26px 12px rgba(255, 230, 140, 0.8); }
+.fx-blade { width: 44px; height: 10px; border-radius: 5px; background: linear-gradient(90deg, #eef3f7, #9aa3ad); box-shadow: 0 0 12px 4px rgba(230, 240, 255, 0.7); }
+.fx-strike { background: radial-gradient(circle, #fff, #f0c27a 50%, transparent 72%); box-shadow: 0 0 16px 6px rgba(240, 190, 110, 0.7); }
+.fx-shield { width: 64px; height: 64px; border-radius: 50%; border: 5px solid #e6ebf0; box-shadow: 0 0 20px 6px rgba(220, 230, 240, 0.8), inset 0 0 18px rgba(220, 230, 240, 0.6); }
+.fx-arcane { background: radial-gradient(circle, #fff, #c9a6ff 45%, #7a3df0 70%, transparent 72%); box-shadow: 0 0 20px 8px rgba(160, 110, 255, 0.7); }
+.fx-wave { width: 60px; height: 60px; border-radius: 50%; border: 6px solid rgba(255, 230, 140, 0.9); box-shadow: 0 0 30px rgba(255, 230, 140, 0.8); }
+.fx-wave.fx-blade { height: 60px; background: none; border-color: rgba(230, 240, 255, 0.9); border-style: dashed; }
+.fx-flash { width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 90, 60, 0.95), rgba(255, 40, 20, 0.4) 45%, transparent 70%); }
+.fx-vignette { left: 50%; top: 50%; width: 100%; height: 100%; background: radial-gradient(ellipse at center, transparent 45%, rgba(200, 20, 10, 0.55)); }
+.fx-particle { width: 8px; height: 8px; border-radius: 50%; }
+.fx-particle.is-red { background: #ff6a3d; box-shadow: 0 0 6px #ff3b1f; }
+.fx-particle.is-white { background: #f4f7fa; box-shadow: 0 0 6px #fff; }
+.fx-particle.is-gold { background: var(--gold-1); box-shadow: 0 0 8px var(--gold-1); }
+.fx-particle.is-green { background: #7dff8a; box-shadow: 0 0 8px #3fe060; }
+.fx-particle.is-poison { background: #9be15d; box-shadow: 0 0 6px #4caf50; width: 10px; height: 10px; }
+.fx-particle.is-frost { background: #d9f3ff; box-shadow: 0 0 8px #7cc8ff; border-radius: 2px; }
+.fx-particle.is-stone { background: #8d7654; border-radius: 2px; }
+.fx-aura { width: 150px; height: 150px; border-radius: 50%; }
+.fx-aura.fx-heal { background: radial-gradient(circle, rgba(125, 255, 138, 0.55), transparent 65%); }
+.fx-aura.fx-armor { border: 6px solid rgba(220, 230, 240, 0.9); box-shadow: 0 0 24px rgba(220, 230, 240, 0.8), inset 0 0 24px rgba(220, 230, 240, 0.5); }
+.fx-aura.fx-frost { background: radial-gradient(circle, rgba(220, 245, 255, 0.8), rgba(120, 200, 255, 0.4) 50%, transparent 68%); }
+.fx-aura.fx-poison { background: radial-gradient(circle, rgba(155, 225, 93, 0.6), transparent 65%); }
+.fx-aura.fx-evade { background: radial-gradient(circle, rgba(255, 255, 255, 0.5), transparent 60%); }
+.fx-aura.fx-buff { background: radial-gradient(circle, rgba(244, 213, 141, 0.6), transparent 65%); }
+.fx-dust { width: 90px; height: 28px; border-radius: 50%; background: radial-gradient(ellipse, rgba(120, 95, 60, 0.7), transparent 70%); }
+.fx-ghost { z-index: 1; }
+.fx-rays {
+  width: 420px; height: 420px; border-radius: 50%; z-index: 0;
+  background: repeating-conic-gradient(rgba(244, 213, 141, 0.55) 0 10deg, transparent 10deg 24deg);
+  mask-image: radial-gradient(circle, #000 20%, transparent 70%); -webkit-mask-image: radial-gradient(circle, #000 20%, transparent 70%);
+}
+.fx-confetti { width: 9px; height: 14px; border-radius: 2px; transform: none; }
+
+/* ---------- HP chart ---------- */
+.hp-chart {
+  margin-top: 12px; padding: 8px 12px 4px; border-radius: 12px; cursor: pointer;
+  background: var(--surface-1); border: 2px solid var(--gold-3);
+}
+.hp-chart:empty { display: none; }
+.hp-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; color: var(--text-secondary); font-size: 14px; }
+.hp-head .legend { margin: 0; }
+.hp-chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.hp-chart svg text { fill: var(--text-secondary); font-family: var(--font-body); font-size: 13px; }
+.hp-chart .grid { stroke: var(--grid); stroke-dasharray: 2 4; }
+.hp-chart .hp-dot { stroke: var(--surface-1); stroke-width: 2; }
+.hp-chart .hp-label { fill: var(--text-primary); font-weight: 600; }
+.hp-chart .hp-star { fill: var(--gold-1); font-size: 15px; }
+.hp-chart .hp-cursor line { stroke: var(--gold-1); stroke-width: 2; }
+@media (max-width: 700px) { .big-card { width: 160px; min-height: 220px; } .fx-banner span { font-size: 22px; padding: 8px 30px; } }

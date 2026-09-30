@@ -128,5 +128,169 @@
     };
   }
 
-  Arena.Sound = { cueFor, isMinor, createSynth };
+  /** Music intensity: -1 silent (no match or match over), 0 calm (setup), 1 battle, 2 climax (a champion at 10 HP or less). */
+  function musicLevelFor(state) {
+    if (!state || state.phase === "ended") return -1;
+    if (state.phase === "setup") return 0;
+    const lowest = Math.min(...state.order.map((name) => state.players[name].hp));
+    return lowest <= 10 ? 2 : 1;
+  }
+
+  const SEMITONES = { C: -9, D: -7, E: -5, F: -4, G: -2, A: 0, B: 2 };
+
+  /** Frequency of a note like "A4", "Bb2" or "F#3" (equal temperament, A4 = 440 Hz). */
+  function noteFrequency(note) {
+    const [, letter, accidental, octave] = note.match(/^([A-G])(#|b)?(-?\d)$/);
+    const offset = SEMITONES[letter] + (accidental === "#" ? 1 : accidental === "b" ? -1 : 0) + (Number(octave) - 4) * 12;
+    return Math.round(440 * Math.pow(2, offset / 12) * 100) / 100;
+  }
+
+  /*
+   * Original "epic" loop in D minor (Dm - Bb - F - C, 84 bpm), composed from oscillators and noise:
+   * string pads (level 0+), taiko drums, bass and brass stabs (level 1+), a heroic melody and faster
+   * drums (level 2). Notes are scheduled slightly ahead of time so the rhythm stays steady.
+   */
+  function createMusic(ctx) {
+    const TEMPO = 84;
+    const EIGHTH = 60 / TEMPO / 2;
+    const CHORDS = [["D3", "F3", "A3"], ["Bb2", "D3", "F3"], ["F2", "A2", "C3"], ["C3", "E3", "G3"]];
+    const BASS = ["D2", "Bb1", "F1", "C2"];
+    const MELODY = [
+      ["D5", 3], ["F5", 1], ["A5", 2], ["G5", 2], ["F5", 3], ["D5", 1], ["E5", 2], ["C5", 2],
+      ["F5", 3], ["A5", 1], ["C6", 2], ["Bb5", 2], ["A5", 4], ["G5", 2], ["E5", 2],
+    ];
+    const out = ctx.createGain();
+    out.gain.value = 0;
+    out.connect(ctx.destination);
+    const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+
+    let level = -1;
+    let volume = 0.5;
+    let timer = null;
+    let step = 0;
+    let nextTime = 0;
+
+    function voice(freq, time, dur, { type = "sawtooth", gain = 0.05, attack = 0.02, cutoff = 1200, detune = 0 }) {
+      const osc = ctx.createOscillator();
+      const filter = ctx.createBiquadFilter();
+      const g = ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      osc.detune.value = detune;
+      filter.type = "lowpass";
+      filter.frequency.value = cutoff;
+      g.gain.setValueAtTime(0.0001, time);
+      g.gain.exponentialRampToValueAtTime(gain, time + attack);
+      g.gain.setValueAtTime(gain, time + Math.max(attack, dur - 0.15));
+      g.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+      osc.connect(filter).connect(g).connect(out);
+      osc.start(time);
+      osc.stop(time + dur + 0.05);
+    }
+
+    function drum(time, strength) {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.frequency.setValueAtTime(95, time);
+      osc.frequency.exponentialRampToValueAtTime(38, time + 0.35);
+      g.gain.setValueAtTime(0.0001, time);
+      g.gain.exponentialRampToValueAtTime(0.55 * strength, time + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, time + 0.5);
+      osc.connect(g).connect(out);
+      osc.start(time);
+      osc.stop(time + 0.55);
+      const src = ctx.createBufferSource();
+      const filter = ctx.createBiquadFilter();
+      const n = ctx.createGain();
+      src.buffer = noiseBuffer;
+      filter.type = "lowpass";
+      filter.frequency.value = 700;
+      n.gain.setValueAtTime(0.0001, time);
+      n.gain.exponentialRampToValueAtTime(0.25 * strength, time + 0.005);
+      n.gain.exponentialRampToValueAtTime(0.0001, time + 0.18);
+      src.connect(filter).connect(n).connect(out);
+      src.start(time);
+      src.stop(time + 0.2);
+    }
+
+    let melodyIndex = 0;
+    let melodyWait = 0;
+
+    function schedule(eighth, time) {
+      const bar = Math.floor(eighth / 8) % CHORDS.length;
+      const inBar = eighth % 8;
+      const barLength = EIGHTH * 8;
+      if (inBar === 0) {
+        CHORDS[bar].forEach((note) => [-7, 7].forEach((d) =>
+          voice(noteFrequency(note), time, barLength + 0.1, { gain: 0.035, attack: 0.5, cutoff: 900, detune: d })));
+      }
+      if (level >= 1) {
+        if (inBar === 0 || inBar === 4) voice(noteFrequency(BASS[bar]), time, EIGHTH * 3, { type: "triangle", gain: 0.16, cutoff: 500 });
+        if (inBar === 0 || inBar === 3 || inBar === 4) drum(time, inBar === 0 ? 1 : 0.7);
+        if (inBar === 0) CHORDS[bar].forEach((note) =>
+          voice(noteFrequency(note) * 2, time, EIGHTH * 1.5, { gain: 0.03, attack: 0.01, cutoff: 2200 }));
+      }
+      if (level >= 2) {
+        if (inBar === 6 || inBar === 7) drum(time, 0.5);
+        if (melodyWait <= 0) {
+          const [note, eighths] = MELODY[melodyIndex % MELODY.length];
+          voice(noteFrequency(note), time, EIGHTH * eighths * 0.95, { type: "square", gain: 0.025, attack: 0.03, cutoff: 2600 });
+          melodyWait = eighths;
+          melodyIndex++;
+        }
+        melodyWait--;
+      }
+    }
+
+    function tick() {
+      while (nextTime < ctx.currentTime + 0.15) {
+        schedule(step, nextTime);
+        nextTime += EIGHTH;
+        step++;
+      }
+    }
+
+    function fadeTo(value, seconds) {
+      out.gain.cancelScheduledValues(ctx.currentTime);
+      out.gain.setValueAtTime(Math.max(0.0001, out.gain.value), ctx.currentTime);
+      out.gain.linearRampToValueAtTime(value, ctx.currentTime + seconds);
+    }
+
+    return {
+      /** Starts, adapts or fades out the music; calling it with the same level does nothing. */
+      setLevel(next) {
+        if (next === level) return;
+        const wasSilent = level < 0;
+        level = next;
+        if (level < 0) {
+          fadeTo(0, 1.2);
+          setTimeout(() => {
+            if (level < 0 && timer) {
+              clearInterval(timer);
+              timer = null;
+            }
+          }, 1300);
+          return;
+        }
+        if (wasSilent || !timer) {
+          if (!timer) {
+            step = 0;
+            melodyIndex = 0;
+            melodyWait = 0;
+            nextTime = ctx.currentTime + 0.1;
+            timer = setInterval(tick, 25);
+          }
+          fadeTo(volume, 1.5);
+        }
+      },
+      setVolume(v) {
+        volume = Math.max(0, Math.min(1, v));
+        if (level >= 0) fadeTo(volume, 0.2);
+      },
+    };
+  }
+
+  Arena.Sound = { cueFor, isMinor, createSynth, musicLevelFor, noteFrequency, createMusic };
 })(typeof window !== "undefined" ? window : globalThis);

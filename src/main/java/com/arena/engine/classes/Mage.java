@@ -23,13 +23,13 @@ import static com.arena.engine.cards.NeutralCards.WOODEN_SHIELD;
 public final class Mage {
 
     static final List<Card> CARDS = List.of(
-            card("Frostbolt", 2, ATTACK).effect(new DealDamage(3).andThen(new Freeze())).directDamage(3).build(),
-            card("Fireball", 4, ATTACK).effect(new DealDamage(6)).directDamage(6).build(),
-            card("Pyroblast", 8, ATTACK).effect(new DealDamage(10)).directDamage(10).build(),
+            card("Frostbolt", 2, ATTACK).effect(new DealDamage(3).andThen(new Freeze())).directDamage(3).text("Deal 3 damage. Freeze: the enemy gets 1 less mana next turn.").build(),
+            card("Fireball", 4, ATTACK).effect(new DealDamage(6)).directDamage(6).text("Deal 6 damage.").build(),
+            card("Pyroblast", 8, ATTACK).effect(new DealDamage(10)).directDamage(10).text("Deal 10 damage.").build(),
             card("Raise Skeletons", 3, ATTACK)
-                    .effect(new Summon(new MinionTemplate("Skeleton", 1, 1, false), 2)).indirectDamage(4).build(),
-            card("Ice Barrier", 3, DEFENSE).effect(new GainArmor(6, 2)).armor(6).build(),
-            card("Arcane Intellect", 3, UTILITY).effect(new DrawCards(2)).immediate().build());
+                    .effect(new Summon(new MinionTemplate("Skeleton", 1, 1, false), 2)).indirectDamage(4).text("Summon two 1/1 Skeletons.").build(),
+            card("Ice Barrier", 3, DEFENSE).effect(new GainArmor(6, 2)).armor(6).text("Gain 6 Armor for 2 turns.").build(),
+            card("Arcane Intellect", 3, UTILITY).effect(new DrawCards(2)).immediate().text("Draw 2 cards.").build());
 
     private Mage() {
     }
