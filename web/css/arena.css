@@ -431,12 +431,20 @@ body.dragging .empty-card { outline: 3px dashed var(--gold-1); outline-offset: 8
 .fx-confetti { width: 9px; height: 14px; border-radius: 2px; transform: none; }
 
 /* ---------- HP chart ---------- */
-.hp-chart {
-  margin-top: 12px; padding: 8px 12px 4px; border-radius: 12px; cursor: pointer;
-  background: var(--surface-1); border: 2px solid var(--gold-3);
+.hp-panel {
+  margin-top: 12px; border-radius: 12px; background: var(--surface-1); border: 2px solid var(--gold-3);
 }
-.hp-chart:empty { display: none; }
-.hp-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; color: var(--text-secondary); font-size: 14px; }
+.hp-panel > summary {
+  cursor: pointer; list-style: none; padding: 8px 14px; font-family: var(--font-title); font-size: 16px;
+  color: var(--gold-1); display: flex; align-items: center; gap: 8px; user-select: none;
+}
+.hp-panel > summary::-webkit-details-marker { display: none; }
+.hp-panel > summary::after { content: "▾"; margin-left: auto; transition: transform 0.2s; }
+.hp-panel:not([open]) > summary::after { transform: rotate(-90deg); }
+.hp-panel > summary:hover { color: #fff3cf; }
+.hp-panel > summary:focus-visible { outline: 2px solid var(--gold-1); outline-offset: 2px; border-radius: 10px; }
+.hp-chart { padding: 0 12px 4px; cursor: pointer; }
+.hp-head { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px 16px; color: var(--text-secondary); font-size: 14px; }
 .hp-head .legend { margin: 0; }
 .hp-chart svg { width: 100%; height: auto; display: block; overflow: visible; }
 .hp-chart svg text { fill: var(--text-secondary); font-family: var(--font-body); font-size: 13px; }

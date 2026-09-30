@@ -214,7 +214,7 @@
       const pt = curve.points.filter((q) => q.frame <= h.frame).at(-1) || curve.points[0];
       return `<text class="hp-star" x="${chartX(h.frame, frames)}" y="${chartY(pt.hp[p]) - 8}" text-anchor="middle" data-tip="${esc(h.source)} : ${h.amount} dégâts sur ${esc(h.target)}">✦</text>`;
     }).join("");
-    return `<div class="hp-head"><span>Points de vie au fil de la partie</span>
+    return `<div class="hp-head">
         <span class="legend">${curve.players.map((n, p) => `<span><span class="swatch" style="background:${colors[p]}"></span>${esc(n)}</span>`).join("")}<span>✦ gros coup (6+)</span></span></div>
       <svg viewBox="0 0 ${CHART.width} ${CHART.height}" role="img" aria-label="Points de vie des deux joueurs au fil de la partie">
         ${grid}${lines}${hits}<g class="hp-cursor"><line x1="0" x2="0" y1="${CHART.top - 4}" y2="${CHART.height - CHART.bottom + 4}"></line></g>
@@ -231,7 +231,8 @@
       log: doc.getElementById("log"), overlay: doc.getElementById("overlay"), scrubber: doc.getElementById("scrubber"),
       position: doc.getElementById("position"), speed: doc.getElementById("speed"),
       play: doc.querySelector('[data-action="play"]'), fxLayer: doc.getElementById("fx-layer"),
-      hpChart: doc.getElementById("hp-chart"), zoom: doc.getElementById("card-zoom"),
+      hpChart: doc.getElementById("hp-chart"), hpPanel: doc.getElementById("hp-panel"),
+      zoom: doc.getElementById("card-zoom"),
     };
     const fx = Arena.Fx.create({ board: el.board, layer: el.fxLayer, speed: () => Number(el.speed.value || 1) });
     let curve = null;
@@ -254,6 +255,7 @@
       setupShown = false;
       curve = Arena.Visuals.hpCurve(timeline);
       el.hpChart.innerHTML = hpChartHtml(curve, timeline.frames.length);
+      el.hpPanel.hidden = false;
       go(Math.max(0, (timeline.turnStarts[0] || 1) - 1));
     }
 
@@ -436,6 +438,18 @@
       pause();
       setupShown = true;
       go(frame);
+    });
+    try {
+      el.hpPanel.open = root.localStorage.getItem("arena.hpOpen") === "true";
+    } catch (e) {
+      /* storage unavailable: the section starts closed */
+    }
+    el.hpPanel.addEventListener("toggle", () => {
+      try {
+        root.localStorage.setItem("arena.hpOpen", String(el.hpPanel.open));
+      } catch (e) {
+        /* storage unavailable: the choice lasts for this visit only */
+      }
     });
     const tooltip = doc.getElementById("tooltip");
     el.hpChart.addEventListener("mousemove", (e) => {

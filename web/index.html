@@ -41,7 +41,10 @@
             <div class="board" id="board" aria-live="polite"></div>
             <div class="fx-layer" id="fx-layer" aria-hidden="true"></div>
           </div>
-          <div class="hp-chart" id="hp-chart" title="Cliquez pour aller à ce moment de la partie"></div>
+          <details class="hp-panel" id="hp-panel" hidden>
+            <summary>📈 Points de vie au fil de la partie</summary>
+            <div class="hp-chart" id="hp-chart" title="Cliquez pour aller à ce moment de la partie"></div>
+          </details>
           <div class="controls" id="controls">
             <div class="buttons">
               <button class="ctl" data-action="start" title="Début (Home)" aria-label="Début">⏮</button>
