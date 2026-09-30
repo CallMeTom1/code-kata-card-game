@@ -263,6 +263,15 @@ what each bot chose before the fight starts:
 The full list of tags and a longer example are in
 `docs/00-PHASE-0-DECISIONS.md` (section G1).
 
+## Web replay (bonus)
+The brief asks for no UI, so the front is a separate, read-only bonus: `web/` is a
+static HTML/CSS/JS page that replays the JSON exports (`--json` for one match,
+`--stats-json` for a batch). The engine did not change for it, apart from one
+field: `DamageDealt` now carries the armor left after the hit. The JS log formatter
+reproduces the console lines exactly; a test compares it with `docs/sample-match.log`.
+We chose plain files over a web server or a framework because the team's work PCs
+cannot install Node, and because opening a file needs no setup.
+
 ## Later: LLM bots
 Once the required deliverables are done, an `LlmBot` (another `Bot`
 implementation, behind an `LlmClient` interface faked in tests) could let

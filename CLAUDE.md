@@ -29,7 +29,9 @@
 - Turn phases: draw → mana → play → resolve → end. Mana +1/turn, cap 10.
   Match ends at 0 HP or after 50 turns (tie-break in DESIGN.md).
 - The engine never prints. It publishes `GameEvent`s to `GameEventListener`s;
-  console log, stats and a future JSON/HTML front are all listeners.
+  console log, stats and the JSON export read by `web/` are all listeners.
+- `web/` is plain HTML/CSS/JS (no framework, no build, no Node needed): logic in pure
+  functions (`web/js/replay.js`, `stats.js`, `logformat.js`) tested in `web/tests.html`.
 - Bots are pure strategies: they read a `GameView` and return an `Action`. No IO.
 - Card effects are small reusable building blocks; a card or hero power is
   a composition of them. All randomness uses an injected, seeded `Random`.

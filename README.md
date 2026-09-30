@@ -6,7 +6,7 @@ bots, and reports the results. No framework, no UI, no database.
 ## Run it
 
 ```bash
-mvn test                                   # 164 tests (JUnit 5 + AssertJ)
+mvn test                                   # 168 tests (JUnit 5 + AssertJ)
 mvn -q compile exec:java -Dexec.args="--matches 1000 --p1 Aggressive:Mage --p2 Defensive:Tank"
 mvn -q compile exec:java -Dexec.args="--matches 1 --log --names Alice,Bob"
 mvn -q compile exec:java -Dexec.args="--help"
@@ -20,7 +20,22 @@ mvn -q compile exec:java -Dexec.args="--help"
 | `--log` | print the first match turn by turn (bracket-tagged, easy to `grep`) |
 | `--preset-decks` | use the preset decks of `DESIGN.md` instead of bot-built decks |
 | `--names A,B` | player names (default `P1,P2`) |
-| `--json FILE` | also write the first match as JSON lines, for a future HTML/JS replay |
+| `--json FILE` | also write the first match as JSON lines, to replay it in `web/index.html` |
+| `--stats-json FILE` | also write the stats of every match as JSON, for the Statistics tab of `web/index.html` |
+
+## Web replay (bonus, outside the brief)
+
+Plain HTML/CSS/JavaScript in [`web/`](web/): no framework, no build, no server, nothing to install.
+
+1. Export a match and/or stats:
+   `--matches 1 --json partie.jsonl --names Alice,Bob` and `--matches 1000 --stats-json stats.json --names Alice,Bob`
+2. Open `web/index.html` in a browser (double-click), then drag and drop the file(s) onto the page,
+   or click **Exemples** to see the bundled sample.
+3. Replay: Hearthstone-like board, hands, minions, heroes, mana, statuses, the same log as the console,
+   play/pause, step by event or by turn (keys: Space, ←/→, Shift+←/→, Home/End), speed, scrubber.
+   Statistics: win split, first-player advantage, match lengths, end reasons, and a table of every match.
+4. Front tests: open `web/tests.html` (runs in the browser, no Node needed). With Node:
+   `node web/tests/run-node.js`.
 
 ## The brief's deliverables
 
@@ -41,8 +56,9 @@ mvn -q compile exec:java -Dexec.args="--help"
 | `engine.events` | every state change is a `GameEvent`; the engine never prints |
 | `engine.decks` | deck rules and deck-building strategy contract |
 | `bots` | Aggressive, Defensive, Random play and deck strategies |
-| `log` | console renderer and JSON exporter (both event listeners) |
-| `cli`, `stats` | command line, match runner, stats |
+| `log`, `json` | console renderer and JSON exporter (both event listeners), minimal JSON writer |
+| `cli`, `stats` | command line, match runner, stats and stats JSON export |
+| `web/` | HTML/CSS/JS replay and statistics (reads the JSON exports) |
 
 Team docs: [`CLAUDE.md`](CLAUDE.md), [`docs/TEAM_GUIDELINE.md`](docs/TEAM_GUIDELINE.md),
 [`docs/00-PHASE-0-DECISIONS.md`](docs/00-PHASE-0-DECISIONS.md), [`docs/plans/`](docs/plans/).

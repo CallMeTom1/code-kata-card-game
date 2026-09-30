@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Skirmish Arena</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Crimson+Pro:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/arena.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="title">Skirmish Arena</h1>
+    <nav class="tabs" role="tablist">
+      <button class="tab is-active" role="tab" aria-selected="true" data-tab="replay">Replay</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="stats">Statistiques</button>
+    </nav>
+    <div class="loaders">
+      <label class="btn">Charger un fichier…
+        <input type="file" id="file-input" accept=".jsonl,.json,.txt" hidden>
+      </label>
+      <button class="btn btn-ghost" id="load-samples">Exemples</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="tab-replay" class="tab-panel" role="tabpanel">
+      <div id="replay-empty" class="empty">
+        <div class="empty-card">
+          <h2>Rejouer une partie</h2>
+          <p>Glissez-déposez un fichier <code>partie.jsonl</code> n'importe où sur la page,
+            ou utilisez <b>Charger un fichier…</b>, ou cliquez sur <b>Exemples</b>.</p>
+          <p>Pour générer une partie avec le moteur Java&nbsp;:</p>
+          <pre>--matches 1 --json partie.jsonl --names Alice,Bob</pre>
+        </div>
+      </div>
+
+      <div id="replay" class="replay" hidden>
+        <div class="arena">
+          <div class="board" id="board" aria-live="polite"></div>
+          <div class="controls" id="controls">
+            <div class="buttons">
+              <button class="ctl" data-action="start" title="Début (Home)" aria-label="Début">⏮</button>
+              <button class="ctl" data-action="prev-turn" title="Tour précédent (Maj+←)" aria-label="Tour précédent">⏪</button>
+              <button class="ctl" data-action="prev" title="Événement précédent (←)" aria-label="Événement précédent">◀</button>
+              <button class="ctl ctl-play" data-action="play" title="Lecture / pause (Espace)" aria-label="Lecture">▶</button>
+              <button class="ctl" data-action="next" title="Événement suivant (→)" aria-label="Événement suivant">▶︎|</button>
+              <button class="ctl" data-action="next-turn" title="Tour suivant (Maj+→)" aria-label="Tour suivant">⏩</button>
+              <button class="ctl" data-action="end" title="Fin (End)" aria-label="Fin">⏭</button>
+              <label class="speed">Vitesse
+                <select id="speed">
+                  <option value="1">×1</option>
+                  <option value="2" selected>×2</option>
+                  <option value="4">×4</option>
+                  <option value="8">×8</option>
+                </select>
+              </label>
+            </div>
+            <input type="range" id="scrubber" min="0" max="0" value="0" aria-label="Position dans la partie">
+            <div class="position" id="position"></div>
+          </div>
+        </div>
+        <aside class="log-panel">
+          <h2>Journal</h2>
+          <ol class="log" id="log"></ol>
+        </aside>
+        <div class="overlay" id="overlay" hidden></div>
+      </div>
+    </section>
+
+    <section id="tab-stats" class="tab-panel" role="tabpanel" hidden>
+      <div id="stats-empty" class="empty">
+        <div class="empty-card">
+          <h2>Statistiques de N matchs</h2>
+          <p>Glissez-déposez un fichier <code>stats.json</code>, ou cliquez sur <b>Exemples</b>.</p>
+          <p>Pour le générer avec le moteur Java&nbsp;:</p>
+          <pre>--matches 1000 --stats-json stats.json --names Alice,Bob</pre>
+        </div>
+      </div>
+      <div id="stats" class="stats" hidden></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="alert" hidden></div>
+  <div class="tooltip" id="tooltip" hidden></div>
+
+  <script src="js/replay.js"></script>
+  <script src="js/logformat.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/view-replay.js"></script>
+  <script src="js/view-stats.js"></script>
+  <script src="data/sample-match.js"></script>
+  <script src="data/sample-stats.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

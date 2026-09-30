@@ -2,3 +2,7 @@ target/
 .idea/
 *.iml
 .vscode/
+
+# match and stats exports generated at the project root
+/*.jsonl
+/stats*.json
