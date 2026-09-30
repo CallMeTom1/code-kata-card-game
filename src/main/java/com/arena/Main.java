@@ -8,6 +8,7 @@ import com.arena.cli.LlmSettings;
 import com.arena.cli.MatchFactory;
 import com.arena.cli.MatchRunner;
 import com.arena.cli.RunReport;
+import com.arena.server.ArenaServer;
 import com.arena.stats.StatsJsonWriter;
 import com.arena.stats.StatsReport;
 
@@ -37,10 +38,11 @@ public final class Main {
     public static int run(String[] args, PrintStream out) {
         CommandLineOptions options;
         MatchFactory factory;
+        LlmSettings settings;
         try {
             options = CommandLineOptions.parse(args);
-            factory = new MatchFactory(claude(LlmSettings.from(EnvFile.load(Path.of("."), System.getenv()),
-                    options.llmModel())));
+            settings = LlmSettings.from(EnvFile.load(Path.of("."), System.getenv()), options.llmModel());
+            factory = new MatchFactory(claude(settings));
             factory.check(options.player1());
             factory.check(options.player2());
         } catch (IllegalArgumentException e) {
@@ -51,6 +53,9 @@ public final class Main {
         if (options.help()) {
             out.println(CommandLineOptions.USAGE);
             return 0;
+        }
+        if (options.servePort() > 0) {
+            return serve(options.servePort(), factory, settings, out);
         }
         RunReport report = new MatchRunner(factory).run(options, out);
         if (options.log()) {
@@ -75,6 +80,25 @@ public final class Main {
             out.println("[EXPORT ] stats written to " + options.statsJsonFile());
         }
         return 0;
+    }
+
+    /** Runs the live server until the program is stopped (Ctrl+C). */
+    private static int serve(int port, MatchFactory factory, LlmSettings settings, PrintStream out) {
+        try {
+            ArenaServer server = new ArenaServer(port, Path.of("web"), factory, settings.hasApiKey());
+            server.start();
+            out.println("[SERVER ] Skirmish Arena live on http://localhost:" + server.port() + " (Ctrl+C to stop)");
+            out.println("[SERVER ] Llm bots: " + (settings.hasApiKey() ? "ready (" + settings.model() + ")"
+                    : "no API key (put ANTHROPIC_API_KEY in .env.local)"));
+            Thread.currentThread().join();
+            return 0;
+        } catch (IOException e) {
+            out.println("Error: cannot start the server on port " + port + ": " + e.getMessage());
+            return 1;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return 0;
+        }
     }
 
     /** One Claude client per run, created only if an Llm bot plays (classic runs need no key). */

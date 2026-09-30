@@ -6,7 +6,7 @@ import java.util.List;
 /** Everything Main needs from the command line, validated in one place. */
 public record CommandLineOptions(int matches, PlayerSpec player1, PlayerSpec player2, long seed, boolean log,
                                  boolean presetDecks, List<String> names, Path jsonFile, Path statsJsonFile,
-                                 boolean help, String llmModel) {
+                                 boolean help, String llmModel, int servePort) {
 
     /** Printed on --help and after any wrong argument. */
     public static final String USAGE = """
@@ -23,6 +23,8 @@ public record CommandLineOptions(int matches, PlayerSpec player1, PlayerSpec pla
               --json FILE            also write the first match as JSON lines (open it in web/index.html)
               --stats-json FILE      also write the stats of every match as JSON (Statistics tab of web/)
               --llm-model ID         model of the Llm bots (default ARENA_LLM_MODEL or claude-opus-5-5)
+              --serve [PORT]         start the local web server (default port 8080): open http://localhost:PORT
+                                     and start matches from the page, watched live
               --help                 show this help
             The Llm bot reads ANTHROPIC_API_KEY from the environment or .env.local.""";
 
@@ -39,6 +41,7 @@ public record CommandLineOptions(int matches, PlayerSpec player1, PlayerSpec pla
         Path statsJson = null;
         boolean help = false;
         String llmModel = null;
+        int servePort = 0;
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             switch (arg) {
@@ -52,11 +55,17 @@ public record CommandLineOptions(int matches, PlayerSpec player1, PlayerSpec pla
                 case "--json" -> json = Path.of(value(args, ++i, arg));
                 case "--stats-json" -> statsJson = Path.of(value(args, ++i, arg));
                 case "--llm-model" -> llmModel = value(args, ++i, arg);
+                case "--serve" -> {
+                    servePort = 8080;
+                    if (i + 1 < args.length && args[i + 1].matches("\\d+")) {
+                        servePort = port(args[++i]);
+                    }
+                }
                 case "--help", "-h" -> help = true;
                 default -> throw new IllegalArgumentException("Unknown option " + arg);
             }
         }
-        return new CommandLineOptions(matches, p1, p2, seed, log, preset, names, json, statsJson, help, llmModel);
+        return new CommandLineOptions(matches, p1, p2, seed, log, preset, names, json, statsJson, help, llmModel, servePort);
     }
 
     private static String value(String[] args, int index, String option) {
@@ -80,6 +89,14 @@ public record CommandLineOptions(int matches, PlayerSpec player1, PlayerSpec pla
             throw new IllegalArgumentException(option + " must be between 1 and 1000000, got " + value);
         }
         return (int) value;
+    }
+
+    private static int port(String text) {
+        int port = Integer.parseInt(text);
+        if (port < 1 || port > 65_535) {
+            throw new IllegalArgumentException("--serve expects a port between 1 and 65535, got " + port);
+        }
+        return port;
     }
 
     private static List<String> names(String text) {

@@ -68,6 +68,16 @@ public final class MatchFactory {
                 presetDecks ? "preset" : "built");
     }
 
+    /** Bot names accepted on the command line and by the live server. */
+    public List<String> bots() {
+        return BOTS;
+    }
+
+    /** Class names, for the live server's form. */
+    public List<String> classes() {
+        return classes.all().stream().map(HeroClass::name).toList();
+    }
+
     /** Fails fast on typos before any match runs. */
     public void check(PlayerSpec spec) {
         if (canonical(spec.bot()).equals("Llm")) {

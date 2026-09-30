@@ -48,4 +48,16 @@ class LlmSettingsTest {
         // Then
         assertThat(settings.model()).isEqualTo("claude-opus-5-5");
     }
+
+    @Test
+    void given_a_real_key_in_env_local_when_checked_then_the_llm_bot_is_ready() throws IOException {
+        // Given
+        Files.writeString(dir.resolve(".env.local"), "ANTHROPIC_API_KEY=sk-ant-test\n");
+
+        // When
+        LlmSettings settings = LlmSettings.from(EnvFile.load(dir, Map.of()), null);
+
+        // Then
+        assertThat(settings.hasApiKey()).isTrue();
+    }
 }

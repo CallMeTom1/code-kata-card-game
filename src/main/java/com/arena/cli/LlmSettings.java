@@ -30,6 +30,11 @@ public final class LlmSettings {
                 + KEY + "=<your key> in .env.local (git-ignored) or export " + KEY + "."));
     }
 
+    /** True when a real key is configured, so the page can offer the Llm bot. */
+    public boolean hasApiKey() {
+        return apiKey.isPresent();
+    }
+
     /** Model id sent to the API. */
     public String model() {
         return model;

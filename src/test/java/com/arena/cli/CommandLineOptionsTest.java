@@ -81,4 +81,32 @@ class CommandLineOptionsTest {
         // Then
         assertThat(options.llmModel()).isEqualTo("claude-sonnet-5-5");
     }
+
+    @Test
+    void given_serve_without_port_when_parsed_then_the_server_uses_port_8080() {
+        // Given / When
+        CommandLineOptions options = CommandLineOptions.parse(new String[] {"--serve", "--log"});
+
+        // Then
+        assertThat(options.servePort()).isEqualTo(8080);
+        assertThat(options.log()).isTrue();
+    }
+
+    @Test
+    void given_serve_with_a_port_when_parsed_then_that_port_is_used() {
+        // Given / When
+        CommandLineOptions options = CommandLineOptions.parse(new String[] {"--serve", "9000"});
+
+        // Then
+        assertThat(options.servePort()).isEqualTo(9000);
+    }
+
+    @Test
+    void given_no_serve_option_when_parsed_then_no_server_is_started() {
+        // Given / When
+        CommandLineOptions options = CommandLineOptions.parse(new String[0]);
+
+        // Then
+        assertThat(options.servePort()).isZero();
+    }
 }
