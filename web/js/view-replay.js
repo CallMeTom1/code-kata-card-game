@@ -107,30 +107,6 @@
       </div>`).join("")}</div>`;
   }
 
-  function describe(event) {
-    switch (event.type) {
-      case "CardPlayed": return [event.player, `joue <b>${esc(event.card)}</b> (${event.cost} mana)`];
-      case "HeroPowerUsed": return [event.player, `utilise son pouvoir <b>${esc(event.power)}</b>`];
-      case "DamageDealt": return [event.source, `inflige <b>${event.hpBefore - event.hpAfter}</b> à ${esc(event.target)}`
-        + (event.absorbed ? ` (${event.absorbed} absorbés)` : "")];
-      case "Healed": return [event.source, `soigne ${esc(event.player)} de <b>${event.amount}</b>`];
-      case "ArmorGained": return [event.source, `donne <b>${event.amount}</b> d'armure à ${esc(event.player)}`];
-      case "MinionSummoned": return [event.owner, `invoque <b>${esc(event.minion)}</b> ${event.attack}/${event.health}${event.taunt ? " (Taunt)" : ""}`];
-      case "MinionAttacked": return [event.owner, `${esc(event.minion)} attaque <b>${esc(event.target)}</b>`];
-      case "MinionDied": return [event.owner, `${esc(event.minion)} est détruit`];
-      case "StatusApplied": return [event.source, `${esc(event.target)} : <b>${esc(event.status)}</b>`];
-      case "EvasionTriggered": return [event.player, `esquive ${event.prevented} dégâts (${esc(event.source)})`];
-      case "PoisonTicked": return [event.player, `subit <b>${event.amount}</b> de poison`];
-      case "FatigueDamage": return [event.player, `n'a plus de cartes : fatigue <b>${event.amount}</b>`];
-      case "CardBurned": return [event.player, `main pleine, <b>${esc(event.card)}</b> est détruite`];
-      case "BotSpoke": return event.message ? [event.player, `dit : <b>« ${esc(event.message)} »</b>`]
-        : [event.player, `réfléchit : <i>${esc(event.thought)}</i>`];
-      case "IllegalAction": return [event.player, `action refusée : ${esc(event.reason)}`];
-      case "ManaGained": return [event.source, `mana ${event.mana}/${event.maxMana}`];
-      default: return null;
-    }
-  }
-
   function floater(event) {
     switch (event.type) {
       case "DamageDealt": return event.hpBefore > event.hpAfter
@@ -366,7 +342,7 @@
       const [bottom, top] = state.order;
       const banner = state.phase === "setup" ? "Préparation" : state.phase === "ended" ? "Fin du match"
         : `Tour ${state.round} · ${esc(state.current)}`;
-      const action = describe(frame.event);
+      const action = Arena.Narration.describe(frame.event, index > 0 ? timeline.frames[index - 1].state : null);
       el.board.innerHTML = handHtml(state, top, highlight) + sideHtml(state, top, highlight) + minionsHtml(state, top, highlight)
         + `<div class="center-line"><div class="turn-banner">${banner}</div></div>`
         + minionsHtml(state, bottom, highlight) + sideHtml(state, bottom, highlight) + handHtml(state, bottom, highlight)
