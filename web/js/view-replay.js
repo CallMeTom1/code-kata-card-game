@@ -295,6 +295,7 @@
       updateLog();
       updateOverlay(state);
       updateChartCursor();
+      if (options.onFrame) options.onFrame(state);
     }
 
     function updateChartCursor() {

@@ -34,6 +34,8 @@ Plain HTML/CSS/JavaScript in [`web/`](web/): no framework, no build, no server, 
 3. Replay: Hearthstone-like board, hands, minions, heroes, mana, statuses, the same log as the console,
    play/pause, step by event or by turn (keys: Space, ←/→, Shift+←/→, Home/End), speed, scrubber,
    synthesized sounds for each event (Web Audio, no audio files; 🔊 button or key M, volume slider),
+   an original epic music loop that follows the match (calm at setup, drums in battle, a heroic melody
+   when a champion is at 10 HP or less; 🎵 button or key B),
    animations (card reveal, spell projectiles, minion attacks, impacts and screen shake, summons, deaths,
    auras, turn banner, victory), card icons, full card text on hover, and an HP chart (click to jump).
    Statistics: win split, first-player advantage, match lengths, end reasons, and a table of every match.
