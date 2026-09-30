@@ -73,15 +73,17 @@ Plain HTML/CSS/JavaScript in [`web/`](web/): no framework, no build, no server, 
    (e.g. with `--matches 1`) for a replay, or only `--stats-json` for the statistics.
    Keep `--seed` to regenerate exactly the same files.
 2. Open `web/index.html` in a browser (double-click), then drag and drop `partie.jsonl` and/or
-   `stats.json` onto the page (or use the file picker), or click **Exemples** to see the bundled sample.
+   `stats.json` onto the page (or use the file picker), or click **Examples** to see the bundled sample.
+   The interface is in English by default; the 🌐 picker in the top bar (or key L) switches it to French and
+   back, and the choice is remembered. The match log and the card texts come from the engine and stay in English.
 3. Replay: Hearthstone-like board, hands, minions, heroes, mana, statuses, the same log as the console,
    play/pause, step by event or by turn (keys: Space, ←/→, Shift+←/→, Home/End), speed, scrubber,
    synthesized sounds for each event (Web Audio, no audio files; 🔊 button or key M, volume slider),
    original music loops that follow the match (calm at setup, drums in battle, a heroic melody
    when a champion is at 10 HP or less; 🎵 button or key B) in four themes to pick from
-   (⚔️ Épique, 🍺 Taverne, 🔥 Boss, 🔮 Mystique),
-   three design themes in the top bar (🎨, or key D): 🍺 Taverne (the original emoji look), 📜 Grimoire
-   (SVG icons from game-icons.net) and 🌿 Plein air (PNG/JPG tiles from Kenney); credits in
+   (⚔️ Epic, 🍺 Tavern, 💀 Boss, 🔮 Mystic),
+   three design themes in the top bar (🎨, or key D): 🍺 Tavern (the original emoji look), 📜 Grimoire
+   (SVG icons from game-icons.net) and 🌿 Open air (PNG/JPG tiles from Kenney); credits in
    [`web/assets/CREDITS.md`](web/assets/CREDITS.md),
    a game that fills the window (⛶ button or key F for real fullscreen) with the HP chart folded below it,
    animations (card reveal, spell projectiles, minion attacks, impacts and screen shake, summons, deaths,

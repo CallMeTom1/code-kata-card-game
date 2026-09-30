@@ -2,14 +2,33 @@
   const { test, eq, ok } = root.Arena.Test;
   const N = () => root.Arena.Narration;
   const state = (current, round) => ({ current, round });
+  const I18n = () => root.Arena.I18n;
 
-  test("given_a_new_turn_after_another_player_when_narrated_then_it_says_whose_turn_ends_and_whose_begins", () => {
+  /** Runs a check in a language without saving it, then puts the previous language back. */
+  function inLanguage(lang, check) {
+    const before = I18n().lang();
+    I18n().setLang(lang, false);
+    try {
+      check();
+    } finally {
+      I18n().setLang(before, false);
+    }
+  }
+
+  test("given_a_new_turn_after_another_player_when_narrated_in_french_then_it_says_whose_turn_ends_and_whose_begins", () => inLanguage("fr", () => {
     const line = N().describe({ type: "TurnStarted", round: 3, player: "Bob", hp: 24, armor: 2, handSize: 4, deckSize: 12 },
       state("Alice", 3));
     eq(line[0], "Fin du tour de Alice");
     ok(line[1].includes("À <b>Bob</b> de jouer"), line[1]);
     ok(line[1].includes("manche 3"), line[1]);
-  });
+  }));
+
+  test("given_a_new_turn_when_narrated_in_english_then_the_message_is_in_english", () => inLanguage("en", () => {
+    const line = N().describe({ type: "TurnStarted", round: 3, player: "Bob", hp: 24, armor: 2, handSize: 4, deckSize: 12 },
+      state("Alice", 3));
+    eq(line[0], "End of Alice's turn");
+    ok(line[1].includes("<b>Bob</b> to play"), line[1]);
+  }));
 
   test("given_the_coin_flip_when_narrated_then_it_names_who_starts_and_who_gets_the_coin", () => {
     const line = N().describe({ type: "FirstPlayerChosen", first: "Alice", second: "Bob" }, state(null, 0));

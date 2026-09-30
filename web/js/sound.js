@@ -150,7 +150,7 @@
    * layers: pad or arpeggio (level 0+), bass, drums and stabs (level 1+), melody and extra drums (level 2).
    */
   const MUSIC_THEMES = [
-    { id: "epic", name: "⚔️ Épique", tempo: 84,
+    { id: "epic", name: "⚔️ Epic", tempo: 84,
       chords: [["D3", "F3", "A3"], ["Bb2", "D3", "F3"], ["F2", "A2", "C3"], ["C3", "E3", "G3"]],
       bass: ["D2", "Bb1", "F1", "C2"],
       melody: [["D5", 3], ["F5", 1], ["A5", 2], ["G5", 2], ["F5", 3], ["D5", 1], ["E5", 2], ["C5", 2],
@@ -158,7 +158,7 @@
       pad: { type: "sawtooth", gain: 0.035, cutoff: 900 }, arpeggio: null,
       bassSteps: [0, 4], drums: { 1: [0, 3, 4], 2: [6, 7] }, drumPitch: [95, 38], stabs: true,
       lead: { type: "square", gain: 0.025 } },
-    { id: "tavern", name: "🍺 Taverne", tempo: 112,
+    { id: "tavern", name: "🍺 Tavern", tempo: 112,
       chords: [["G3", "B3", "D4"], ["E3", "G3", "B3"], ["C3", "E3", "G3"], ["D3", "F#3", "A3"]],
       bass: ["G2", "E2", "C2", "D2"],
       melody: [["D5", 2], ["G5", 2], ["B5", 2], ["A5", 2], ["G5", 2], ["E5", 2], ["C5", 2], ["E5", 2],
@@ -174,7 +174,7 @@
       pad: { type: "sawtooth", gain: 0.03, cutoff: 700 }, arpeggio: null,
       bassSteps: [0, 1, 2, 3, 4, 5, 6, 7], drums: { 1: [0, 2, 4, 6], 2: [1, 3, 5, 7] }, drumPitch: [80, 32], stabs: true,
       lead: { type: "sawtooth", gain: 0.022 } },
-    { id: "mystic", name: "🔮 Mystique", tempo: 70,
+    { id: "mystic", name: "🔮 Mystic", tempo: 70,
       chords: [["A2", "C3", "E3"], ["F2", "A2", "C3"], ["C3", "E3", "G3"], ["G2", "B2", "D3"]],
       bass: ["A1", "F1", "C2", "G1"],
       melody: [["E5", 4], ["C5", 4], ["A4", 4], ["C5", 4], ["G5", 4], ["E5", 4], ["D5", 6], ["B4", 2]],

@@ -10,6 +10,6 @@
   test("given_no_api_key_when_the_bot_options_are_listed_then_llm_is_shown_but_disabled", () => {
     const options = root.Arena.Live.botOptions({ bots: ["Aggressive", "Llm"], llmReady: false });
     eq(options, [{ value: "Aggressive", label: "Aggressive", disabled: false },
-      { value: "Llm", label: "Llm (Claude) — clé API manquante", disabled: true }]);
+      { value: "Llm", label: root.Arena.I18n.t("live.llm") + root.Arena.I18n.t("live.no-key"), disabled: true }]);
   });
 })(typeof window !== "undefined" ? window : globalThis);

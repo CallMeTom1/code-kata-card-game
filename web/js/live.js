@@ -1,10 +1,11 @@
 /*
- * Live matches: when the page is served by the Java server (--serve), a "Nouvelle partie" button
+ * Live matches: when the page is served by the Java server (--serve), a "New match" button
  * starts a match on the server and the replay follows its events as they arrive (Server-Sent Events).
  * Opened as a file, the page stays a replay viewer and this module does nothing.
  */
 (function (root) {
   const Arena = (root.Arena = root.Arena || {});
+  const t = (key, params) => Arena.I18n.t(key, params);
 
   /** Form values to the server's request: "Bot:Class" as on the command line. */
   function requestBody(form) {
@@ -17,7 +18,7 @@
     return options.bots.map((bot) => {
       const llm = bot === "Llm";
       const missing = llm && !options.llmReady;
-      return { value: bot, label: llm ? "Llm (Claude)" + (missing ? " — clé API manquante" : "") : bot, disabled: missing };
+      return { value: bot, label: llm ? t("live.llm") + (missing ? t("live.no-key") : "") : bot, disabled: missing };
     });
   }
 
@@ -28,22 +29,34 @@
     const dialog = doc.getElementById("new-match-dialog");
     const form = doc.getElementById("new-match-form");
     let source = null;
+    let options = null;
 
-    fetch("api/options").then((r) => (r.ok ? r.json() : null)).then((options) => {
-      if (!options) return;
-      fill(options);
+    fetch("api/options").then((r) => (r.ok ? r.json() : null)).then((answer) => {
+      if (!answer) return;
+      options = answer;
+      fill();
+      reset();
       button.hidden = false;
     }).catch(() => {});
 
-    function fill(options) {
+    /** Option labels in the current language, keeping the player's choices. */
+    function fill() {
       const bots = botOptions(options).map((o) =>
         `<option value="${o.value}"${o.disabled ? " disabled" : ""}>${o.label}</option>`).join("");
-      const classes = `<option value="auto">auto (le bot choisit)</option>`
+      const classes = `<option value="auto">${t("live.auto")}</option>`
         + options.classes.map((c) => `<option value="${c}">${c}</option>`).join("");
       ["1", "2"].forEach((n) => {
+        const bot = form.elements["bot" + n].value;
+        const heroClass = form.elements["class" + n].value;
         form.elements["bot" + n].innerHTML = bots;
         form.elements["class" + n].innerHTML = classes;
+        if (bot) form.elements["bot" + n].value = bot;
+        if (heroClass) form.elements["class" + n].value = heroClass;
       });
+    }
+
+    /** First defaults: two AIs when a key is set, two classic bots otherwise. */
+    function reset() {
       const llm = options.llmReady;
       form.elements.bot1.value = llm ? "Llm" : "Aggressive";
       form.elements.bot2.value = llm ? "Llm" : "Defensive";
@@ -51,7 +64,10 @@
       form.elements.name2.value = llm ? "Claude-B" : "Bob";
     }
 
-    button.addEventListener("click", () => dialog.showModal());
+    button.addEventListener("click", () => {
+      fill();
+      dialog.showModal();
+    });
     form.addEventListener("submit", (e) => {
       if (e.submitter && e.submitter.value === "cancel") return;
       e.preventDefault();
@@ -67,12 +83,12 @@
         response = await fetch("api/matches", { method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body) });
       } catch (e) {
-        showError("Serveur injoignable : " + e.message);
+        showError(t("live.unreachable", { message: e.message }));
         return;
       }
       const answer = await response.json();
       if (!response.ok) {
-        showError(answer.error || "La partie n'a pas pu démarrer.");
+        showError(answer.error || t("live.failed"));
         return;
       }
       selectTab("replay");
@@ -82,12 +98,12 @@
       source.addEventListener("end", () => finish());
       source.addEventListener("failure", (e) => {
         finish();
-        showError("La partie s'est arrêtée : " + JSON.parse(e.data).message);
+        showError(t("live.stopped", { message: JSON.parse(e.data).message }));
       });
       source.onerror = () => {
         if (!source) return;
         finish();
-        showError("Connexion au serveur perdue.");
+        showError(t("live.lost"));
       };
     }
 

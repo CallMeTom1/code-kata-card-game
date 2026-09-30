@@ -1,52 +1,56 @@
 /*
  * One plain-language message per event ("who" + what happened), shown on the board so a viewer
- * understands the match without reading the technical log. Pure function, tested in tests.html.
+ * understands the match without reading the technical log. Pure function (texts from i18n.js),
+ * tested in tests.html.
  */
 (function (root) {
   const Arena = (root.Arena = root.Arena || {});
 
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const plural = (n, word) => n + " " + word + (n > 1 ? "s" : "");
+  const t = (key, params) => Arena.I18n.t(key, params);
+  const count = (key, n) => t(key + (n > 1 ? ".many" : ".one"), { n });
 
   /** [who, html] for an event; {@code before} is the state before it (to tell whose turn just ended). */
   function describe(event, before) {
     const e = event;
     switch (e.type) {
-      case "MatchStarted": return ["Arène", `Le combat commence : <b>${esc(e.player1)}</b> contre <b>${esc(e.player2)}</b>`];
-      case "PlayerSetUp": return [e.player, `choisit la classe <b>${esc(e.heroClass)}</b> (pouvoir ${esc(e.heroPower)})`];
-      case "FirstPlayerChosen": return ["Pile ou face", `<b>${esc(e.first)}</b> commence, ${esc(e.second)} reçoit The Coin`];
-      case "MulliganDone": return [e.player, e.putBack.length ? `échange ${plural(e.putBack.length, "carte")} de sa main`
-        : "garde toute sa main"];
-      case "OpeningHand": return [e.player, `commence avec ${plural(e.cards.length, "carte")} en main`];
+      case "MatchStarted": return [t("narr.arena"), t("narr.match-started", { p1: esc(e.player1), p2: esc(e.player2) })];
+      case "PlayerSetUp": return [e.player, t("narr.setup", { cls: esc(e.heroClass), power: esc(e.heroPower) })];
+      case "FirstPlayerChosen": return [t("narr.coin"), t("narr.first", { first: esc(e.first), second: esc(e.second) })];
+      case "MulliganDone": return [e.player, e.putBack.length
+        ? t("narr.mulligan-swap", { cards: count("narr.cards", e.putBack.length) }) : t("narr.mulligan-keep")];
+      case "OpeningHand": return [e.player, t("narr.opening", { cards: count("narr.cards", e.cards.length) })];
       case "TurnStarted": {
-        const who = before && before.current && before.current !== e.player ? `Fin du tour de ${before.current}` : "Début du combat";
-        return [who, `À <b>${esc(e.player)}</b> de jouer · manche ${e.round} · ${e.hp} PV`];
+        const ended = before && before.current && before.current !== e.player;
+        return [ended ? t("narr.turn-end", { player: before.current }) : t("narr.turn-start"),
+          t("narr.turn", { player: esc(e.player), round: e.round, hp: e.hp })];
       }
-      case "CardDrawn": return [e.player, `pioche <b>${esc(e.card)}</b>`];
-      case "ManaRefilled": return [e.player, `dispose de <b>${e.mana}</b> mana${e.frozen ? " (gelé : −1)" : ""}`];
-      case "CardPlayed": return [e.player, `joue <b>${esc(e.card)}</b> (${e.cost} mana)`];
-      case "HeroPowerUsed": return [e.player, `utilise son pouvoir <b>${esc(e.power)}</b>`];
-      case "DamageDealt": return [e.source, `inflige <b>${e.hpBefore - e.hpAfter}</b> à ${esc(e.target)}`
-        + (e.absorbed ? ` (${e.absorbed} absorbés)` : "")];
-      case "Healed": return [e.source, `soigne ${esc(e.player)} de <b>${e.amount}</b>`];
-      case "ArmorGained": return [e.source, `donne <b>${e.amount}</b> d'armure à ${esc(e.player)}`];
-      case "ArmorExpired": return [e.player, `perd ${e.amount} d'armure (expirée)`];
-      case "ManaGained": return [e.player, `${esc(e.source)} : mana <b>${e.mana}</b> (max ${e.maxMana})`];
-      case "MinionSummoned": return [e.owner, `invoque <b>${esc(e.minion)}</b> ${e.attack}/${e.health}${e.taunt ? " (Taunt)" : ""}`];
-      case "SummonFizzled": return [e.owner, `plateau plein : ${esc(e.minion)} n'arrive pas`];
-      case "MinionAttacked": return [e.owner, `${esc(e.minion)} attaque <b>${esc(e.target)}</b>`];
-      case "MinionDamaged": return [e.source, `blesse ${esc(e.minion)} de <b>${e.amount}</b>`];
-      case "MinionDied": return [e.owner, `${esc(e.minion)} est détruit`];
-      case "StatusApplied": return [e.source, `${esc(e.target)} : <b>${esc(e.status)}</b>`];
-      case "EvasionTriggered": return [e.player, `esquive ${e.prevented} dégâts (${esc(e.source)})`];
-      case "PoisonTicked": return [e.player, `subit <b>${e.amount}</b> de poison`];
-      case "FatigueDamage": return [e.player, `n'a plus de cartes : fatigue <b>${e.amount}</b>`];
-      case "CardBurned": return [e.player, `main pleine, <b>${esc(e.card)}</b> est détruite`];
-      case "IllegalAction": return [e.player, `action refusée : ${esc(e.reason)}`];
-      case "BotSpoke": return e.message ? [e.player, `dit : <b>« ${esc(e.message)} »</b>`]
-        : [e.player, `réfléchit : <i>${esc(e.thought)}</i>`];
-      case "MatchEnded": return ["Fin du combat", e.winner === "DRAW" ? "<b>Match nul</b>"
-        : `<b>${esc(e.winner)}</b> remporte la partie (${esc(e.reason)}, ${plural(e.rounds, "manche")})`];
+      case "CardDrawn": return [e.player, t("narr.draw", { card: esc(e.card) })];
+      case "ManaRefilled": return [e.player, t("narr.mana", { mana: e.mana }) + (e.frozen ? t("narr.frozen") : "")];
+      case "CardPlayed": return [e.player, t("action.card-played", { card: esc(e.card), cost: e.cost })];
+      case "HeroPowerUsed": return [e.player, t("action.hero-power", { power: esc(e.power) })];
+      case "DamageDealt": return [e.source, t("action.damage", { amount: e.hpBefore - e.hpAfter, target: esc(e.target) })
+        + (e.absorbed ? t("action.absorbed", { n: e.absorbed }) : "")];
+      case "Healed": return [e.source, t("action.heal", { player: esc(e.player), amount: e.amount })];
+      case "ArmorGained": return [e.source, t("action.armor", { amount: e.amount, player: esc(e.player) })];
+      case "ArmorExpired": return [e.player, t("narr.armor-expired", { amount: e.amount })];
+      case "ManaGained": return [e.player, t("narr.mana-gained", { source: esc(e.source), mana: e.mana, max: e.maxMana })];
+      case "MinionSummoned": return [e.owner, t("action.summon", { minion: esc(e.minion), attack: e.attack, health: e.health })
+        + (e.taunt ? t("action.summon-taunt") : "")];
+      case "SummonFizzled": return [e.owner, t("narr.fizzle", { minion: esc(e.minion) })];
+      case "MinionAttacked": return [e.owner, t("action.minion-attack", { minion: esc(e.minion), target: esc(e.target) })];
+      case "MinionDamaged": return [e.source, t("narr.minion-damaged", { minion: esc(e.minion), amount: e.amount })];
+      case "MinionDied": return [e.owner, t("action.minion-died", { minion: esc(e.minion) })];
+      case "StatusApplied": return [e.source, t("action.status", { target: esc(e.target), status: esc(e.status) })];
+      case "EvasionTriggered": return [e.player, t("action.evasion", { amount: e.prevented, source: esc(e.source) })];
+      case "PoisonTicked": return [e.player, t("action.poison", { amount: e.amount })];
+      case "FatigueDamage": return [e.player, t("action.fatigue", { amount: e.amount })];
+      case "CardBurned": return [e.player, t("action.burn", { card: esc(e.card) })];
+      case "IllegalAction": return [e.player, t("action.illegal", { reason: esc(e.reason) })];
+      case "BotSpoke": return e.message ? [e.player, t("narr.says", { message: esc(e.message) })]
+        : [e.player, t("narr.thinks", { thought: esc(e.thought) })];
+      case "MatchEnded": return [t("narr.end"), e.winner === "DRAW" ? t("narr.draw-result")
+        : t("narr.winner", { winner: esc(e.winner), reason: esc(e.reason), rounds: count("narr.rounds", e.rounds) })];
       default: return null;
     }
   }

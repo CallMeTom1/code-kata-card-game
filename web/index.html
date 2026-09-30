@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,18 +12,24 @@
   <header class="topbar">
     <h1 class="title">Skirmish Arena</h1>
     <nav class="tabs" role="tablist">
-      <button class="tab is-active" role="tab" aria-selected="true" data-tab="replay">Replay</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="stats">Statistiques</button>
+      <button class="tab is-active" role="tab" aria-selected="true" data-tab="replay" data-i18n="tab.replay">Replay</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="stats" data-i18n="tab.stats">Statistics</button>
     </nav>
-    <label class="design-picker" title="Thème du design (D)">🎨
-      <select id="design-theme" aria-label="Thème du design"></select>
+    <label class="design-picker" title="Design theme (D)" data-i18n-title="design.title">🎨
+      <select id="design-theme" aria-label="Design theme" data-i18n-label="design.label"></select>
+    </label>
+    <label class="design-picker" title="Language (L)" data-i18n-title="lang.title">🌐
+      <select id="lang-select" aria-label="Language" data-i18n-label="lang.label">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+      </select>
     </label>
     <div class="loaders">
-      <button class="btn btn-live" id="new-match" hidden>⚔ Nouvelle partie</button>
-      <label class="btn">Charger un fichier…
+      <button class="btn btn-live" id="new-match" data-i18n="live.new" hidden>⚔ New match</button>
+      <label class="btn"><span data-i18n="loader.file">Load a file…</span>
         <input type="file" id="file-input" accept=".jsonl,.json,.txt" hidden>
       </label>
-      <button class="btn btn-ghost" id="load-samples">Exemples</button>
+      <button class="btn btn-ghost" id="load-samples" data-i18n="loader.samples">Examples</button>
     </div>
   </header>
 
@@ -31,10 +37,9 @@
     <section id="tab-replay" class="tab-panel" role="tabpanel">
       <div id="replay-empty" class="empty">
         <div class="empty-card">
-          <h2>Rejouer une partie</h2>
-          <p>Glissez-déposez un fichier <code>partie.jsonl</code> n'importe où sur la page,
-            ou utilisez <b>Charger un fichier…</b>, ou cliquez sur <b>Exemples</b>.</p>
-          <p>Pour générer une partie avec le moteur Java&nbsp;:</p>
+          <h2 data-i18n="empty.replay.title">Replay a match</h2>
+          <p data-i18n-html="empty.replay.drop">Drag and drop a <code>partie.jsonl</code> file anywhere on the page, or use <b>Load a file…</b>, or click <b>Examples</b>.</p>
+          <p data-i18n-html="empty.replay.generate">To generate a match with the Java engine:</p>
           <pre>--matches 1 --json partie.jsonl --names Alice,Bob</pre>
         </div>
       </div>
@@ -47,21 +52,21 @@
           </div>
           <div class="controls" id="controls">
             <div class="buttons">
-              <button class="ctl" data-action="start" title="Début (Home)" aria-label="Début">⏮</button>
-              <button class="ctl" data-action="prev-turn" title="Tour précédent (Maj+←)" aria-label="Tour précédent">⏪</button>
-              <button class="ctl" data-action="prev" title="Événement précédent (←)" aria-label="Événement précédent">◀</button>
-              <button class="ctl ctl-play" data-action="play" title="Lecture / pause (Espace)" aria-label="Lecture">▶</button>
-              <button class="ctl" data-action="next" title="Événement suivant (→)" aria-label="Événement suivant">▶︎|</button>
-              <button class="ctl" data-action="next-turn" title="Tour suivant (Maj+→)" aria-label="Tour suivant">⏩</button>
-              <button class="ctl" data-action="end" title="Fin (End)" aria-label="Fin">⏭</button>
+              <button class="ctl" data-action="start" title="Start (Home)" aria-label="Start" data-i18n-title="ctl.start" data-i18n-label="ctl.start.label">⏮</button>
+              <button class="ctl" data-action="prev-turn" title="Previous turn (Shift+←)" aria-label="Previous turn" data-i18n-title="ctl.prev-turn" data-i18n-label="ctl.prev-turn.label">⏪</button>
+              <button class="ctl" data-action="prev" title="Previous event (←)" aria-label="Previous event" data-i18n-title="ctl.prev" data-i18n-label="ctl.prev.label">◀</button>
+              <button class="ctl ctl-play" data-action="play" title="Play / pause (Space)" aria-label="Play" data-i18n-title="ctl.play">▶</button>
+              <button class="ctl" data-action="next" title="Next event (→)" aria-label="Next event" data-i18n-title="ctl.next" data-i18n-label="ctl.next.label">▶︎|</button>
+              <button class="ctl" data-action="next-turn" title="Next turn (Shift+→)" aria-label="Next turn" data-i18n-title="ctl.next-turn" data-i18n-label="ctl.next-turn.label">⏩</button>
+              <button class="ctl" data-action="end" title="End (End)" aria-label="End" data-i18n-title="ctl.end" data-i18n-label="ctl.end.label">⏭</button>
               <div class="sound">
-                <button class="ctl" id="music-toggle" aria-pressed="true" title="Musique activée (B)" aria-label="Couper la musique">🎵</button>
-                <select id="music-theme" aria-label="Thème musical" title="Thème musical"></select>
-                <button class="ctl" id="sound-toggle" aria-pressed="true" title="Son activé (M)" aria-label="Couper le son">🔊</button>
-                <input type="range" id="volume" min="0" max="100" value="60" aria-label="Volume">
+                <button class="ctl" id="music-toggle" aria-pressed="true" title="Music on (B)" aria-label="Turn the music off">🎵</button>
+                <select id="music-theme" aria-label="Music theme" title="Music theme" data-i18n-title="music.theme" data-i18n-label="music.theme"></select>
+                <button class="ctl" id="sound-toggle" aria-pressed="true" title="Sound on (M)" aria-label="Mute the sound">🔊</button>
+                <input type="range" id="volume" min="0" max="100" value="60" aria-label="Volume" data-i18n-label="volume">
               </div>
-              <button class="ctl" id="fullscreen-toggle" title="Plein écran (F)" aria-label="Plein écran" aria-pressed="false">⛶</button>
-              <label class="speed">Vitesse
+              <button class="ctl" id="fullscreen-toggle" title="Fullscreen (F)" aria-label="Fullscreen" aria-pressed="false">⛶</button>
+              <label class="speed"><span data-i18n="speed">Speed</span>
                 <select id="speed">
                   <option value="1">×1</option>
                   <option value="2" selected>×2</option>
@@ -70,30 +75,30 @@
                 </select>
               </label>
             </div>
-            <input type="range" id="scrubber" min="0" max="0" value="0" aria-label="Position dans la partie">
+            <input type="range" id="scrubber" min="0" max="0" value="0" aria-label="Position in the match" data-i18n-label="position.label">
             <div class="position" id="position"></div>
           </div>
         </div>
         <aside class="log-panel">
-          <h2 id="dialogue-title" hidden>Dialogue</h2>
+          <h2 id="dialogue-title" data-i18n="dialogue.title" hidden>Dialogue</h2>
           <ol class="dialogue" id="dialogue" aria-live="polite" hidden></ol>
-          <h2>Journal</h2>
+          <h2 data-i18n="log.title">Log</h2>
           <ol class="log" id="log"></ol>
         </aside>
         <div class="overlay" id="overlay" hidden></div>
       </div>
       <details class="hp-panel" id="hp-panel" hidden>
-        <summary>📈 Points de vie au fil de la partie</summary>
-        <div class="hp-chart" id="hp-chart" title="Cliquez pour aller à ce moment de la partie"></div>
+        <summary data-i18n="hp.title">📈 Hit points over the match</summary>
+        <div class="hp-chart" id="hp-chart" title="Click to jump to that moment of the match" data-i18n-title="hp.hint"></div>
       </details>
     </section>
 
     <section id="tab-stats" class="tab-panel" role="tabpanel" hidden>
       <div id="stats-empty" class="empty">
         <div class="empty-card">
-          <h2>Statistiques de N matchs</h2>
-          <p>Glissez-déposez un fichier <code>stats.json</code>, ou cliquez sur <b>Exemples</b>.</p>
-          <p>Pour le générer avec le moteur Java&nbsp;:</p>
+          <h2 data-i18n="empty.stats.title">Statistics of N matches</h2>
+          <p data-i18n-html="empty.stats.drop">Drag and drop a <code>stats.json</code> file, or click <b>Examples</b>.</p>
+          <p data-i18n-html="empty.stats.generate">To generate it with the Java engine:</p>
           <pre>--matches 1000 --stats-json stats.json --names Alice,Bob</pre>
         </div>
       </div>
@@ -105,25 +110,25 @@
 
   <dialog class="new-match" id="new-match-dialog">
     <form id="new-match-form" method="dialog">
-      <h2>Nouvelle partie</h2>
+      <h2 data-i18n="live.title">New match</h2>
       <div class="new-match-sides">
         <fieldset>
-          <legend>Joueur 1</legend>
-          <label>Nom <input name="name1" required maxlength="20"></label>
-          <label>Bot <select name="bot1"></select></label>
-          <label>Classe <select name="class1"></select></label>
+          <legend data-i18n="live.player1">Player 1</legend>
+          <label><span data-i18n="live.name">Name</span> <input name="name1" required maxlength="20"></label>
+          <label><span data-i18n="live.bot">Bot</span> <select name="bot1"></select></label>
+          <label><span data-i18n="live.class">Class</span> <select name="class1"></select></label>
         </fieldset>
         <fieldset>
-          <legend>Joueur 2</legend>
-          <label>Nom <input name="name2" required maxlength="20"></label>
-          <label>Bot <select name="bot2"></select></label>
-          <label>Classe <select name="class2"></select></label>
+          <legend data-i18n="live.player2">Player 2</legend>
+          <label><span data-i18n="live.name">Name</span> <input name="name2" required maxlength="20"></label>
+          <label><span data-i18n="live.bot">Bot</span> <select name="bot2"></select></label>
+          <label><span data-i18n="live.class">Class</span> <select name="class2"></select></label>
         </fieldset>
       </div>
-      <p class="new-match-hint">Avec le bot Llm, Claude choisit ses cartes et réfléchit à chaque tour : la partie se déroule en direct.</p>
+      <p class="new-match-hint" data-i18n="live.hint">With the Llm bot, Claude picks its cards and thinks every turn: the match is played live.</p>
       <div class="new-match-actions">
-        <button class="btn btn-ghost" value="cancel" formnovalidate>Annuler</button>
-        <button class="btn" value="start">Lancer le combat</button>
+        <button class="btn btn-ghost" value="cancel" formnovalidate data-i18n="live.cancel">Cancel</button>
+        <button class="btn" value="start" data-i18n="live.start">Start the fight</button>
       </div>
     </form>
   </dialog>
@@ -131,6 +136,7 @@
   <div class="tooltip" id="tooltip" hidden></div>
   <div class="card-zoom" id="card-zoom" hidden></div>
 
+  <script src="js/i18n.js"></script>
   <script src="js/replay.js"></script>
   <script src="js/logformat.js"></script>
   <script src="js/stats.js"></script>
@@ -148,8 +154,8 @@
   <script>
     if (!window.Arena || !window.Arena.ReplayView) {
       const box = document.getElementById("toast");
-      box.textContent = "Les scripts de la page n'ont pas pu être chargés. Ouvrez web/index.html dans Chrome, "
-        + "Edge ou Firefox depuis le dossier du projet (pas dans un aperçu), avec les dossiers js/, css/ et data/ à côté.";
+      box.textContent = "The page scripts could not be loaded. Open web/index.html in Chrome, Edge or Firefox "
+        + "from the project folder (not in a preview), with the js/, css/ and data/ folders next to it.";
       box.hidden = false;
     }
   </script>
