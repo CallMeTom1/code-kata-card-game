@@ -212,7 +212,7 @@ Exemple proposé :
 ...
 [RESULT ] Alice WINS | reason: HP 0 | turns: 18 | damage Alice 34 / Bob 21
 ```
-Étiquettes : `MATCH`, `SETUP`, `DECK`, `CURVE`, `START`, `SWAP` (mulligan), `TURN`, `DRAW`, `BURN`, `FATIGUE`, `PLAY`, `POWER`,
+Étiquettes (implémentées) : `MATCH`, `SETUP`, `POWER`, `DECK`, `CURVE`, `START`, `SWAP` (mulligan), `HAND`, `TURN`, `MANA`, `DRAW`, `BURN`, `FATIGUE`, `PLAY`, `ILLEGAL`, `POISON`, `EVADE`,
 `DAMAGE`, `HEAL`, `ARMOR`, `STATUS`, `SUMMON`, `MINION`, `DEATH`, `RESULT`.
 Les noms de joueur sont complétés par des espaces pour que les colonnes restent alignées.
 Décision : ______

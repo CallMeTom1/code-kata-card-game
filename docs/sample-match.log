@@ -1,0 +1,216 @@
+[MATCH  ] Alice [Aggressive:Mage] vs Bob [Defensive:Tank] | seed 42
+[SETUP  ][Alice] [Aggressive] plays [Mage] (imposed) | deck: built
+[POWER  ][Alice] Fireblast (2) — deal 1 damage
+[DECK   ][Alice] [ATTACK   16] Fireball x2, Pyroblast x2, Frostbolt x2, Strike x2, Wild Wolf x2, Crushing Blow x2, Quick Jab x2, Raise Skeletons x2
+[DECK   ][Alice] [RESOURCE  2] Mana Crystal x2
+[DECK   ][Alice] [UTILITY   2] Insight x2
+[CURVE  ][Alice] [1: 6] [2: 6] [3: 2] [4: 2] [5+: 4] | avg cost 2.9
+[SETUP  ][Bob  ] [Defensive] plays [Tank] (imposed) | deck: built
+[POWER  ][Bob  ] Armor Up (2) — Armor 2 (3 turns)
+[DECK   ][Bob  ] [ATTACK    6] Crushing Blow x2, Strike x2, Wild Wolf x2
+[DECK   ][Bob  ] [DEFENSE  10] Fortress x2, Iron Golem x2, Iron Wall x2, Shield Block x2, Shieldbearer x2
+[DECK   ][Bob  ] [UTILITY   4] Last Stand x2, Healing Potion x2
+[CURVE  ][Bob  ] [1: 2] [2: 6] [3: 4] [4: 4] [5+: 4] | avg cost 3.1
+[START  ] Bob goes first (coin flip) | Alice gets The Coin
+[SWAP   ][Bob  ] keeps the whole hand
+[SWAP   ][Alice] puts back Crushing Blow → draws Crushing Blow
+[HAND   ][Bob  ] Iron Wall, Iron Wall, Last Stand
+[HAND   ][Alice] Strike, Frostbolt, Raise Skeletons, Crushing Blow, The Coin
+[T01] ======================================================================
+[T01][Bob  ][TURN   ] [HP 30/30] [ARMOR 0] [HAND 3] [DECK 17]
+[T01][Bob  ][DRAW   ] Strike
+[T01][Bob  ][MANA   ] [MANA 1/1]
+[T01][Alice][TURN   ] [HP 30/30] [ARMOR 0] [HAND 5] [DECK 16]
+[T01][Alice][DRAW   ] Pyroblast
+[T01][Alice][MANA   ] [MANA 1/1]
+[T01][Alice][PLAY   ] The Coin (0) → [MANA 1/1]
+[T01][Alice][MANA   ] The Coin → [MANA 2/1]
+[T01][Alice][PLAY   ] Strike (2) → [MANA 0/1]
+[T01][Alice][DAMAGE ] Strike → Bob : 4 dmg [ABSORBED 0] [HP 30 → 26]
+[T02] ======================================================================
+[T02][Bob  ][TURN   ] [HP 26/30] [ARMOR 0] [HAND 4] [DECK 16]
+[T02][Bob  ][DRAW   ] Wild Wolf
+[T02][Bob  ][MANA   ] [MANA 2/2]
+[T02][Bob  ][PLAY   ] Strike (2) → [MANA 0/2]
+[T02][Bob  ][DAMAGE ] Strike → Alice : 4 dmg [ABSORBED 0] [HP 30 → 26]
+[T02][Alice][TURN   ] [HP 26/30] [ARMOR 0] [HAND 4] [DECK 15]
+[T02][Alice][DRAW   ] Wild Wolf
+[T02][Alice][MANA   ] [MANA 2/2]
+[T02][Alice][PLAY   ] Wild Wolf (2) → [MANA 0/2]
+[T02][Alice][SUMMON ] Wolf [2/2] → [BOARD 1/7]
+[T03] ======================================================================
+[T03][Bob  ][TURN   ] [HP 26/30] [ARMOR 0] [HAND 4] [DECK 15]
+[T03][Bob  ][DRAW   ] Last Stand
+[T03][Bob  ][MANA   ] [MANA 3/3]
+[T03][Bob  ][PLAY   ] Wild Wolf (2) → [MANA 1/3]
+[T03][Bob  ][SUMMON ] Wolf [2/2] → [BOARD 1/7]
+[T03][Alice][TURN   ] [HP 26/30] [ARMOR 0] [HAND 4] [DECK 14]
+[T03][Alice][DRAW   ] Mana Crystal
+[T03][Alice][MANA   ] [MANA 3/3]
+[T03][Alice][PLAY   ] Mana Crystal (1) → [MANA 2/3]
+[T03][Alice][MANA   ] Mana Crystal → [MANA 2/4]
+[T03][Alice][PLAY   ] Frostbolt (2) → [MANA 0/4]
+[T03][Alice][DAMAGE ] Frostbolt → Bob : 3 dmg [ABSORBED 0] [HP 26 → 23]
+[T03][Alice][STATUS ] Bob [FROZEN (-1 mana next turn)] from Frostbolt
+[T03][Alice][MINION ] Wolf [2/2] attacks Bob
+[T03][Alice][DAMAGE ] Wolf → Bob : 2 dmg [ABSORBED 0] [HP 23 → 21]
+[T04] ======================================================================
+[T04][Bob  ][TURN   ] [HP 21/30] [ARMOR 0] [HAND 4] [DECK 14]
+[T04][Bob  ][DRAW   ] Healing Potion
+[T04][Bob  ][MANA   ] [MANA 3/4] [FROZEN -1]
+[T04][Bob  ][PLAY   ] Iron Wall (3) → [MANA 0/4]
+[T04][Bob  ][ARMOR  ] Iron Wall → Bob : +5 (2 turns) [ARMOR 5]
+[T04][Bob  ][MINION ] Wolf [2/2] attacks Alice
+[T04][Bob  ][DAMAGE ] Wolf → Alice : 2 dmg [ABSORBED 0] [HP 26 → 24]
+[T04][Alice][TURN   ] [HP 24/30] [ARMOR 0] [HAND 3] [DECK 13]
+[T04][Alice][DRAW   ] Fireball
+[T04][Alice][MANA   ] [MANA 5/5]
+[T04][Alice][PLAY   ] Crushing Blow (5) → [MANA 0/5]
+[T04][Alice][DAMAGE ] Crushing Blow → Bob : 8 dmg [ABSORBED 5] [HP 21 → 18]
+[T04][Alice][MINION ] Wolf [2/2] attacks Bob
+[T04][Alice][DAMAGE ] Wolf → Bob : 2 dmg [ABSORBED 0] [HP 18 → 16]
+[T05] ======================================================================
+[T05][Bob  ][TURN   ] [HP 16/30] [ARMOR 0] [HAND 4] [DECK 13]
+[T05][Bob  ][DRAW   ] Fortress
+[T05][Bob  ][MANA   ] [MANA 5/5]
+[T05][Bob  ][PLAY   ] Fortress (5) → [MANA 0/5]
+[T05][Bob  ][ARMOR  ] Fortress → Bob : +8 (2 turns) [ARMOR 8]
+[T05][Bob  ][MINION ] Wolf [2/2] attacks Alice
+[T05][Bob  ][DAMAGE ] Wolf → Alice : 2 dmg [ABSORBED 0] [HP 24 → 22]
+[T05][Alice][TURN   ] [HP 22/30] [ARMOR 0] [HAND 3] [DECK 12]
+[T05][Alice][DRAW   ] Strike
+[T05][Alice][MANA   ] [MANA 6/6]
+[T05][Alice][PLAY   ] Fireball (4) → [MANA 2/6]
+[T05][Alice][PLAY   ] Strike (2) → [MANA 0/6]
+[T05][Alice][DAMAGE ] Fireball → Bob : 6 dmg [ABSORBED 6] [HP 16 → 16]
+[T05][Alice][DAMAGE ] Strike → Bob : 4 dmg [ABSORBED 2] [HP 16 → 14]
+[T05][Alice][MINION ] Wolf [2/2] attacks Bob
+[T05][Alice][DAMAGE ] Wolf → Bob : 2 dmg [ABSORBED 0] [HP 14 → 12]
+[T06] ======================================================================
+[T06][Bob  ][TURN   ] [HP 12/30] [ARMOR 0] [HAND 4] [DECK 12]
+[T06][Bob  ][DRAW   ] Iron Golem
+[T06][Bob  ][MANA   ] [MANA 6/6]
+[T06][Bob  ][PLAY   ] Last Stand (4) → [MANA 2/6]
+[T06][Bob  ][PLAY   ] Healing Potion (2) → [MANA 0/6]
+[T06][Bob  ][HEAL   ] Last Stand → Bob : +6 [HP 12 → 18]
+[T06][Bob  ][HEAL   ] Healing Potion → Bob : +4 [HP 18 → 22]
+[T06][Bob  ][MINION ] Wolf [2/2] attacks Alice
+[T06][Bob  ][DAMAGE ] Wolf → Alice : 2 dmg [ABSORBED 0] [HP 22 → 20]
+[T06][Alice][TURN   ] [HP 20/30] [ARMOR 0] [HAND 2] [DECK 11]
+[T06][Alice][DRAW   ] Raise Skeletons
+[T06][Alice][MANA   ] [MANA 7/7]
+[T06][Alice][PLAY   ] Raise Skeletons (3) → [MANA 4/7]
+[T06][Alice][PLAY   ] Raise Skeletons (3) → [MANA 1/7]
+[T06][Alice][SUMMON ] Skeleton [1/1] → [BOARD 2/7]
+[T06][Alice][SUMMON ] Skeleton [1/1] → [BOARD 3/7]
+[T06][Alice][SUMMON ] Skeleton [1/1] → [BOARD 4/7]
+[T06][Alice][SUMMON ] Skeleton [1/1] → [BOARD 5/7]
+[T06][Alice][MINION ] Wolf [2/2] attacks Bob
+[T06][Alice][DAMAGE ] Wolf → Bob : 2 dmg [ABSORBED 0] [HP 22 → 20]
+[T07] ======================================================================
+[T07][Bob  ][TURN   ] [HP 20/30] [ARMOR 0] [HAND 3] [DECK 11]
+[T07][Bob  ][DRAW   ] Healing Potion
+[T07][Bob  ][MANA   ] [MANA 7/7]
+[T07][Bob  ][PLAY   ] Last Stand (4) → [MANA 3/7]
+[T07][Bob  ][PLAY   ] Iron Wall (3) → [MANA 0/7]
+[T07][Bob  ][HEAL   ] Last Stand → Bob : +6 [HP 20 → 26]
+[T07][Bob  ][ARMOR  ] Iron Wall → Bob : +5 (2 turns) [ARMOR 5]
+[T07][Bob  ][MINION ] Wolf [2/2] attacks Alice
+[T07][Bob  ][DAMAGE ] Wolf → Alice : 2 dmg [ABSORBED 0] [HP 20 → 18]
+[T07][Alice][TURN   ] [HP 18/30] [ARMOR 0] [HAND 1] [DECK 10]
+[T07][Alice][DRAW   ] Insight
+[T07][Alice][MANA   ] [MANA 8/8]
+[T07][Alice][PLAY   ] Pyroblast (8) → [MANA 0/8]
+[T07][Alice][DAMAGE ] Pyroblast → Bob : 10 dmg [ABSORBED 5] [HP 26 → 21]
+[T07][Alice][MINION ] Wolf [2/2] attacks Bob
+[T07][Alice][DAMAGE ] Wolf → Bob : 2 dmg [ABSORBED 0] [HP 21 → 19]
+[T07][Alice][MINION ] Skeleton [1/1] attacks Bob
+[T07][Alice][DAMAGE ] Skeleton → Bob : 1 dmg [ABSORBED 0] [HP 19 → 18]
+[T07][Alice][MINION ] Skeleton [1/1] attacks Bob
+[T07][Alice][DAMAGE ] Skeleton → Bob : 1 dmg [ABSORBED 0] [HP 18 → 17]
+[T07][Alice][MINION ] Skeleton [1/1] attacks Bob
+[T07][Alice][DAMAGE ] Skeleton → Bob : 1 dmg [ABSORBED 0] [HP 17 → 16]
+[T07][Alice][MINION ] Skeleton [1/1] attacks Bob
+[T07][Alice][DAMAGE ] Skeleton → Bob : 1 dmg [ABSORBED 0] [HP 16 → 15]
+[T08] ======================================================================
+[T08][Bob  ][TURN   ] [HP 15/30] [ARMOR 0] [HAND 2] [DECK 10]
+[T08][Bob  ][DRAW   ] Shieldbearer
+[T08][Bob  ][MANA   ] [MANA 8/8]
+[T08][Bob  ][PLAY   ] Healing Potion (2) → [MANA 6/8]
+[T08][Bob  ][PLAY   ] Iron Golem (4) → [MANA 2/8]
+[T08][Bob  ][PLAY   ] Shieldbearer (1) → [MANA 1/8]
+[T08][Bob  ][HEAL   ] Healing Potion → Bob : +4 [HP 15 → 19]
+[T08][Bob  ][SUMMON ] Iron Golem [0/6] [TAUNT] → [BOARD 2/7]
+[T08][Bob  ][SUMMON ] Shieldbearer [0/3] [TAUNT] → [BOARD 3/7]
+[T08][Bob  ][MINION ] Wolf [2/2] attacks Alice
+[T08][Bob  ][DAMAGE ] Wolf → Alice : 2 dmg [ABSORBED 0] [HP 18 → 16]
+[T08][Alice][TURN   ] [HP 16/30] [ARMOR 0] [HAND 1] [DECK 9]
+[T08][Alice][DRAW   ] Mana Crystal
+[T08][Alice][MANA   ] [MANA 9/9]
+[T08][Alice][PLAY   ] Insight (1) → [MANA 8/9]
+[T08][Alice][DRAW   ] Fireball
+[T08][Alice][PLAY   ] Fireball (4) → [MANA 4/9]
+[T08][Alice][PLAY   ] Mana Crystal (1) → [MANA 3/9]
+[T08][Alice][MANA   ] Mana Crystal → [MANA 3/10]
+[T08][Alice][POWER  ] Fireblast (2) → [MANA 1/10]
+[T08][Alice][DAMAGE ] Fireball → Bob : 6 dmg [ABSORBED 0] [HP 19 → 13]
+[T08][Alice][DAMAGE ] Fireblast → Bob : 1 dmg [ABSORBED 0] [HP 13 → 12]
+[T08][Alice][MINION ] Wolf [2/2] attacks Iron Golem
+[T08][Alice][MINION ] Iron Golem (Bob) takes 2 from Wolf [HEALTH 4]
+[T08][Alice][MINION ] Skeleton [1/1] attacks Iron Golem
+[T08][Alice][MINION ] Iron Golem (Bob) takes 1 from Skeleton [HEALTH 3]
+[T08][Alice][MINION ] Skeleton [1/1] attacks Iron Golem
+[T08][Alice][MINION ] Iron Golem (Bob) takes 1 from Skeleton [HEALTH 2]
+[T08][Alice][MINION ] Skeleton [1/1] attacks Iron Golem
+[T08][Alice][MINION ] Iron Golem (Bob) takes 1 from Skeleton [HEALTH 1]
+[T08][Alice][MINION ] Skeleton [1/1] attacks Iron Golem
+[T08][Alice][MINION ] Iron Golem (Bob) takes 1 from Skeleton [HEALTH 0]
+[T08][Alice][DEATH  ] Iron Golem (Bob)
+[T09] ======================================================================
+[T09][Bob  ][TURN   ] [HP 12/30] [ARMOR 0] [HAND 0] [DECK 9]
+[T09][Bob  ][DRAW   ] Strike
+[T09][Bob  ][MANA   ] [MANA 9/9]
+[T09][Bob  ][PLAY   ] Strike (2) → [MANA 7/9]
+[T09][Bob  ][POWER  ] Armor Up (2) → [MANA 5/9]
+[T09][Bob  ][DAMAGE ] Strike → Alice : 4 dmg [ABSORBED 0] [HP 16 → 12]
+[T09][Bob  ][ARMOR  ] Armor Up → Bob : +2 (3 turns) [ARMOR 2]
+[T09][Bob  ][MINION ] Wolf [2/2] attacks Alice
+[T09][Bob  ][DAMAGE ] Wolf → Alice : 2 dmg [ABSORBED 0] [HP 12 → 10]
+[T09][Alice][TURN   ] [HP 10/30] [ARMOR 0] [HAND 0] [DECK 7]
+[T09][Alice][DRAW   ] Wild Wolf
+[T09][Alice][MANA   ] [MANA 10/10]
+[T09][Alice][PLAY   ] Wild Wolf (2) → [MANA 8/10]
+[T09][Alice][POWER  ] Fireblast (2) → [MANA 6/10]
+[T09][Alice][SUMMON ] Wolf [2/2] → [BOARD 6/7]
+[T09][Alice][DAMAGE ] Fireblast → Bob : 1 dmg [ABSORBED 1] [HP 12 → 12]
+[T09][Alice][MINION ] Wolf [2/2] attacks Shieldbearer
+[T09][Alice][MINION ] Shieldbearer (Bob) takes 2 from Wolf [HEALTH 1]
+[T09][Alice][MINION ] Skeleton [1/1] attacks Shieldbearer
+[T09][Alice][MINION ] Shieldbearer (Bob) takes 1 from Skeleton [HEALTH 0]
+[T09][Alice][DEATH  ] Shieldbearer (Bob)
+[T09][Alice][MINION ] Skeleton [1/1] attacks Bob
+[T09][Alice][DAMAGE ] Skeleton → Bob : 1 dmg [ABSORBED 1] [HP 12 → 12]
+[T09][Alice][MINION ] Skeleton [1/1] attacks Bob
+[T09][Alice][DAMAGE ] Skeleton → Bob : 1 dmg [ABSORBED 0] [HP 12 → 11]
+[T09][Alice][MINION ] Skeleton [1/1] attacks Bob
+[T09][Alice][DAMAGE ] Skeleton → Bob : 1 dmg [ABSORBED 0] [HP 11 → 10]
+[T10] ======================================================================
+[T10][Bob  ][TURN   ] [HP 10/30] [ARMOR 0] [HAND 0] [DECK 8]
+[T10][Bob  ][DRAW   ] Crushing Blow
+[T10][Bob  ][MANA   ] [MANA 10/10]
+[T10][Bob  ][PLAY   ] Crushing Blow (5) → [MANA 5/10]
+[T10][Bob  ][POWER  ] Armor Up (2) → [MANA 3/10]
+[T10][Bob  ][DAMAGE ] Crushing Blow → Alice : 8 dmg [ABSORBED 0] [HP 10 → 2]
+[T10][Bob  ][ARMOR  ] Armor Up → Bob : +2 (3 turns) [ARMOR 2]
+[T10][Bob  ][MINION ] Wolf [2/2] attacks Alice
+[T10][Bob  ][DAMAGE ] Wolf → Alice : 2 dmg [ABSORBED 0] [HP 2 → 0]
+[RESULT ] Bob WINS | reason: HP 0 | turns: 10 | HP Alice 0 / Bob 10 | damage Alice 40 / Bob 30
+
+=== Skirmish Arena — 1 match | Alice [Aggressive:Mage] vs Bob [Defensive:Tank] | seeds 42..42 ===
+[STATS  ] Alice win rate     : 0.0% (0)
+[STATS  ] Bob win rate       : 100.0% (1)
+[STATS  ] Draws              : 0.0% (0)
+[STATS  ] First player wins  : 100.0%
+[STATS  ] Avg match length   : 10.0 turns
+[STATS  ] Avg damage / match : Alice 40.0 | Bob 30.0 | total 70.0
+[STATS  ] End reasons        : HP 0 100.0%

@@ -1,5 +1,8 @@
 # Sprint 0 — Squelette et contrats partagés (les 4, en mob)
 
+> **Statut : implémenté** (voir l'historique git). Les noms de tests réels peuvent différer
+> légèrement ; les chiffres finaux des cartes sont dans `DESIGN.md` (section Balance).
+
 **Objectif** : en ~45 minutes, poser sur `main` tout ce dont les 4 lots ont
 besoin pour travailler en parallèle sans se bloquer. On ne code **aucune
 règle du jeu** ici, seulement des contrats et des implémentations triviales.

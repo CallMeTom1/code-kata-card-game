@@ -320,4 +320,21 @@ class MatchTest {
         // Then
         assertThat(listener.eventsOfType(MinionAttacked.class)).noneMatch(a -> a.minion().equals("Wolf"));
     }
+
+    @Test
+    void given_an_enemy_taunt_when_an_attack_card_is_played_then_the_champion_is_hit_anyway() {
+        // Given
+        Card wall = new Card("Wall Card", 1, CardCategory.DEFENSE,
+                new Summon(new MinionTemplate("Wall", 0, 5, true), 1), false);
+        Contender p1 = contender("P1", new ByNameBot("P1", "Wall Card"), deckOf(wall, 20));
+        Contender p2 = contender("P2", new ByNameBot("P2", END, "Strike"), deckOf(STRIKE, 20));
+        Match match = p1First(p1, p2, events);
+
+        // When
+        match.play();
+
+        // Then
+        assertThat(listener.eventsOfType(DamageDealt.class)).first()
+                .isEqualTo(new DamageDealt("Strike", "P1", 4, 0, 30, 26));
+    }
 }

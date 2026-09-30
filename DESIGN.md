@@ -38,6 +38,8 @@ Hearthstone; a summon onto a full board fizzles). A minion has Attack / Health, 
   As in Hearthstone, Taunt only stops attacks: Attack cards, poison and
   hero powers ignore it and hit the champion. When a minion hits a minion,
   both deal their Attack to each other. A minion at 0 Health dies immediately.
+- Attacking is optional in Hearthstone, so a minion **stays back** instead
+  of attacking a Taunt that would kill it without dying itself.
 - Cards never target a minion (no targeting choice), so minions are only
   damaged by other minions and by area effects ("each enemy minion"). That
   makes AoE cards (Whirlwind Slash, Holy Nova) valuable.
@@ -90,12 +92,12 @@ Defensive to value Taunt.
 | Attack   | Strike         | 2    | 4 damage                        |
 | Attack   | Crushing Blow  | 5    | 8 damage                        |
 | Attack   | Wild Wolf      | 2    | Summon a 2/2 Wolf               |
-| Defense  | Wooden Shield  | 1    | Armor 3 (2 turns)               |
-| Defense  | Iron Wall      | 3    | Armor 7 (2 turns)               |
+| Defense  | Wooden Shield  | 1    | Armor 2 (2 turns)               |
+| Defense  | Iron Wall      | 3    | Armor 5 (2 turns)               |
 | Defense  | Shieldbearer   | 1    | Summon a 0/3 Shieldbearer, Taunt|
 | Resource | Mana Crystal   | 1    | +1 max mana permanently         |
 | Utility  | Insight        | 1    | Draw 1 card                     |
-| Utility  | Healing Potion | 2    | Heal 5 HP (max 30)              |
+| Utility  | Healing Potion | 2    | Heal 4 HP (max 30)              |
 
 ## Classes
 **Mage** — burst spells and necromancy. Hero power *Fireblast*: deal 1 damage.
@@ -105,20 +107,20 @@ Defensive to value Taunt.
 | A    | Fireball         | 4    | 6 damage                           |
 | A    | Pyroblast        | 8    | 10 damage                          |
 | A    | Raise Skeletons  | 3    | Summon two 1/1 Skeletons           |
-| D    | Ice Barrier      | 3    | Armor 8 (2 turns)                  |
+| D    | Ice Barrier      | 3    | Armor 6 (2 turns)                  |
 | U    | Arcane Intellect | 3    | Draw 2 cards                       |
 
 **Tank** — armor and endurance. Hero power *Armor Up*: Armor 2 (3 turns).
 | Cat. | Card        | Cost | Effect                                   |
 |------|-------------|------|------------------------------------------|
 | A    | Shield Slam | 1    | Damage equal to your current armor       |
-| D    | Shield Block| 3    | Armor 5 (2 turns), draw 1 card           |
-| D    | Fortress    | 5    | Armor 12 (3 turns)                       |
-| D    | Iron Golem  | 4    | Summon a 2/6 Iron Golem, Taunt           |
+| D    | Shield Block| 3    | Armor 4 (2 turns), draw 1 card           |
+| D    | Fortress    | 5    | Armor 8 (2 turns)                        |
+| D    | Iron Golem  | 4    | Summon a 0/6 Iron Golem, Taunt           |
 | R    | War Chest   | 2    | +1 max mana, Armor 2 (2 turns)           |
-| U    | Last Stand  | 4    | Heal 8 HP                                |
+| U    | Last Stand  | 4    | Heal 6 HP                                |
 
-**Épéiste (Swordsman)** — multi-hit, buffs and minion clearing (no summons:
+**Épéiste (`Swordsman` on the command line)** — multi-hit, buffs and minion clearing (no summons:
 a lone duellist). Hero power *Sharpen*: your next Attack card deals +2 damage.
 | Cat. | Card             | Cost | Effect                                           |
 |------|------------------|------|--------------------------------------------------|
@@ -139,16 +141,16 @@ Poison 1 (2 turns).
 | D    | Evasion       | 2    | Evasion (lasts up to 2 turns)                 |
 | R    | Preparation   | 0    | +2 mana this turn only                        |
 
-**Clerc (Cleric)** — healing and attrition. Hero power *Lesser Heal*: heal
+**Clerc (`Cleric` on the command line)** — healing and attrition. Hero power *Lesser Heal*: heal
 2 HP.
 | Cat. | Card                | Cost | Effect                                              |
 |------|---------------------|------|-----------------------------------------------------|
 | A    | Smite               | 1    | 2 damage                                            |
-| A    | Holy Nova           | 4    | 2 damage to the enemy champion and each enemy minion, heal 3 HP |
+| A    | Holy Nova           | 5    | 2 damage to the enemy champion and each enemy minion, heal 2 HP |
 | D    | Power Word: Shield  | 1    | Armor 3 (2 turns), draw 1 card                      |
 | R    | Divine Blessing     | 2    | +1 max mana, heal 2 HP                              |
-| U    | Greater Heal        | 3    | Heal 7 HP                                           |
-| U    | Spirit Healer       | 3    | Summon a 0/3 Spirit; heals you 2 HP at the end of each of your turns |
+| U    | Greater Heal        | 3    | Heal 6 HP                                           |
+| U    | Spirit Healer       | 3    | Summon a 0/3 Spirit with Taunt; heals you 2 HP at the end of each of your turns |
 
 Twin Blades hits armor hard but is weak against Parry. Eviscerate and Poison
 get through Tank armor. Whirlwind Slash and Holy Nova are the answers to
@@ -209,7 +211,10 @@ Play strategies:
 
 ## Stats & determinism
 Every match uses its own seed (`baseSeed + matchIndex`), so any match in a
-batch can be replayed with its exact log. "Damage dealt" is the HP the
+batch can be replayed with its exact log (`--seed <that seed> --matches 1 --log`).
+The seed is mixed (`Seeds.random`) before creating `java.util.Random`: with raw
+consecutive seeds, the first coin flip was identical and player 1 started all
+1000 matches. "Damage dealt" is the HP the
 opponent's champion actually lost to your cards, minions, poison and hero
 power. Damage to minions and fatigue are excluded. Aggregates report the
 win rate per side, the draw rate, the first-player win rate, the average
@@ -231,17 +236,29 @@ hero power, deck (grouped by category) and mana curve, so a reader knows
 what each bot chose before the fight starts:
 ```
 [MATCH  ] Alice [Aggressive:Mage] vs Bob [Defensive:Tank] | seed 42
-[SETUP  ][Alice] [Aggressive] plays [Mage] (imposed) | deck: preset
+[SETUP  ][Alice] [Aggressive] plays [Mage] (imposed) | deck: built
 [POWER  ][Alice] Fireblast (2) — deal 1 damage
-[DECK   ][Alice] [ATTACK   10] Quick Jab x2, Frostbolt x2, Fireball x2, Raise Skeletons x2, Pyroblast x2
-[DECK   ][Alice] [DEFENSE   4] Wooden Shield x2, Ice Barrier x2
+[DECK   ][Alice] [ATTACK   16] Fireball x2, Pyroblast x2, Frostbolt x2, Strike x2, Wild Wolf x2, Crushing Blow x2, Quick Jab x2, Raise Skeletons x2
 [DECK   ][Alice] [RESOURCE  2] Mana Crystal x2
-[DECK   ][Alice] [UTILITY   4] Insight x2, Arcane Intellect x2
-[CURVE  ][Alice] [1: 8] [2: 2] [3: 6] [4: 2] [5+: 2] | avg cost 2.7
-[SETUP  ][Bob  ] ...
-[START  ] Alice goes first (coin flip) | Bob gets The Coin
+[DECK   ][Alice] [UTILITY   2] Insight x2
+[CURVE  ][Alice] [1: 6] [2: 6] [3: 2] [4: 2] [5+: 4] | avg cost 2.9
+[SETUP  ][Bob  ] [Defensive] plays [Tank] (imposed) | deck: built
+[POWER  ][Bob  ] Armor Up (2) — Armor 2 (3 turns)
+[DECK   ][Bob  ] [ATTACK    6] Crushing Blow x2, Strike x2, Wild Wolf x2
+[DECK   ][Bob  ] [DEFENSE  10] Fortress x2, Iron Golem x2, Iron Wall x2, Shield Block x2, Shieldbearer x2
+[DECK   ][Bob  ] [UTILITY   4] Last Stand x2, Healing Potion x2
+[CURVE  ][Bob  ] [1: 2] [2: 6] [3: 4] [4: 4] [5+: 4] | avg cost 3.1
+[START  ] Bob goes first (coin flip) | Alice gets The Coin
+[SWAP   ][Bob  ] keeps the whole hand
+[SWAP   ][Alice] puts back Crushing Blow → draws Crushing Blow
+[HAND   ][Bob  ] Iron Wall, Iron Wall, Last Stand
+[HAND   ][Alice] Strike, Frostbolt, Raise Skeletons, Crushing Blow, The Coin
 [T01] ======================================================================
-[T01][Alice][TURN   ] [HP 30/30] [ARMOR 0] [MANA 1/1] [HAND 3] [DECK 17]
+[T01][Bob  ][TURN   ] [HP 30/30] [ARMOR 0] [HAND 3] [DECK 17]
+[T01][Bob  ][DRAW   ] Strike
+[T01][Bob  ][MANA   ] [MANA 1/1]
+[T01][Alice][TURN   ] [HP 30/30] [ARMOR 0] [HAND 5] [DECK 16]
+[T01][Alice][DRAW   ] Pyroblast
 ```
 The full list of tags and a longer example are in
 `docs/00-PHASE-0-DECISIONS.md` (section G1).
@@ -266,4 +283,28 @@ We follow Hearthstone wherever the brief allows. The exceptions:
   own keywords.
 - Players are named `P1` and `P2` by default (`--names Alice,Bob` to change).
 
-All numbers are a first draft, to rebalance with the `run-simulation` skill.
+## Balance (measured)
+The first numbers were a draft; 1000-match runs showed Defensive:Tank winning
+96% against Aggressive:Mage. Armor and heals gave more value per mana than
+attacks, and two minions were untouchable value engines, because cards never
+target minions (Iron Golem 2/6 Taunt, which enemy minions refused to attack,
+and Spirit Healer without Taunt). Fixes: lower armor and heals, Holy Nova at
+its Hearthstone values, Iron Golem 0/6, Spirit Healer with Taunt, minions
+that do not suicide into a Taunt, and smarter Aggressive decisions.
+
+Reference results (seed 42, 1000 matches, bot-built decks):
+
+| Matchup | P1 win rate | First player wins | Avg length |
+|---|---|---|---|
+| Aggressive:Mage vs Defensive:Tank (default) | 46.7% | 50.3% | 9.6 turns |
+| Aggressive:auto vs Defensive:auto (Assassin vs Tank) | 46.4% | 52.2% | 9.6 turns |
+| Aggressive:Mage vs Random:Mage | 91.2% | 51.0% | 7.1 turns |
+| Defensive:Tank vs Random:Tank | 90.6% | 52.6% | 19.6 turns |
+| Random:auto vs Random:auto | 50.1% | 51.1% | 13.3 turns |
+
+Known outliers, left for the team to tune: a class played against its
+nature. Aggressive:Tank and Aggressive:Cleric build decks with almost no
+armor or heals, and lose nearly every match (0-2%) against Defensive:Tank or
+Defensive:Cleric. Cleric also beats Tank 94% when both are Aggressive. The
+`run-simulation` skill is the tool to keep tuning; every change of a number
+goes in this file.

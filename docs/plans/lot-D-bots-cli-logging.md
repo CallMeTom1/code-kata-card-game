@@ -1,5 +1,8 @@
 # Lot D — Bots, CLI, log console et statistiques
 
+> **Statut : implémenté** (voir l'historique git). Les noms de tests réels peuvent différer
+> légèrement ; les chiffres finaux des cartes sont dans `DESIGN.md` (section Balance).
+
 **Mode** : mob, un seul PC — ce fichier est une partie du backlog commun (ordre : section I de `docs/00-PHASE-0-DECISIONS.md`)
 **Possède** : `bots`, `cli`, `log`, `stats`, `Main`
 
@@ -10,68 +13,68 @@ les bots reçoivent un faux `GameView`.
 ## Jalon M1 — voir un match dans le terminal
 
 ### D.1 `ConsoleRenderer` (un `GameEventListener`)
-- [ ] Il écrit dans un `PrintStream` injecté (pas `System.out` en dur) → testable.
-- [ ] `given_turn_started_event_when_rendered_then_prints_turn_header`
+- [x] Il écrit dans un `PrintStream` injecté (pas `System.out` en dur) → testable.
+- [x] `given_turn_started_event_when_rendered_then_prints_turn_header`
       (ex. `[T03][Alice][TURN   ] [HP 28/30] [ARMOR 0] [MANA 3/3] [HAND 4] [DECK 13]`)
-- [ ] `given_damage_dealt_with_absorbed_armor_when_rendered_then_shows_absorbed_and_hp_left`
+- [x] `given_damage_dealt_with_absorbed_armor_when_rendered_then_shows_absorbed_and_hp_left`
       (ex. `[T03][Alice][DAMAGE ] Fireball → Bob : 6 dmg [ABSORBED 2] [HP 26 → 22]`)
-- [ ] Format de référence : section G1 de `docs/00-PHASE-0-DECISIONS.md`
+- [x] Format de référence : section G1 de `docs/00-PHASE-0-DECISIONS.md`
       (étiquettes entre crochets, largeur fixe, une ligne par événement).
-- [ ] `given_unknown_event_when_rendered_then_nothing_breaks` (Liskov : un événement inconnu est ignoré)
-- [ ] Un format par événement du sprint 0, puis un par événement ajouté par A et C.
-- [ ] Fin de match : résumé (gagnant, raison, tours, PV restants).
+- [x] `given_unknown_event_when_rendered_then_nothing_breaks` (Liskov : un événement inconnu est ignoré)
+- [x] Un format par événement du sprint 0, puis un par événement ajouté par A et C.
+- [x] Fin de match : résumé (gagnant, raison, tours, PV restants).
 
 ### D.2 `RandomBot`
-- [ ] `given_no_affordable_card_when_asked_then_ends_turn`
-- [ ] `given_seeded_random_when_asked_twice_then_same_choice` (déterminisme)
-- [ ] Ne renvoie jamais une carte trop chère.
+- [x] `given_no_affordable_card_when_asked_then_ends_turn`
+- [x] `given_seeded_random_when_asked_twice_then_same_choice` (déterminisme)
+- [x] Ne renvoie jamais une carte trop chère.
 
 ### D.3 CLI et `Main`
-- [ ] `CommandLineOptions` : `--matches N`, `--p1 Bot:Class`, `--p2 Bot:Class`,
+- [x] `CommandLineOptions` : `--matches N`, `--p1 Bot:Class`, `--p2 Bot:Class`,
       `--seed S`, `--log` ; valeurs par défaut ; message clair si un bot ou une
       classe est inconnu.
-- [ ] `given_args_p1_Aggressive_Mage_when_parsed_then_bot_is_Aggressive_and_class_is_Mage`
-- [ ] `BotFactory` : `byName(String)` (une ligne par bot).
-- [ ] **Intégration M1** avec A et B : `Main --matches 1 --log` affiche un match Random vs Random complet.
+- [x] `given_args_p1_Aggressive_Mage_when_parsed_then_bot_is_Aggressive_and_class_is_Mage`
+- [x] `BotFactory` : `byName(String)` (une ligne par bot).
+- [x] **Intégration M1** avec A et B : `Main --matches 1 --log` affiche un match Random vs Random complet.
 
 ## Jalon M2 — statistiques et vrais bots
 
 ### D.4 `StatsCollector` (un `GameEventListener`) et `MatchRunner`
-- [ ] `MatchRunner` joue N matchs avec la graine `baseSeed + i` ; `--log` n'attache le `ConsoleRenderer` qu'au premier match.
-- [ ] `given_3_matches_won_2_by_p1_when_aggregated_then_p1_win_rate_is_66_7_percent`
-- [ ] Taux de match nul, taux de victoire du premier joueur, durée moyenne en tours,
+- [x] `MatchRunner` joue N matchs avec la graine `baseSeed + i` ; `--log` n'attache le `ConsoleRenderer` qu'au premier match.
+- [x] `given_3_matches_won_2_by_p1_when_aggregated_then_p1_win_rate_is_66_7_percent`
+- [x] Taux de match nul, taux de victoire du premier joueur, durée moyenne en tours,
       dégâts moyens infligés au champion adverse par camp (hors fatigue et hors minions).
-- [ ] Affichage final des stats (`StatsReport` → texte).
+- [x] Affichage final des stats (`StatsReport` → texte).
 
 ### D.5 `AggressiveBot` et `DefensiveBot` (règles dans `DESIGN.md`)
-- [ ] Aggressive : `given_resource_and_attack_in_hand_when_asked_then_plays_resource_first`
-- [ ] `given_two_attacks_affordable_when_asked_then_plays_highest_damage`
-- [ ] `given_battle_cry_and_no_attack_affordable_after_when_asked_then_does_not_play_it`
-- [ ] `given_2_mana_left_and_nothing_playable_when_asked_then_uses_hero_power`
-- [ ] Defensive : `given_hp_15_when_heal_and_attack_in_hand_then_plays_heal_first`
-- [ ] `given_hp_20_when_asked_then_behaves_like_aggressive`
-- [ ] Minions : un minion offensif vaut 2× son attaque (après le lot C).
-- [ ] Mulligan : `given_aggressive_bot_and_opening_hand_with_a_5_cost_card_when_mulligan_then_it_is_put_back`
-- [ ] Les bots ont besoin de connaître les dégâts d'une carte : ajouter au besoin
+- [x] Aggressive : `given_resource_and_attack_in_hand_when_asked_then_plays_resource_first`
+- [x] `given_two_attacks_affordable_when_asked_then_plays_highest_damage`
+- [x] `given_battle_cry_and_no_attack_affordable_after_when_asked_then_does_not_play_it`
+- [x] `given_2_mana_left_and_nothing_playable_when_asked_then_uses_hero_power`
+- [x] Defensive : `given_hp_15_when_heal_and_attack_in_hand_then_plays_heal_first`
+- [x] `given_hp_20_when_asked_then_behaves_like_aggressive`
+- [x] Minions : un minion offensif vaut 2× son attaque (après le lot C).
+- [x] Mulligan : `given_aggressive_bot_and_opening_hand_with_a_5_cost_card_when_mulligan_then_it_is_put_back`
+- [x] Les bots ont besoin de connaître les dégâts d'une carte : ajouter au besoin
       une méthode `estimatedDamage()` sur `Card` → **commit de contrat séparé, validé par le groupe**.
 
 ### D.6 Préparation du match : classe et deck (voir `DESIGN.md`, section Decks)
-- [ ] `DeckValidator` : `given_deck_with_3_copies_when_validated_then_rejected` ;
+- [x] `DeckValidator` : `given_deck_with_3_copies_when_validated_then_rejected` ;
       `given_deck_with_19_cards_when_validated_then_rejected` ;
       `given_deck_with_5_class_cards_when_validated_then_rejected`
-- [ ] Interface `DeckStrategy` : `chooseClass(...)` et `buildDeck(heroClass, cardPool)`
-- [ ] `given_aggressive_strategy_when_building_mage_deck_then_no_heal_and_valid_deck`
-- [ ] `given_defensive_strategy_when_building_deck_then_at_least_6_attack_cards`
-- [ ] `given_random_strategy_and_same_seed_when_building_twice_then_same_deck`
-- [ ] CLI : `Bot:auto`, `Bot:Class` et `--preset-decks`
-- [ ] Événements `ClassChosen`, `DeckBuilt` et `MatchSetUp`, et leur rendu
+- [x] Interface `DeckStrategy` : `chooseClass(...)` et `buildDeck(heroClass, cardPool)`
+- [x] `given_aggressive_strategy_when_building_mage_deck_then_no_heal_and_valid_deck`
+- [x] `given_defensive_strategy_when_building_deck_then_at_least_6_attack_cards`
+- [x] `given_random_strategy_and_same_seed_when_building_twice_then_same_deck`
+- [x] CLI : `Bot:auto`, `Bot:Class` et `--preset-decks`
+- [x] Événements `ClassChosen`, `DeckBuilt` et `MatchSetUp`, et leur rendu
       (`[SETUP]`, `[POWER]`, `[DECK]` par catégorie, `[CURVE]`, `[START]`) :
       `given_deck_built_event_when_rendered_then_cards_grouped_by_category_with_counts`
 
 ## Jalon M3 — livrables et ouverture
-- [ ] Sauvegarder un log d'exemple dans `docs/sample-match.log` (livrable n°2 de l'énoncé).
-- [ ] Vérifier le skill `.claude/skills/run-simulation` et l'utiliser pour l'équilibrage.
+- [x] Sauvegarder un log d'exemple dans `docs/sample-match.log` (livrable n°2 de l'énoncé).
+- [x] Vérifier le skill `.claude/skills/run-simulation` et l'utiliser pour l'équilibrage.
 - [ ] (Plus tard) `LlmBot` : voir la section « Later: LLM bots » de `DESIGN.md`.
-- [ ] (Bonus, ouverture front) `JsonEventExporter` : un listener qui écrit les
+- [x] (Bonus, ouverture front) `JsonEventExporter` : un listener qui écrit les
       événements d'un match en JSON Lines (`--json fichier`), sans bibliothèque
       externe. Le moteur ne doit pas changer d'une ligne.
