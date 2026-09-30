@@ -175,3 +175,19 @@ this so we can add a front without touching the engine, and so that
 match in full; the other matches only feed the stats.
 
 All numbers are a first draft, to rebalance with the `run-simulation` skill.
+
+## MVP status (first version)
+The first implementation covers the engine, neutral cards, Mage and Tank —
+exactly the build order above — with these simplifications to revisit once
+minions land:
+- No board/minions yet: Raise Skeletons (Mage) and Iron Golem (Tank) are
+  left out of their decks; each deck is padded back to 20 cards with extra
+  neutral filler (documented in `ClassDecks`).
+- Resolve phase order is simplified to Defense/Utility first, then Attack
+  cards, in play order (the finer-grained "heal before non-heal utility"
+  distinction from the rules will matter once more cards need it).
+- Only Mage and Tank are implemented; Épéiste, Assassin and Clerc, Combo,
+  Evasion and the next-Attack-bonus buffs are wired in the engine
+  (`Champion`, `EffectContext`) but have no cards using them yet.
+- `RandomBot`, `AggressiveBot` and `DefensiveBot` are implemented per the
+  Bots section above.

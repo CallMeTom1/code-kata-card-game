@@ -1,0 +1,7 @@
+com\arena\testing\ScriptedBot.class
+com\arena\engine\combat\ArmorDamageResolverTest.class
+com\arena\engine\match\TieBreakerTest.class
+com\arena\engine\match\MatchTest.class
+com\arena\testing\RecordingListener.class
+com\arena\engine\events\EventPublisherTest.class
+com\arena\engine\player\ChampionTest.class
