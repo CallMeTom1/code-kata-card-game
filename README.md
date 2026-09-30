@@ -75,5 +75,7 @@ Plain HTML/CSS/JavaScript in [`web/`](web/): no framework, no build, no server, 
 | `cli`, `stats` | command line, match runner, stats and stats JSON export |
 | `web/` | HTML/CSS/JS replay and statistics (reads the JSON exports) |
 
+Game summary in French (rules, classes, cards, bots): [`docs/RESUME-DU-JEU.md`](docs/RESUME-DU-JEU.md).
+
 Team docs: [`CLAUDE.md`](CLAUDE.md), [`docs/TEAM_GUIDELINE.md`](docs/TEAM_GUIDELINE.md),
 [`docs/00-PHASE-0-DECISIONS.md`](docs/00-PHASE-0-DECISIONS.md), [`docs/plans/`](docs/plans/).
