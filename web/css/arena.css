@@ -487,13 +487,6 @@ body.dragging .empty-card { outline: 3px dashed var(--gold-1); outline-offset: 8
 @media (max-height: 900px) and (min-width: 1101px) {
   main { padding: 10px 16px; }
   .board { gap: 4px; padding: 8px; border-width: 8px; min-height: 0; }
-  .hero { width: 76px; height: 90px; font-size: 34px; }
-  .hand { min-height: 70px; }
-  .card { width: 64px; height: 72px; padding-top: 12px; }
-  .minions { min-height: 78px; }
-  .minion { width: 56px; height: 72px; padding: 6px 4px; }
-  .minion-icon { font-size: 18px; }
-  .power { width: 46px; height: 46px; font-size: 9px; }
   .controls { padding: 6px 10px; gap: 4px; }
 }
 
@@ -576,3 +569,36 @@ dialog.new-match::backdrop { background: rgba(0, 0, 0, 0.6); }
 .new-match-hint { font-size: 14px; opacity: 0.8; }
 .new-match-actions { display: flex; justify-content: flex-end; gap: 10px; }
 .new-match .btn-ghost { color: var(--ink); }
+
+/* ---------- Board scale: every piece follows --u (the hero height), which grows with the window height,
+   so big screens get big cards and a laptop still fits the board and its controls on one screen. ---------- */
+@media (min-width: 701px) {
+  :root { --u: clamp(80px, calc((100dvh - 210px) / 6.5), 190px); }
+  .hand { min-height: calc(var(--u) * 0.82); }
+  .card { width: calc(var(--u) * 0.74); height: calc(var(--u) * 0.82); padding: calc(var(--u) * 0.13) 5px 5px;
+    font-size: calc(var(--u) * 0.1); }
+  .card-name { font-size: calc(var(--u) * 0.105); }
+  .card-cat { font-size: calc(var(--u) * 0.075); }
+  .card-icon { font-size: calc(var(--u) * 0.2); }
+  .cost { width: calc(var(--u) * 0.22); height: calc(var(--u) * 0.22); font-size: calc(var(--u) * 0.12);
+    top: calc(var(--u) * -0.07); left: calc(var(--u) * -0.07); }
+  .hero { width: calc(var(--u) * 0.84); height: var(--u); font-size: calc(var(--u) * 0.37);
+    border-radius: calc(var(--u) * 0.42) calc(var(--u) * 0.42) calc(var(--u) * 0.15) calc(var(--u) * 0.15); }
+  .gem { min-width: calc(var(--u) * 0.28); height: calc(var(--u) * 0.28); font-size: calc(var(--u) * 0.14); }
+  .power { width: calc(var(--u) * 0.48); height: calc(var(--u) * 0.48); font-size: calc(var(--u) * 0.08); }
+  .power .cost { width: calc(var(--u) * 0.17); height: calc(var(--u) * 0.17); font-size: calc(var(--u) * 0.09);
+    margin-left: calc(var(--u) * -0.085); }
+  .minions { min-height: calc(var(--u) * 0.84); }
+  .minion { width: calc(var(--u) * 0.6); height: calc(var(--u) * 0.76); font-size: calc(var(--u) * 0.088); }
+  .minion-icon { font-size: calc(var(--u) * 0.2); }
+  .minion .stat { width: calc(var(--u) * 0.21); height: calc(var(--u) * 0.21); font-size: calc(var(--u) * 0.115); }
+  .hero-name { font-size: calc(var(--u) * 0.15 + 4px); }
+  .hero-label, .deck-pile { font-size: calc(var(--u) * 0.08 + 6px); }
+  .mana { font-size: calc(var(--u) * 0.1 + 5px); }
+  .crystal { width: calc(var(--u) * 0.1); height: calc(var(--u) * 0.1); }
+  .turn-banner { font-size: calc(var(--u) * 0.1 + 5px); }
+  .action { font-size: calc(var(--u) * 0.1 + 5px); }
+  .speech { font-size: calc(var(--u) * 0.08 + 6px); max-width: calc(var(--u) * 1.6 + 60px); }
+}
+.log { font-size: 13px; }
+.dialogue { font-size: 16.5px; }
