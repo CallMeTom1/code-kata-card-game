@@ -6,7 +6,7 @@ import java.util.List;
 /** Everything Main needs from the command line, validated in one place. */
 public record CommandLineOptions(int matches, PlayerSpec player1, PlayerSpec player2, long seed, boolean log,
                                  boolean presetDecks, List<String> names, Path jsonFile, Path statsJsonFile,
-                                 boolean help) {
+                                 boolean help, String llmModel) {
 
     /** Printed on --help and after any wrong argument. */
     public static final String USAGE = """
@@ -14,7 +14,7 @@ public record CommandLineOptions(int matches, PlayerSpec player1, PlayerSpec pla
               --matches N            number of matches to simulate (default 100)
               --p1 <Bot>:<Class|auto> player 1 (default Aggressive:Mage)
               --p2 <Bot>:<Class|auto> player 2 (default Defensive:Tank)
-                                     bots: Aggressive, Defensive, Random
+                                     bots: Aggressive, Defensive, Random, Llm (Claude API)
                                      classes: Mage, Tank, Swordsman, Assassin, Cleric, or auto
               --seed S               seed of the first match; match i uses S + i (default 42)
               --log                  print the first match turn by turn
@@ -22,7 +22,9 @@ public record CommandLineOptions(int matches, PlayerSpec player1, PlayerSpec pla
               --names A,B            player names (default P1,P2)
               --json FILE            also write the first match as JSON lines (open it in web/index.html)
               --stats-json FILE      also write the stats of every match as JSON (Statistics tab of web/)
-              --help                 show this help""";
+              --llm-model ID         model of the Llm bots (default ARENA_LLM_MODEL or claude-opus-5-5)
+              --help                 show this help
+            The Llm bot reads ANTHROPIC_API_KEY from the environment or .env.local.""";
 
     /** Reads the arguments; throws with a clear message on anything unexpected. */
     public static CommandLineOptions parse(String[] args) {
@@ -36,6 +38,7 @@ public record CommandLineOptions(int matches, PlayerSpec player1, PlayerSpec pla
         Path json = null;
         Path statsJson = null;
         boolean help = false;
+        String llmModel = null;
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             switch (arg) {
@@ -48,11 +51,12 @@ public record CommandLineOptions(int matches, PlayerSpec player1, PlayerSpec pla
                 case "--names" -> names = names(value(args, ++i, arg));
                 case "--json" -> json = Path.of(value(args, ++i, arg));
                 case "--stats-json" -> statsJson = Path.of(value(args, ++i, arg));
+                case "--llm-model" -> llmModel = value(args, ++i, arg);
                 case "--help", "-h" -> help = true;
                 default -> throw new IllegalArgumentException("Unknown option " + arg);
             }
         }
-        return new CommandLineOptions(matches, p1, p2, seed, log, preset, names, json, statsJson, help);
+        return new CommandLineOptions(matches, p1, p2, seed, log, preset, names, json, statsJson, help, llmModel);
     }
 
     private static String value(String[] args, int index, String option) {

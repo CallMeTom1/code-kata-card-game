@@ -72,4 +72,13 @@ class CommandLineOptionsTest {
         assertThatThrownBy(() -> CommandLineOptions.parse(new String[] {"--seed"}))
                 .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("--seed");
     }
+
+    @Test
+    void given_an_llm_model_when_parsed_then_it_is_kept_for_the_llm_bots() {
+        // Given / When
+        CommandLineOptions options = CommandLineOptions.parse(new String[] {"--llm-model", "claude-sonnet-5-5"});
+
+        // Then
+        assertThat(options.llmModel()).isEqualTo("claude-sonnet-5-5");
+    }
 }

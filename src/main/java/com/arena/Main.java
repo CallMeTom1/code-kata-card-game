@@ -1,6 +1,10 @@
 package com.arena;
 
+import com.arena.bots.llm.ClaudeLlmClient;
+import com.arena.bots.llm.LlmClient;
 import com.arena.cli.CommandLineOptions;
+import com.arena.cli.EnvFile;
+import com.arena.cli.LlmSettings;
 import com.arena.cli.MatchFactory;
 import com.arena.cli.MatchRunner;
 import com.arena.cli.RunReport;
@@ -10,6 +14,7 @@ import com.arena.stats.StatsReport;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -31,9 +36,11 @@ public final class Main {
     /** Runs the program against any output stream; returns 0 on success and 2 on a wrong argument. */
     public static int run(String[] args, PrintStream out) {
         CommandLineOptions options;
-        MatchFactory factory = new MatchFactory();
+        MatchFactory factory;
         try {
             options = CommandLineOptions.parse(args);
+            factory = new MatchFactory(claude(LlmSettings.from(EnvFile.load(Path.of("."), System.getenv()),
+                    options.llmModel())));
             factory.check(options.player1());
             factory.check(options.player2());
         } catch (IllegalArgumentException e) {
@@ -68,5 +75,16 @@ public final class Main {
             out.println("[EXPORT ] stats written to " + options.statsJsonFile());
         }
         return 0;
+    }
+
+    /** One Claude client per run, created only if an Llm bot plays (classic runs need no key). */
+    private static java.util.function.Supplier<LlmClient> claude(LlmSettings settings) {
+        LlmClient[] client = new LlmClient[1];
+        return () -> {
+            if (client[0] == null) {
+                client[0] = new ClaudeLlmClient(settings.apiKey(), settings.model());
+            }
+            return client[0];
+        };
     }
 }

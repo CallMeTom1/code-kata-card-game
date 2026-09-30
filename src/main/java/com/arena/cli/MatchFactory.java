@@ -6,6 +6,8 @@ import com.arena.bots.DefensiveBot;
 import com.arena.bots.DefensiveDeckStrategy;
 import com.arena.bots.RandomBot;
 import com.arena.bots.RandomDeckStrategy;
+import com.arena.bots.llm.LlmClient;
+import com.arena.bots.llm.LlmPlayer;
 import com.arena.engine.cards.Card;
 import com.arena.engine.cards.NeutralCards;
 import com.arena.engine.classes.HeroClass;
@@ -19,21 +21,43 @@ import com.arena.engine.match.Seeds;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /** Wires a command-line spec to a bot, a class and a validated deck (the only place that knows them all). */
 public final class MatchFactory {
 
-    private static final List<String> BOTS = List.of("Aggressive", "Defensive", "Random");
+    private static final List<String> BOTS = List.of("Aggressive", "Defensive", "Random", "Llm");
 
     private final HeroClasses classes = StandardClasses.all();
     private final DeckValidator validator = new DeckValidator(NeutralCards.all());
+    private final Supplier<LlmClient> llm;
+
+    /** A factory for the classic bots only: asking for an Llm bot fails with a clear message. */
+    public MatchFactory() {
+        this(() -> {
+            throw new IllegalArgumentException("The Llm bot is not configured");
+        });
+    }
+
+    /** {@code llm} is only called when an Llm bot plays, so classic runs need no API key. */
+    public MatchFactory(Supplier<LlmClient> llm) {
+        this.llm = llm;
+    }
 
     /** Builds one side; {@code seed} drives the Random bot and Random deck so matches stay replayable. */
     public Contender contender(String name, PlayerSpec spec, boolean presetDecks, long seed) {
         Random random = Seeds.random(seed);
-        Bot bot = bot(spec.bot(), random);
-        DeckStrategy strategy = deckStrategy(spec.bot(), random);
+        Bot bot;
+        DeckStrategy strategy;
+        if (canonical(spec.bot()).equals("Llm")) {
+            LlmPlayer player = new LlmPlayer(llm.get());
+            bot = player.bot();
+            strategy = player.deckStrategy();
+        } else {
+            bot = bot(spec.bot(), random);
+            strategy = deckStrategy(spec.bot(), random);
+        }
         HeroClass heroClass = spec.autoClass() ? strategy.chooseClass(classes) : heroClass(spec.heroClass());
         List<Card> deck = presetDecks ? heroClass.presetDeck() : strategy.buildDeck(heroClass, NeutralCards.all());
         List<String> errors = validator.validate(heroClass, deck);
@@ -46,7 +70,9 @@ public final class MatchFactory {
 
     /** Fails fast on typos before any match runs. */
     public void check(PlayerSpec spec) {
-        bot(spec.bot(), new Random(0));
+        if (canonical(spec.bot()).equals("Llm")) {
+            llm.get();
+        }
         if (!spec.autoClass()) {
             heroClass(spec.heroClass());
         }

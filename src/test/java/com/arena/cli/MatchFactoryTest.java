@@ -1,6 +1,7 @@
 package com.arena.cli;
 
 import com.arena.engine.match.Contender;
+import com.arena.testing.FakeLlmClient;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,5 +48,23 @@ class MatchFactoryTest {
         assertThatThrownBy(() -> factory.contender("P1", new PlayerSpec("Random", "Necromancer"), false, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Necromancer").hasMessageContaining("Mage, Tank, Swordsman, Assassin, Cleric");
+    }
+
+    @Test
+    void given_llm_auto_when_building_the_contender_then_the_model_chooses_class_and_deck() {
+        // Given
+        String mageDeck = new MatchFactory().contender("X", new PlayerSpec("Aggressive", "Mage"), true, 1L).deck()
+                .stream().map(c -> "\"" + c.name() + "\"").reduce((a, b) -> a + "," + b).orElseThrow();
+        FakeLlmClient client = new FakeLlmClient().answering("{\"thought\":\"t\",\"message\":\"m\","
+                + "\"heroClass\":\"Mage\",\"deck\":[" + mageDeck + "]}");
+        MatchFactory llmFactory = new MatchFactory(() -> client);
+
+        // When
+        Contender contender = llmFactory.contender("P1", new PlayerSpec("Llm", "auto"), false, 42L);
+
+        // Then
+        assertThat(contender.bot().name()).isEqualTo("Llm");
+        assertThat(contender.heroClass().name()).isEqualTo("Mage");
+        assertThat(contender.deck()).hasSize(20);
     }
 }
