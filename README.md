@@ -6,7 +6,7 @@ bots, and reports the results. No framework, no UI, no database.
 ## Run it
 
 ```bash
-mvn test                                   # 168 tests (JUnit 5 + AssertJ)
+mvn test                                   # 171 tests (JUnit 5 + AssertJ)
 mvn -q compile exec:java -Dexec.args="--matches 1000 --p1 Aggressive:Mage --p2 Defensive:Tank"
 mvn -q compile exec:java -Dexec.args="--matches 1 --log --names Alice,Bob"
 mvn -q compile exec:java -Dexec.args="--help"
@@ -33,7 +33,9 @@ Plain HTML/CSS/JavaScript in [`web/`](web/): no framework, no build, no server, 
    or click **Exemples** to see the bundled sample.
 3. Replay: Hearthstone-like board, hands, minions, heroes, mana, statuses, the same log as the console,
    play/pause, step by event or by turn (keys: Space, ←/→, Shift+←/→, Home/End), speed, scrubber,
-   and synthesized sounds for each event (Web Audio, no audio files; 🔊 button or key M, volume slider).
+   synthesized sounds for each event (Web Audio, no audio files; 🔊 button or key M, volume slider),
+   animations (card reveal, spell projectiles, minion attacks, impacts and screen shake, summons, deaths,
+   auras, turn banner, victory), card icons, full card text on hover, and an HP chart (click to jump).
    Statistics: win split, first-player advantage, match lengths, end reasons, and a table of every match.
 4. Front tests: open `web/tests.html` in Chrome/Edge/Firefox (not in an editor preview; no Node needed). With Node:
    `node web/tests/run-node.js`.

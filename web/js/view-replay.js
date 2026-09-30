@@ -15,8 +15,10 @@
     '"': "&quot;", "'": "&#39;" }[c]));
 
   function cardHtml(card, isNew) {
-    return `<div class="card${isNew ? " is-new" : ""}" data-cat="${esc(card.category)}" title="${esc(card.name)} — ${esc(CATEGORY_NAMES[card.category] || card.category)}, coût ${card.cost}">
+    return `<div class="card${isNew ? " is-new" : ""}" tabindex="0" data-cat="${esc(card.category)}" data-name="${esc(card.name)}"
+        data-cost="${card.cost}" data-text="${esc(card.text || "")}" aria-label="${esc(card.name)}, coût ${card.cost} : ${esc(card.text || "")}">
       <div class="cost"><span>${card.cost}</span></div>
+      <div class="card-icon" aria-hidden="true">${Arena.Visuals.iconFor(card.name, card.category)}</div>
       <div class="card-name">${esc(card.name)}</div>
       <div class="card-cat">${CATEGORY_SHORT[card.category] || "?"}</div>
     </div>`;
@@ -72,7 +74,7 @@
   function handHtml(state, name, highlight) {
     const p = state.players[name];
     const lastDrawn = highlight && highlight.kind === "draw" && highlight.player === name ? p.hand.length - 1 : -1;
-    return `<div class="hand" aria-label="Main de ${esc(name)}">${p.hand.map((c, i) => cardHtml(c, i === lastDrawn)).join("")}</div>`;
+    return `<div class="hand" data-player="${esc(name)}" aria-label="Main de ${esc(name)}">${p.hand.map((c, i) => cardHtml(c, i === lastDrawn)).join("")}</div>`;
   }
 
   function minionsHtml(state, name, highlight) {
@@ -80,8 +82,8 @@
     const acting = highlight && highlight.kind === "minion-attack" ? highlight.minionId : null;
     const hit = highlight && highlight.kind === "minion-damage" ? highlight.minionId : null;
     return `<div class="minions" aria-label="Plateau de ${esc(name)}">${p.board.map((m) => `
-      <div class="minion${m.taunt ? " is-taunt" : ""}${m.id === acting ? " is-acting" : ""}${m.id === hit ? " is-hit" : ""}" title="${esc(m.name)} ${m.attack}/${m.health}${m.taunt ? " — Taunt" : ""}">
-        ${esc(m.name)}
+      <div class="minion${m.taunt ? " is-taunt" : ""}${m.id === acting ? " is-acting" : ""}${m.id === hit ? " is-hit" : ""}" data-minion-id="${m.id}" title="${esc(m.name)} ${m.attack}/${m.health}${m.taunt ? " — Taunt" : ""}">
+        <span class="minion-icon" aria-hidden="true">${Arena.Visuals.iconFor(m.name)}</span>${esc(m.name)}
         <div class="stat atk">${m.attack}</div>
         <div class="stat hp${m.health < m.maxHealth ? " is-hurt" : ""}">${m.health}</div>
       </div>`).join("")}</div>`;
@@ -184,6 +186,41 @@
     </div>`;
   }
 
+  const CHART = { width: 900, height: 170, left: 34, right: 70, top: 12, bottom: 24 };
+
+  function chartX(frame, frames) {
+    return CHART.left + (frame / Math.max(1, frames - 1)) * (CHART.width - CHART.left - CHART.right);
+  }
+
+  function chartY(hp) {
+    return CHART.top + (1 - Math.min(30, Math.max(0, hp)) / 30) * (CHART.height - CHART.top - CHART.bottom);
+  }
+
+  /** HP of both players over the match; blue = first player listed, orange = second (validated palette). */
+  function hpChartHtml(curve, frames) {
+    const colors = ["var(--p1)", "var(--p2)"];
+    const grid = [0, 10, 20, 30].map((hp) => `<line class="grid" x1="${CHART.left}" x2="${CHART.width - CHART.right}" y1="${chartY(hp)}" y2="${chartY(hp)}"></line>
+      <text x="${CHART.left - 6}" y="${chartY(hp) + 4}" text-anchor="end">${hp}</text>`).join("");
+    const lines = curve.players.map((name, p) => {
+      const pts = curve.points.map((pt) => `${chartX(pt.frame, frames)},${chartY(pt.hp[p])}`).join(" ");
+      const last = curve.points.at(-1);
+      const dots = curve.points.map((pt) => `<circle class="hp-dot" cx="${chartX(pt.frame, frames)}" cy="${chartY(pt.hp[p])}" r="3" fill="${colors[p]}"></circle>
+        <circle class="hp-hit" cx="${chartX(pt.frame, frames)}" cy="${chartY(pt.hp[p])}" r="9" fill="transparent" data-tip="${esc(name)} : ${pt.hp[p]} PV${pt.round ? " (manche " + pt.round + ")" : ""}"></circle>`).join("");
+      return `<polyline points="${pts}" fill="none" stroke="${colors[p]}" stroke-width="2" stroke-linejoin="round"></polyline>${dots}
+        <text class="hp-label" x="${chartX(last.frame, frames) + 8}" y="${chartY(last.hp[p]) + 4 + (p ? 10 : -4)}">${esc(name)} ${last.hp[p]}</text>`;
+    }).join("");
+    const hits = curve.bigHits.map((h) => {
+      const p = curve.players.indexOf(h.target);
+      const pt = curve.points.filter((q) => q.frame <= h.frame).at(-1) || curve.points[0];
+      return `<text class="hp-star" x="${chartX(h.frame, frames)}" y="${chartY(pt.hp[p]) - 8}" text-anchor="middle" data-tip="${esc(h.source)} : ${h.amount} dégâts sur ${esc(h.target)}">✦</text>`;
+    }).join("");
+    return `<div class="hp-head"><span>Points de vie au fil de la partie</span>
+        <span class="legend">${curve.players.map((n, p) => `<span><span class="swatch" style="background:${colors[p]}"></span>${esc(n)}</span>`).join("")}<span>✦ gros coup (6+)</span></span></div>
+      <svg viewBox="0 0 ${CHART.width} ${CHART.height}" role="img" aria-label="Points de vie des deux joueurs au fil de la partie">
+        ${grid}${lines}${hits}<g class="hp-cursor"><line x1="0" x2="0" y1="${CHART.top - 4}" y2="${CHART.height - CHART.bottom + 4}"></line></g>
+      </svg>`;
+  }
+
   /**
    * Creates the replay view bound to the page elements; returns the controls the app needs.
    * options.onStep(event) is called each time the replay moves exactly one event forward (used for sounds).
@@ -193,8 +230,13 @@
       root: doc.getElementById("replay"), empty: doc.getElementById("replay-empty"), board: doc.getElementById("board"),
       log: doc.getElementById("log"), overlay: doc.getElementById("overlay"), scrubber: doc.getElementById("scrubber"),
       position: doc.getElementById("position"), speed: doc.getElementById("speed"),
-      play: doc.querySelector('[data-action="play"]'),
+      play: doc.querySelector('[data-action="play"]'), fxLayer: doc.getElementById("fx-layer"),
+      hpChart: doc.getElementById("hp-chart"), zoom: doc.getElementById("card-zoom"),
     };
+    const fx = Arena.Fx.create({ board: el.board, layer: el.fxLayer, speed: () => Number(el.speed.value || 1) });
+    let curve = null;
+    let resultTimer = null;
+    let justArrived = false;
     let timeline = null;
     let index = 0;
     let timer = null;
@@ -210,6 +252,8 @@
       el.empty.hidden = true;
       el.root.hidden = false;
       setupShown = false;
+      curve = Arena.Visuals.hpCurve(timeline);
+      el.hpChart.innerHTML = hpChartHtml(curve, timeline.frames.length);
       go(Math.max(0, (timeline.turnStarts[0] || 1) - 1));
     }
 
@@ -217,8 +261,18 @@
       if (!timeline) return;
       const previous = index;
       index = Math.max(0, Math.min(target, timeline.frames.length - 1));
+      const forward = index === previous + 1;
+      const effects = forward ? Arena.Visuals.effectsFor(timeline.frames[index].event,
+        timeline.frames[previous].state, timeline.frames[index].state) : [];
+      const captured = fx.capture(effects);
+      if (!forward) fx.clear();
+      justArrived = forward;
       render();
-      if (index === previous + 1 && options.onStep) options.onStep(timeline.frames[index].event);
+      justArrived = false;
+      if (forward) {
+        fx.play(effects, captured);
+        if (options.onStep) options.onStep(timeline.frames[index].event);
+      }
     }
 
     function render() {
@@ -240,6 +294,12 @@
         + (turnNumber ? ` · tour de jeu ${turnNumber}/${timeline.turnStarts.length}` : "");
       updateLog();
       updateOverlay(state);
+      updateChartCursor();
+    }
+
+    function updateChartCursor() {
+      const cursor = el.hpChart.querySelector(".hp-cursor");
+      if (cursor) cursor.setAttribute("transform", `translate(${chartX(index, timeline.frames.length)},0)`);
     }
 
     function showFloater(f) {
@@ -278,8 +338,18 @@
         el.overlay.innerHTML = setupHtml(state);
         el.overlay.hidden = false;
       } else if (state.phase === "ended" && index === timeline.frames.length - 1 && !timer) {
-        el.overlay.innerHTML = resultHtml(state);
-        el.overlay.hidden = false;
+        clearTimeout(resultTimer);
+        const show = () => {
+          if (index !== timeline.frames.length - 1 || timer) return;
+          el.overlay.innerHTML = resultHtml(state);
+          el.overlay.hidden = false;
+        };
+        if (justArrived) {
+          el.overlay.hidden = true;
+          resultTimer = setTimeout(show, 2200);
+        } else {
+          show();
+        }
       } else {
         el.overlay.hidden = true;
       }
@@ -356,6 +426,46 @@
       setupShown = true;
       go(Number(el.scrubber.value));
     });
+    el.hpChart.addEventListener("click", (e) => {
+      const svg = el.hpChart.querySelector("svg");
+      if (!svg || !timeline) return;
+      const box = svg.getBoundingClientRect();
+      const x = ((e.clientX - box.left) / box.width) * CHART.width;
+      const frame = Math.round(((x - CHART.left) / (CHART.width - CHART.left - CHART.right)) * (timeline.frames.length - 1));
+      pause();
+      setupShown = true;
+      go(frame);
+    });
+    const tooltip = doc.getElementById("tooltip");
+    el.hpChart.addEventListener("mousemove", (e) => {
+      const mark = e.target.closest("[data-tip]");
+      if (!mark) {
+        tooltip.hidden = true;
+        return;
+      }
+      tooltip.textContent = mark.getAttribute("data-tip");
+      tooltip.hidden = false;
+      tooltip.style.left = Math.min(e.clientX + 14, root.innerWidth - tooltip.offsetWidth - 8) + "px";
+      tooltip.style.top = e.clientY + 14 + "px";
+    });
+    el.hpChart.addEventListener("mouseleave", () => (tooltip.hidden = true));
+    el.board.addEventListener("mouseover", (e) => showZoom(e.target.closest(".card")));
+    el.board.addEventListener("focusin", (e) => showZoom(e.target.closest(".card")));
+    el.board.addEventListener("mouseout", (e) => { if (e.target.closest(".card")) el.zoom.hidden = true; });
+    el.board.addEventListener("focusout", () => (el.zoom.hidden = true));
+
+    function showZoom(cardEl) {
+      if (!cardEl) return;
+      const card = { name: cardEl.dataset.name, cost: cardEl.dataset.cost, category: cardEl.dataset.cat,
+        text: cardEl.dataset.text, icon: Arena.Visuals.iconFor(cardEl.dataset.name, cardEl.dataset.cat) };
+      el.zoom.innerHTML = Arena.Fx.bigCardHtml(card);
+      el.zoom.hidden = false;
+      const box = cardEl.getBoundingClientRect();
+      const top = box.top > root.innerHeight / 2 ? box.top - el.zoom.offsetHeight - 10 : box.bottom + 10;
+      el.zoom.style.left = Math.max(8, Math.min(box.left + box.width / 2 - el.zoom.offsetWidth / 2, root.innerWidth - el.zoom.offsetWidth - 8)) + "px";
+      el.zoom.style.top = Math.max(8, top) + "px";
+    }
+
     el.log.addEventListener("click", (e) => {
       const li = e.target.closest("li[data-frame]");
       if (li) {
