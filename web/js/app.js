@@ -50,6 +50,8 @@
     reader.readAsText(file);
   }
 
+  Arena.Live.create({ replay, showError, selectTab });
+
   doc.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => selectTab(tab.dataset.tab)));
   doc.getElementById("file-input").addEventListener("change", (e) => {
     [...e.target.files].forEach(loadFile);

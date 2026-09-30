@@ -270,14 +270,15 @@
     let index = 0;
     let timer = null;
     let setupShown = false;
+    let live = false;
 
     function load(events) {
       pause();
       timeline = Arena.Replay.buildTimeline(events);
       if (!timeline.frames.length) throw new Error("Le fichier ne contient aucun événement.");
       el.scrubber.max = String(timeline.frames.length - 1);
-      el.log.innerHTML = timeline.frames.map((f) => f.lines.map((line) =>
-        `<li data-frame="${f.index}" tabindex="-1" class="${logClass(line)}">${esc(line)}</li>`).join("")).join("");
+      live = false;
+      el.log.innerHTML = timeline.frames.map(logItems).join("");
       const talking = timeline.frames.some((f) => f.event.type === "BotSpoke");
       el.dialogue.hidden = !talking;
       el.dialogueTitle.hidden = !talking;
@@ -290,8 +291,57 @@
       go(Math.max(0, (timeline.turnStarts[0] || 1) - 1));
     }
 
+    function logItems(f) {
+      return f.lines.map((line) =>
+        `<li data-frame="${f.index}" tabindex="-1" class="${logClass(line)}">${esc(line)}</li>`).join("");
+    }
+
+    /** Opens an empty board that fills while the server plays the match, and follows it. */
+    function startLive() {
+      pause();
+      timeline = Arena.Replay.buildTimeline([]);
+      live = true;
+      index = 0;
+      setupShown = true;
+      el.log.innerHTML = "";
+      el.dialogue.innerHTML = "";
+      el.dialogue.hidden = true;
+      el.dialogueTitle.hidden = true;
+      el.hpPanel.hidden = true;
+      el.overlay.hidden = true;
+      el.board.innerHTML = `<div class="live-wait">Préparation de la partie… les champions choisissent leurs cartes.</div>`;
+      el.empty.hidden = true;
+      el.root.hidden = false;
+      el.position.textContent = "🔴 En direct · en attente du premier événement";
+      el.play.textContent = "⏸";
+      timer = setTimeout(tick, 150);
+    }
+
+    /** One more event from the server; the view keeps playing at the chosen speed. */
+    function append(event) {
+      if (!timeline) startLive();
+      const frame = Arena.Replay.extendTimeline(timeline, event);
+      el.log.insertAdjacentHTML("beforeend", logItems(frame));
+      el.scrubber.max = String(timeline.frames.length - 1);
+      if (event.type === "BotSpoke") {
+        el.dialogue.hidden = false;
+        el.dialogueTitle.hidden = false;
+      }
+      if (event.type === "TurnStarted" || event.type === "MatchEnded") {
+        curve = Arena.Visuals.hpCurve(timeline);
+        el.hpChart.innerHTML = hpChartHtml(curve, timeline.frames.length);
+        el.hpPanel.hidden = false;
+      }
+      if (timeline.frames.length === 1) render();
+    }
+
+    /** The server has sent everything: playing stops at the last event as for a file. */
+    function endLive() {
+      live = false;
+    }
+
     function go(target) {
-      if (!timeline) return;
+      if (!timeline || !timeline.frames.length) return;
       const previous = index;
       index = Math.max(0, Math.min(target, timeline.frames.length - 1));
       const forward = index === previous + 1;
@@ -309,6 +359,7 @@
     }
 
     function render() {
+      if (!timeline.frames.length) return;
       const frame = timeline.frames[index];
       const state = frame.state;
       const highlight = state.highlight;
@@ -324,7 +375,8 @@
       el.scrubber.value = String(index);
       const turnNumber = timeline.turnStarts.filter((i) => i <= index).length;
       el.position.textContent = `Événement ${index + 1} / ${timeline.frames.length}` + (state.round ? ` · manche ${state.round}` : "")
-        + (turnNumber ? ` · tour de jeu ${turnNumber}/${timeline.turnStarts.length}` : "");
+        + (turnNumber ? ` · tour de jeu ${turnNumber}/${timeline.turnStarts.length}` : "")
+        + (live ? (index === timeline.frames.length - 1 ? " · 🔴 en direct, en attente de la suite…" : " · 🔴 en direct") : "");
       updateLog();
       updateDialogue(state);
       updateOverlay(state);
@@ -406,6 +458,10 @@
     }
 
     function tick() {
+      if (live && index >= timeline.frames.length - 1) {
+        timer = setTimeout(tick, 250);
+        return;
+      }
       if (index >= timeline.frames.length - 1) {
         pause();
         render();
@@ -418,7 +474,7 @@
     function play() {
       if (!timeline || timer) return;
       setupShown = true;
-      if (index >= timeline.frames.length - 1) go(0);
+      if (index >= timeline.frames.length - 1 && !live) go(0);
       el.play.textContent = "⏸";
       el.play.setAttribute("aria-label", "Pause");
       timer = setTimeout(tick, 150);
@@ -536,7 +592,8 @@
       if (timeline) render();
     }
 
-    return { load, action, redraw, isLoaded: () => !!timeline, speed: () => Number(el.speed.value || 1) };
+    return { load, startLive, append, endLive, action, redraw, isLoaded: () => !!timeline,
+      speed: () => Number(el.speed.value || 1) };
   }
 
   Arena.ReplayView = { create };

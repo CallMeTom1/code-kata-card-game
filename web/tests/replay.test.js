@@ -145,4 +145,15 @@
     eq(state.dialogue.map((d) => d.player + ": " + d.message), ["Alice: Feel the heat!", "Bob: My armor laughs."]);
     eq(state.highlight.kind, "speech");
   });
+
+  test("given_events_arriving_one_by_one_when_the_timeline_is_extended_then_it_equals_the_timeline_built_at_once", () => {
+    const events = R().parseJsonl(root.ArenaSamples.matchJsonl);
+    const whole = R().buildTimeline(events);
+    const live = R().buildTimeline([]);
+    events.forEach((event) => R().extendTimeline(live, event));
+    eq(live.frames.length, whole.frames.length);
+    eq(live.turnStarts, whole.turnStarts);
+    eq(live.frames[live.frames.length - 1].state, whole.frames[whole.frames.length - 1].state);
+    eq(live.frames.map((f) => f.lines), whole.frames.map((f) => f.lines));
+  });
 })(typeof window !== "undefined" ? window : globalThis);

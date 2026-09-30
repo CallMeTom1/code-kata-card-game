@@ -213,17 +213,20 @@
 
   /** One frame per event (state after it, plus its log lines), and where each turn starts. */
   function buildTimeline(events) {
-    const format = Arena.LogFormat ? Arena.LogFormat.create() : () => [];
-    const frames = [];
-    const turnStarts = [];
-    let state = initialState();
-    events.forEach((event, index) => {
-      state = apply(state, event);
-      frames.push({ index, event, state, lines: format(event) });
-      if (event.type === "TurnStarted") turnStarts.push(index);
-    });
-    return { frames, turnStarts };
+    const timeline = { frames: [], turnStarts: [], format: Arena.LogFormat ? Arena.LogFormat.create() : () => [] };
+    events.forEach((event) => extendTimeline(timeline, event));
+    return timeline;
   }
 
-  Arena.Replay = { parseJsonl, initialState, apply, buildTimeline };
+  /** Adds one event at the end (live matches); returns the new frame. */
+  function extendTimeline(timeline, event) {
+    const last = timeline.frames[timeline.frames.length - 1];
+    const index = timeline.frames.length;
+    const frame = { index, event, state: apply(last ? last.state : initialState(), event), lines: timeline.format(event) };
+    timeline.frames.push(frame);
+    if (event.type === "TurnStarted") timeline.turnStarts.push(index);
+    return frame;
+  }
+
+  Arena.Replay = { parseJsonl, initialState, apply, buildTimeline, extendTimeline };
 })(typeof window !== "undefined" ? window : globalThis);

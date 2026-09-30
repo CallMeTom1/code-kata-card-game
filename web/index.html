@@ -19,6 +19,7 @@
       <select id="design-theme" aria-label="Thème du design"></select>
     </label>
     <div class="loaders">
+      <button class="btn btn-live" id="new-match" hidden>⚔ Nouvelle partie</button>
       <label class="btn">Charger un fichier…
         <input type="file" id="file-input" accept=".jsonl,.json,.txt" hidden>
       </label>
@@ -102,6 +103,30 @@
 
   <footer class="credits" id="theme-credits"></footer>
 
+  <dialog class="new-match" id="new-match-dialog">
+    <form id="new-match-form" method="dialog">
+      <h2>Nouvelle partie</h2>
+      <div class="new-match-sides">
+        <fieldset>
+          <legend>Joueur 1</legend>
+          <label>Nom <input name="name1" required maxlength="20"></label>
+          <label>Bot <select name="bot1"></select></label>
+          <label>Classe <select name="class1"></select></label>
+        </fieldset>
+        <fieldset>
+          <legend>Joueur 2</legend>
+          <label>Nom <input name="name2" required maxlength="20"></label>
+          <label>Bot <select name="bot2"></select></label>
+          <label>Classe <select name="class2"></select></label>
+        </fieldset>
+      </div>
+      <p class="new-match-hint">Avec le bot Llm, Claude choisit ses cartes et réfléchit à chaque tour : la partie se déroule en direct.</p>
+      <div class="new-match-actions">
+        <button class="btn btn-ghost" value="cancel" formnovalidate>Annuler</button>
+        <button class="btn" value="start">Lancer le combat</button>
+      </div>
+    </form>
+  </dialog>
   <div class="toast" id="toast" role="alert" hidden></div>
   <div class="tooltip" id="tooltip" hidden></div>
   <div class="card-zoom" id="card-zoom" hidden></div>
@@ -117,6 +142,7 @@
   <script src="js/view-stats.js"></script>
   <script src="data/sample-match.js"></script>
   <script src="data/sample-stats.js"></script>
+  <script src="js/live.js"></script>
   <script src="js/app.js"></script>
   <script>
     if (!window.Arena || !window.Arena.ReplayView) {
