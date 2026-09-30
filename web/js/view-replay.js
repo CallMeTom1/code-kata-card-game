@@ -6,11 +6,12 @@
   const Arena = (root.Arena = root.Arena || {});
   const doc = root.document;
 
-  const CLASS_ICONS = { Mage: "🔮", Tank: "🛡️", Swordsman: "⚔️", Assassin: "🗡️", Cleric: "✨" };
   const CATEGORY_SHORT = { ATTACK: "ATQ", DEFENSE: "DEF", RESOURCE: "RES", UTILITY: "UTI" };
   const CATEGORY_NAMES = { ATTACK: "Attaque", DEFENSE: "Défense", RESOURCE: "Ressource", UTILITY: "Utilitaire" };
   const BASE_DELAY_MS = 900;
 
+  /** The design theme is read from the page, so switching it only needs a redraw. */
+  const art = (kind, name, category) => Arena.Themes.artHtml(doc.documentElement.dataset.theme, kind, name, category);
   const esc = (text) => String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;",
     '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -18,7 +19,7 @@
     return `<div class="card${isNew ? " is-new" : ""}" tabindex="0" data-cat="${esc(card.category)}" data-name="${esc(card.name)}"
         data-cost="${card.cost}" data-text="${esc(card.text || "")}" aria-label="${esc(card.name)}, coût ${card.cost} : ${esc(card.text || "")}">
       <div class="cost"><span>${card.cost}</span></div>
-      <div class="card-icon" aria-hidden="true">${Arena.Visuals.iconFor(card.name, card.category)}</div>
+      <div class="card-icon" aria-hidden="true">${art("card", card.name, card.category)}</div>
       <div class="card-name">${esc(card.name)}</div>
       <div class="card-cat">${CATEGORY_SHORT[card.category] || "?"}</div>
     </div>`;
@@ -59,7 +60,7 @@
       </div>
       <div class="hero-block">
         <div class="hero${current ? " is-current" : ""}${dead ? " is-dead" : ""}" data-class="${esc(p.heroClass)}" data-hero="${esc(name)}" title="${esc(name)} : ${p.hp} PV, ${p.armor} armure">
-          <span aria-hidden="true">${CLASS_ICONS[p.heroClass] || "🎴"}</span>
+          <span class="hero-art" aria-hidden="true">${art("hero", p.heroClass)}</span>
           ${p.armor > 0 ? `<div class="gem gem-armor" title="Armure">${p.armor}</div>` : ""}
           <div class="gem gem-hp" title="Points de vie">${p.hp}</div>
         </div>
@@ -100,7 +101,7 @@
     const hit = highlight && highlight.kind === "minion-damage" ? highlight.minionId : null;
     return `<div class="minions" aria-label="Plateau de ${esc(name)}">${p.board.map((m) => `
       <div class="minion${m.taunt ? " is-taunt" : ""}${m.id === acting ? " is-acting" : ""}${m.id === hit ? " is-hit" : ""}" data-minion-id="${m.id}" title="${esc(m.name)} ${m.attack}/${m.health}${m.taunt ? " — Taunt" : ""}">
-        <span class="minion-icon" aria-hidden="true">${Arena.Visuals.iconFor(m.name)}</span>${esc(m.name)}
+        <span class="minion-icon" aria-hidden="true">${art("card", m.name)}</span>${esc(m.name)}
         <div class="stat atk">${m.attack}</div>
         <div class="stat hp${m.health < m.maxHealth ? " is-hurt" : ""}">${m.health}</div>
       </div>`).join("")}</div>`;
@@ -173,7 +174,7 @@
       const mull = p.mulligan && p.mulligan.putBack.length
         ? `remet ${p.mulligan.putBack.map(esc).join(", ")} → pioche ${p.mulligan.drawn.map(esc).join(", ")}` : "garde toute sa main";
       return `<div class="setup-player">
-        <h3><span class="swatch" style="background:var(--p${i + 1})"></span>${CLASS_ICONS[p.heroClass] || ""} ${esc(name)}</h3>
+        <h3><span class="swatch" style="background:var(--p${i + 1})"></span><span class="setup-art">${art("hero", p.heroClass)}</span> ${esc(name)}</h3>
         <dl>
           <dt>Bot</dt><dd>${esc(p.bot)}</dd>
           <dt>Classe</dt><dd>${esc(p.heroClass)} (${p.classChoice === "auto" ? "choisie par le bot" : "imposée"})</dd>
@@ -240,7 +241,7 @@
       const pt = curve.points.filter((q) => q.frame <= h.frame).at(-1) || curve.points[0];
       return `<text class="hp-star" x="${chartX(h.frame, frames)}" y="${chartY(pt.hp[p]) - 8}" text-anchor="middle" data-tip="${esc(h.source)} : ${h.amount} dégâts sur ${esc(h.target)}">✦</text>`;
     }).join("");
-    return `<div class="hp-head"><span>Points de vie au fil de la partie</span>
+    return `<div class="hp-head">
         <span class="legend">${curve.players.map((n, p) => `<span><span class="swatch" style="background:${colors[p]}"></span>${esc(n)}</span>`).join("")}<span>✦ gros coup (6+)</span></span></div>
       <svg viewBox="0 0 ${CHART.width} ${CHART.height}" role="img" aria-label="Points de vie des deux joueurs au fil de la partie">
         ${grid}${lines}${hits}<g class="hp-cursor"><line x1="0" x2="0" y1="${CHART.top - 4}" y2="${CHART.height - CHART.bottom + 4}"></line></g>
@@ -257,7 +258,8 @@
       log: doc.getElementById("log"), overlay: doc.getElementById("overlay"), scrubber: doc.getElementById("scrubber"),
       position: doc.getElementById("position"), speed: doc.getElementById("speed"),
       play: doc.querySelector('[data-action="play"]'), fxLayer: doc.getElementById("fx-layer"),
-      hpChart: doc.getElementById("hp-chart"), zoom: doc.getElementById("card-zoom"),
+      hpChart: doc.getElementById("hp-chart"), hpPanel: doc.getElementById("hp-panel"),
+      zoom: doc.getElementById("card-zoom"),
       dialogue: doc.getElementById("dialogue"), dialogueTitle: doc.getElementById("dialogue-title"),
     };
     const fx = Arena.Fx.create({ board: el.board, layer: el.fxLayer, speed: () => Number(el.speed.value || 1) });
@@ -284,6 +286,7 @@
       setupShown = false;
       curve = Arena.Visuals.hpCurve(timeline);
       el.hpChart.innerHTML = hpChartHtml(curve, timeline.frames.length);
+      el.hpPanel.hidden = false;
       go(Math.max(0, (timeline.turnStarts[0] || 1) - 1));
     }
 
@@ -477,6 +480,18 @@
       setupShown = true;
       go(frame);
     });
+    try {
+      el.hpPanel.open = root.localStorage.getItem("arena.hpOpen") === "true";
+    } catch (e) {
+      /* storage unavailable: the section starts closed */
+    }
+    el.hpPanel.addEventListener("toggle", () => {
+      try {
+        root.localStorage.setItem("arena.hpOpen", String(el.hpPanel.open));
+      } catch (e) {
+        /* storage unavailable: the choice lasts for this visit only */
+      }
+    });
     const tooltip = doc.getElementById("tooltip");
     el.hpChart.addEventListener("mousemove", (e) => {
       const mark = e.target.closest("[data-tip]");
@@ -498,7 +513,7 @@
     function showZoom(cardEl) {
       if (!cardEl) return;
       const card = { name: cardEl.dataset.name, cost: cardEl.dataset.cost, category: cardEl.dataset.cat,
-        text: cardEl.dataset.text, icon: Arena.Visuals.iconFor(cardEl.dataset.name, cardEl.dataset.cat) };
+        text: cardEl.dataset.text, icon: art("card", cardEl.dataset.name, cardEl.dataset.cat) };
       el.zoom.innerHTML = Arena.Fx.bigCardHtml(card);
       el.zoom.hidden = false;
       const box = cardEl.getBoundingClientRect();
@@ -516,7 +531,12 @@
       }
     });
 
-    return { load, action, isLoaded: () => !!timeline, speed: () => Number(el.speed.value || 1) };
+    /** A new design theme changes the pictures of the frame on screen, not only the next ones. */
+    function redraw() {
+      if (timeline) render();
+    }
+
+    return { load, action, redraw, isLoaded: () => !!timeline, speed: () => Number(el.speed.value || 1) };
   }
 
   Arena.ReplayView = { create };

@@ -146,19 +146,51 @@
   }
 
   /*
-   * Original "epic" loop in D minor (Dm - Bb - F - C, 84 bpm), composed from oscillators and noise:
-   * string pads (level 0+), taiko drums, bass and brass stabs (level 1+), a heroic melody and faster
-   * drums (level 2). Notes are scheduled slightly ahead of time so the rhythm stays steady.
+   * Original music themes, described as data so one engine can play them all. Each bar lasts 8 eighths;
+   * layers: pad or arpeggio (level 0+), bass, drums and stabs (level 1+), melody and extra drums (level 2).
    */
+  const MUSIC_THEMES = [
+    { id: "epic", name: "⚔️ Épique", tempo: 84,
+      chords: [["D3", "F3", "A3"], ["Bb2", "D3", "F3"], ["F2", "A2", "C3"], ["C3", "E3", "G3"]],
+      bass: ["D2", "Bb1", "F1", "C2"],
+      melody: [["D5", 3], ["F5", 1], ["A5", 2], ["G5", 2], ["F5", 3], ["D5", 1], ["E5", 2], ["C5", 2],
+        ["F5", 3], ["A5", 1], ["C6", 2], ["Bb5", 2], ["A5", 4], ["G5", 2], ["E5", 2]],
+      pad: { type: "sawtooth", gain: 0.035, cutoff: 900 }, arpeggio: null,
+      bassSteps: [0, 4], drums: { 1: [0, 3, 4], 2: [6, 7] }, drumPitch: [95, 38], stabs: true,
+      lead: { type: "square", gain: 0.025 } },
+    { id: "tavern", name: "🍺 Taverne", tempo: 112,
+      chords: [["G3", "B3", "D4"], ["E3", "G3", "B3"], ["C3", "E3", "G3"], ["D3", "F#3", "A3"]],
+      bass: ["G2", "E2", "C2", "D2"],
+      melody: [["D5", 2], ["G5", 2], ["B5", 2], ["A5", 2], ["G5", 2], ["E5", 2], ["C5", 2], ["E5", 2],
+        ["D5", 2], ["F#5", 2], ["A5", 2], ["F#5", 2], ["G5", 4], ["D5", 4]],
+      pad: null, arpeggio: { type: "triangle", gain: 0.07, cutoff: 2400, pattern: [0, 1, 2, 1, 0, 1, 2, 1] },
+      bassSteps: [0, 3, 4], drums: { 1: [0, 4], 2: [2, 6] }, drumPitch: [160, 90], stabs: false,
+      lead: { type: "sine", gain: 0.05 } },
+    { id: "boss", name: "💀 Boss", tempo: 132,
+      chords: [["E2", "B2", "E3"], ["F2", "C3", "F3"], ["E2", "B2", "E3"], ["D2", "A2", "D3"]],
+      bass: ["E1", "F1", "E1", "D1"],
+      melody: [["E5", 1], ["E5", 1], ["F5", 2], ["E5", 1], ["D5", 1], ["E5", 2], ["F5", 2], ["G5", 2], ["F5", 2], ["E5", 2],
+        ["E5", 1], ["E5", 1], ["F5", 2], ["E5", 1], ["D5", 1], ["B4", 2], ["D5", 2], ["E5", 2], ["F5", 2], ["E5", 2]],
+      pad: { type: "sawtooth", gain: 0.03, cutoff: 700 }, arpeggio: null,
+      bassSteps: [0, 1, 2, 3, 4, 5, 6, 7], drums: { 1: [0, 2, 4, 6], 2: [1, 3, 5, 7] }, drumPitch: [80, 32], stabs: true,
+      lead: { type: "sawtooth", gain: 0.022 } },
+    { id: "mystic", name: "🔮 Mystique", tempo: 70,
+      chords: [["A2", "C3", "E3"], ["F2", "A2", "C3"], ["C3", "E3", "G3"], ["G2", "B2", "D3"]],
+      bass: ["A1", "F1", "C2", "G1"],
+      melody: [["E5", 4], ["C5", 4], ["A4", 4], ["C5", 4], ["G5", 4], ["E5", 4], ["D5", 6], ["B4", 2]],
+      pad: { type: "sine", gain: 0.06, cutoff: 1800 }, arpeggio: { type: "sine", gain: 0.035, cutoff: 5000, octave: 2,
+        pattern: [0, 1, 2, 0, 1, 2, 1, 0] },
+      bassSteps: [0], drums: { 1: [], 2: [0, 4] }, drumPitch: [70, 40], stabs: false,
+      lead: { type: "triangle", gain: 0.05 } },
+  ];
+
+  /** The theme with this id, or the epic one when the id is unknown (old saved settings). */
+  function musicTheme(id) {
+    return MUSIC_THEMES.find((t) => t.id === id) || MUSIC_THEMES[0];
+  }
+
+  /** Plays a theme with the intensity given by setLevel; notes are scheduled ahead so the rhythm stays steady. */
   function createMusic(ctx) {
-    const TEMPO = 84;
-    const EIGHTH = 60 / TEMPO / 2;
-    const CHORDS = [["D3", "F3", "A3"], ["Bb2", "D3", "F3"], ["F2", "A2", "C3"], ["C3", "E3", "G3"]];
-    const BASS = ["D2", "Bb1", "F1", "C2"];
-    const MELODY = [
-      ["D5", 3], ["F5", 1], ["A5", 2], ["G5", 2], ["F5", 3], ["D5", 1], ["E5", 2], ["C5", 2],
-      ["F5", 3], ["A5", 1], ["C6", 2], ["Bb5", 2], ["A5", 4], ["G5", 2], ["E5", 2],
-    ];
     const out = ctx.createGain();
     out.gain.value = 0;
     out.connect(ctx.destination);
@@ -166,11 +198,15 @@
     const data = noiseBuffer.getChannelData(0);
     for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
 
+    let theme = MUSIC_THEMES[0];
     let level = -1;
     let volume = 0.5;
     let timer = null;
     let step = 0;
     let nextTime = 0;
+    let melodyIndex = 0;
+    let melodyWait = 0;
+    const eighth = () => 60 / theme.tempo / 2;
 
     function voice(freq, time, dur, { type = "sawtooth", gain = 0.05, attack = 0.02, cutoff = 1200, detune = 0 }) {
       const osc = ctx.createOscillator();
@@ -191,16 +227,17 @@
     }
 
     function drum(time, strength) {
+      const [from, to] = theme.drumPitch;
       const osc = ctx.createOscillator();
       const g = ctx.createGain();
-      osc.frequency.setValueAtTime(95, time);
-      osc.frequency.exponentialRampToValueAtTime(38, time + 0.35);
+      osc.frequency.setValueAtTime(from, time);
+      osc.frequency.exponentialRampToValueAtTime(to, time + 0.3);
       g.gain.setValueAtTime(0.0001, time);
-      g.gain.exponentialRampToValueAtTime(0.55 * strength, time + 0.008);
-      g.gain.exponentialRampToValueAtTime(0.0001, time + 0.5);
+      g.gain.exponentialRampToValueAtTime(0.5 * strength, time + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, time + 0.45);
       osc.connect(g).connect(out);
       osc.start(time);
-      osc.stop(time + 0.55);
+      osc.stop(time + 0.5);
       const src = ctx.createBufferSource();
       const filter = ctx.createBiquadFilter();
       const n = ctx.createGain();
@@ -208,35 +245,39 @@
       filter.type = "lowpass";
       filter.frequency.value = 700;
       n.gain.setValueAtTime(0.0001, time);
-      n.gain.exponentialRampToValueAtTime(0.25 * strength, time + 0.005);
-      n.gain.exponentialRampToValueAtTime(0.0001, time + 0.18);
+      n.gain.exponentialRampToValueAtTime(0.22 * strength, time + 0.005);
+      n.gain.exponentialRampToValueAtTime(0.0001, time + 0.16);
       src.connect(filter).connect(n).connect(out);
       src.start(time);
       src.stop(time + 0.2);
     }
 
-    let melodyIndex = 0;
-    let melodyWait = 0;
-
-    function schedule(eighth, time) {
-      const bar = Math.floor(eighth / 8) % CHORDS.length;
-      const inBar = eighth % 8;
-      const barLength = EIGHTH * 8;
-      if (inBar === 0) {
-        CHORDS[bar].forEach((note) => [-7, 7].forEach((d) =>
-          voice(noteFrequency(note), time, barLength + 0.1, { gain: 0.035, attack: 0.5, cutoff: 900, detune: d })));
+    function schedule(index, time) {
+      const bar = Math.floor(index / 8) % theme.chords.length;
+      const inBar = index % 8;
+      const chord = theme.chords[bar];
+      const e = eighth();
+      if (theme.pad && inBar === 0) {
+        chord.forEach((note) => [-7, 7].forEach((d) => voice(noteFrequency(note), time, e * 8 + 0.1,
+          { type: theme.pad.type, gain: theme.pad.gain, attack: 0.5, cutoff: theme.pad.cutoff, detune: d })));
+      }
+      if (theme.arpeggio) {
+        const a = theme.arpeggio;
+        const note = chord[a.pattern[inBar] % chord.length];
+        voice(noteFrequency(note) * (a.octave || 1) * 2, time, e * 0.9, { type: a.type, gain: a.gain, attack: 0.005, cutoff: a.cutoff });
       }
       if (level >= 1) {
-        if (inBar === 0 || inBar === 4) voice(noteFrequency(BASS[bar]), time, EIGHTH * 3, { type: "triangle", gain: 0.16, cutoff: 500 });
-        if (inBar === 0 || inBar === 3 || inBar === 4) drum(time, inBar === 0 ? 1 : 0.7);
-        if (inBar === 0) CHORDS[bar].forEach((note) =>
-          voice(noteFrequency(note) * 2, time, EIGHTH * 1.5, { gain: 0.03, attack: 0.01, cutoff: 2200 }));
+        if (theme.bassSteps.includes(inBar)) voice(noteFrequency(theme.bass[bar]), time, e * (theme.bassSteps.length > 4 ? 0.9 : 3),
+          { type: "triangle", gain: 0.16, cutoff: 500 });
+        if ((theme.drums[1] || []).includes(inBar)) drum(time, inBar === 0 ? 1 : 0.7);
+        if (theme.stabs && inBar === 0) chord.forEach((note) =>
+          voice(noteFrequency(note) * 2, time, e * 1.5, { gain: 0.03, attack: 0.01, cutoff: 2200 }));
       }
       if (level >= 2) {
-        if (inBar === 6 || inBar === 7) drum(time, 0.5);
+        if ((theme.drums[2] || []).includes(inBar)) drum(time, 0.5);
         if (melodyWait <= 0) {
-          const [note, eighths] = MELODY[melodyIndex % MELODY.length];
-          voice(noteFrequency(note), time, EIGHTH * eighths * 0.95, { type: "square", gain: 0.025, attack: 0.03, cutoff: 2600 });
+          const [note, eighths] = theme.melody[melodyIndex % theme.melody.length];
+          voice(noteFrequency(note), time, e * eighths * 0.95, { type: theme.lead.type, gain: theme.lead.gain, attack: 0.03, cutoff: 2600 });
           melodyWait = eighths;
           melodyIndex++;
         }
@@ -247,7 +288,7 @@
     function tick() {
       while (nextTime < ctx.currentTime + 0.15) {
         schedule(step, nextTime);
-        nextTime += EIGHTH;
+        nextTime += eighth();
         step++;
       }
     }
@@ -258,11 +299,17 @@
       out.gain.linearRampToValueAtTime(value, ctx.currentTime + seconds);
     }
 
+    function restart() {
+      step = 0;
+      melodyIndex = 0;
+      melodyWait = 0;
+      nextTime = ctx.currentTime + 0.1;
+    }
+
     return {
       /** Starts, adapts or fades out the music; calling it with the same level does nothing. */
       setLevel(next) {
         if (next === level) return;
-        const wasSilent = level < 0;
         level = next;
         if (level < 0) {
           fadeTo(0, 1.2);
@@ -274,16 +321,18 @@
           }, 1300);
           return;
         }
-        if (wasSilent || !timer) {
-          if (!timer) {
-            step = 0;
-            melodyIndex = 0;
-            melodyWait = 0;
-            nextTime = ctx.currentTime + 0.1;
-            timer = setInterval(tick, 25);
-          }
-          fadeTo(volume, 1.5);
+        if (!timer) {
+          restart();
+          timer = setInterval(tick, 25);
         }
+        fadeTo(volume, 1.5);
+      },
+      /** Switches theme at once, from the start of its progression. */
+      setTheme(id) {
+        const next = musicTheme(id);
+        if (next === theme) return;
+        theme = next;
+        restart();
       },
       setVolume(v) {
         volume = Math.max(0, Math.min(1, v));
@@ -292,5 +341,5 @@
     };
   }
 
-  Arena.Sound = { cueFor, isMinor, createSynth, musicLevelFor, noteFrequency, createMusic };
+  Arena.Sound = { cueFor, isMinor, createSynth, musicLevelFor, noteFrequency, createMusic, MUSIC_THEMES, musicTheme };
 })(typeof window !== "undefined" ? window : globalThis);

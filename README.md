@@ -66,8 +66,13 @@ Plain HTML/CSS/JavaScript in [`web/`](web/): no framework, no build, no server, 
 3. Replay: Hearthstone-like board, hands, minions, heroes, mana, statuses, the same log as the console,
    play/pause, step by event or by turn (keys: Space, ←/→, Shift+←/→, Home/End), speed, scrubber,
    synthesized sounds for each event (Web Audio, no audio files; 🔊 button or key M, volume slider),
-   an original epic music loop that follows the match (calm at setup, drums in battle, a heroic melody
-   when a champion is at 10 HP or less; 🎵 button or key B),
+   original music loops that follow the match (calm at setup, drums in battle, a heroic melody
+   when a champion is at 10 HP or less; 🎵 button or key B) in four themes to pick from
+   (⚔️ Épique, 🍺 Taverne, 🔥 Boss, 🔮 Mystique),
+   three design themes in the top bar (🎨, or key D): 🍺 Taverne (the original emoji look), 📜 Grimoire
+   (SVG icons from game-icons.net) and 🌿 Plein air (PNG/JPG tiles from Kenney); credits in
+   [`web/assets/CREDITS.md`](web/assets/CREDITS.md),
+   a game that fills the window (⛶ button or key F for real fullscreen) with the HP chart folded below it,
    animations (card reveal, spell projectiles, minion attacks, impacts and screen shake, summons, deaths,
    auras, turn banner, victory), card icons, full card text on hover, and an HP chart (click to jump).
    Statistics: win split, first-player advantage, match lengths, end reasons, and a table of every match.

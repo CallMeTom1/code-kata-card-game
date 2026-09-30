@@ -272,10 +272,18 @@ reproduces the console lines exactly; a test compares it with `docs/sample-match
 We chose plain files over a web server or a framework because the team's work PCs
 cannot install Node, and because opening a file needs no setup.
 Every card also has a rules text (`Card.text`, exported in `PlayerSetUp`) so the replay can
-show it. Sounds and the background music are synthesized (Web Audio): the music is an
-original loop in D minor whose layers follow the match (setup, battle, climax at 10 HP or
-less, silence at the end). Animations use the Web Animations API:
-no asset files, no library. Both only run when the replay moves one event forward, get
+show it. Sounds and the background music are synthesized (Web Audio): the music is one of
+four original loops (`MUSIC_THEMES` in `sound.js`: epic in D minor, tavern, boss, mystic)
+whose layers follow the match (setup, battle, climax at 10 HP or less, silence at the end).
+Animations use the Web Animations API, no library.
+The game fills the window under the top bar (it only scrolls when the window is too small,
+and gets denser under 900 px high); the HP chart is a folded section below it.
+Design themes (`themes.js`) are a palette in `arena.css` plus optional pictures per hero class
+and card; a missing picture falls back to the original emoji, so the classic look is never lost
+and a theme can be added one picture at a time. Their pictures are downloaded once and
+committed under `web/assets/` (the page must work offline from a file): SVG icons from
+game-icons.net (CC BY 3.0, credited in the footer) and Kenney tiles (CC0, PNG, plus one JPG
+board built from them). Sources and licenses: `web/assets/CREDITS.md`. Both only run when the replay moves one event forward, get
 shorter at high speed, and animations are skipped when the OS asks for reduced motion.
 
 ## LLM bots (Claude API)
