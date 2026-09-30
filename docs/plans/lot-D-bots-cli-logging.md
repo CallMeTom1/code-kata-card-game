@@ -12,9 +12,11 @@ les bots reçoivent un faux `GameView`.
 ### D.1 `ConsoleRenderer` (un `GameEventListener`)
 - [ ] Il écrit dans un `PrintStream` injecté (pas `System.out` en dur) → testable.
 - [ ] `given_turn_started_event_when_rendered_then_prints_turn_header`
-      (ex. `=== Turn 3 — Alice (Aggressive:Mage) ===`)
+      (ex. `[T03][Alice][TURN   ] [HP 28/30] [ARMOR 0] [MANA 3/3] [HAND 4] [DECK 13]`)
 - [ ] `given_damage_dealt_with_absorbed_armor_when_rendered_then_shows_absorbed_and_hp_left`
-      (ex. `Fireball hits Bob for 6 (2 absorbed by armor) → Bob 22 HP`)
+      (ex. `[T03][Alice][DAMAGE ] Fireball → Bob : 6 dmg [ABSORBED 2] [HP 26 → 22]`)
+- [ ] Format de référence : section G1 de `docs/00-PHASE-0-DECISIONS.md`
+      (étiquettes entre crochets, largeur fixe, une ligne par événement).
 - [ ] `given_unknown_event_when_rendered_then_nothing_breaks` (Liskov : un événement inconnu est ignoré)
 - [ ] Un format par événement du sprint 0, puis un par événement ajouté par A et C.
 - [ ] Fin de match : résumé (gagnant, raison, tours, PV restants).

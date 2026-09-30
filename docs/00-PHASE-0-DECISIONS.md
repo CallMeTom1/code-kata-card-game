@@ -170,14 +170,40 @@ Décision : ______
 ## G. Logging
 
 ### G1. Format console
+Chaque ligne commence par des **étiquettes entre crochets** : le tour, le
+joueur, puis le type d'événement, aligné sur une largeur fixe. On peut
+filtrer avec `grep` (par exemple `grep "\[DAMAGE"` ou `grep "\[Bob"`), et
+l'œil trouve vite l'information. Une seule ligne par événement : on n'écrit
+que ce qui s'est passé, jamais ce qui ne s'est pas passé.
+
 Exemple proposé :
 ```
-=== Turn 3 — Alice (Aggressive:Mage) — 28 HP, 3 mana ===
-  draws Fireball
-  plays Frostbolt (2 mana, 1 left) → Bob is frozen
-  uses Fireblast? no, not enough mana
-  Frostbolt hits Bob for 3 (0 absorbed) → Bob 24 HP
+[MATCH  ] Alice [Aggressive:Mage] vs Bob [Defensive:Tank] | seed 42 | Alice starts
+[T03] ======================================================================
+[T03][Alice][TURN   ] [HP 28/30] [ARMOR 0] [MANA 3/3] [HAND 4] [DECK 13]
+[T03][Alice][DRAW   ] Fireball
+[T03][Alice][PLAY   ] Frostbolt (2) → [MANA 1/3]
+[T03][Alice][DAMAGE ] Frostbolt → Bob : 3 dmg [ABSORBED 0] [HP 27 → 24]
+[T03][Alice][STATUS ] Bob [FROZEN] (-1 mana next turn)
+[T03][Alice][MINION ] Skeleton [1/1] → Bob : 1 dmg [ABSORBED 1] [HP 24 → 24]
+[T03][Bob  ][TURN   ] [HP 24/30] [ARMOR 0] [MANA 2/3] [HAND 5] [DECK 12]
+[T03][Bob  ][PLAY   ] Healing Potion (2) → [MANA 0/3]
+[T03][Bob  ][HEAL   ] Healing Potion → Bob : +5 [HP 24 → 29]
+[T04] ======================================================================
+[T04][Alice][PLAY   ] Raise Skeletons (3) → [MANA 1/4]
+[T04][Alice][SUMMON ] Skeleton [1/1] → [BOARD 2/5]
+[T04][Alice][SUMMON ] Skeleton [1/1] → [BOARD 3/5]
+[T04][Bob  ][POWER  ] Armor Up (2) → [ARMOR 2 (3 turns)] [MANA 2/4]
+...
+[T09][Alice][DEATH  ] Skeleton [1/1] dies attacking Iron Golem [2/6] [TAUNT]
+...
+[T17][Bob  ][FATIGUE] 3 dmg [HP 4 → 1]
+...
+[RESULT ] Alice WINS | reason: HP 0 | turns: 18 | damage Alice 34 / Bob 21
 ```
+Étiquettes : `MATCH`, `TURN`, `DRAW`, `BURN`, `FATIGUE`, `PLAY`, `POWER`,
+`DAMAGE`, `HEAL`, `ARMOR`, `STATUS`, `SUMMON`, `MINION`, `DEATH`, `RESULT`.
+Les noms de joueur sont complétés par des espaces pour que les colonnes restent alignées.
 Décision : ______
 
 ### G2. Quels matchs logger
