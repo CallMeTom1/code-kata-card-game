@@ -39,6 +39,14 @@ export async function playEvents(events) {
 /** Applies a server response (view + events) and animates it. */
 export async function showResponse(response) {
     const aiTurn = response.events.some(e => e.type === 'TurnStarted' && e.player !== match.humanSide);
+    // Pokémon defeated by the human's own action are still on screen: let them fade out first.
+    const dying = response.events.filter(e => e.type === 'PokemonDefeated').map(e => document.querySelector(
+        `[data-location="${e.owner === match.humanSide ? 'board' : 'enemy-board'}"][data-card="${e.pokemonId}"]:not(.fx-death)`))
+        .filter(Boolean);
+    if (!aiTurn && dying.length) {
+        dying.forEach(el => el.classList.add('fx-death'));
+        await new Promise(resolve => setTimeout(resolve, 380));
+    }
     applyResponse(response);
     ui.selected = null;
     if (aiTurn) ui.aiPlaying = true;

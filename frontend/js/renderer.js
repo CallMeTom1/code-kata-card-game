@@ -57,16 +57,24 @@ function minionHtml(inPlay, index, owner, ui, targets) {
                  tabindex="0" title="${esc(def.name)}${def.text ? ' — ' + esc(def.text) : ''}">
         ${artwork(def.id, true, def.category)}
         <div class="minion-name">${esc(def.name)}</div>
+        ${hpBar(inPlay.currentHp, inPlay.maxHp)}
+        ${owner === 'self' && !inPlay.canAttack ? '<span class="status-badge" title="Cannot attack this turn">Zz</span>' : ''}
         <span class="stat stat--attack">${inPlay.attack}</span>
         <span class="stat stat--hp ${damaged ? 'is-damaged' : ''}">${inPlay.currentHp}</span>
     </div>`;
+}
+
+function hpBar(hp, max) {
+    const ratio = Math.max(0, Math.min(1, hp / max));
+    const level = ratio > .6 ? 'high' : ratio > .3 ? 'mid' : 'low';
+    return `<div class="hp-bar hp-bar--${level}"><i style="width:${ratio * 100}%"></i></div>`;
 }
 
 function boardHtml(player, owner, ui, targets) {
     const slots = [];
     for (let i = 0; i < getCatalog().boardSize; i++) {
         const inPlay = player.board[i];
-        slots.push(inPlay ? minionHtml(inPlay, i, owner, ui, targets) : '<div class="slot slot--empty"></div>');
+        slots.push(inPlay ? minionHtml(inPlay, i, owner, ui, targets) : '<div class="slot slot--empty"><span></span></div>');
     }
     return slots.join('');
 }
@@ -78,7 +86,10 @@ export function heroHtml(player, owner, targetable = false) {
             ${effect.kind === 'DAMAGE_REDUCTION' ? '🛡' : '⚔'} ${effect.value}</span>`).join('');
     return `<div class="hero ${targetable ? 'is-targetable' : ''}" data-location="${owner === 'self' ? 'hero' : 'enemy-hero'}" tabindex="0">
         ${artwork(def.id, true, 'HERO')}
-        <div class="hero-name">${esc(def.name)}</div>
+        <div class="hero-plate">
+            <div class="hero-name">${esc(def.name)}</div>
+            ${hpBar(player.currentHp, player.maxHp)}
+        </div>
         <span class="hero-hp ${player.currentHp < player.maxHp ? 'is-damaged' : ''}">${player.currentHp}</span>
         <div class="effects">${effects}</div>
     </div>`;
@@ -151,7 +162,7 @@ export function render(ui) {
         ? `<strong>Match over — ${esc(resultText(match.result, match.humanSide))}</strong>
            <span class="turn-phase">${esc(match.result?.reason ?? '')}</span>`
         : `<span class="turn-number">Turn ${view.turnNumber} / ${getCatalog().maxTurns}</span>
-           <span class="turn-owner ${selfActive ? 'is-self' : 'is-opponent'}">${selfActive ? 'Your turn' : `${esc(who)}'s turn`}</span>
+           <span class="turn-owner ${selfActive ? 'is-self' : 'is-opponent'}">${selfActive ? 'Your turn' : 'AI turn'}</span>
            <span class="turn-phase">${view.phase}</span>`;
     $('end-turn').disabled = !legalActions().some(a => a.type === 'EndTurn') || ui.busy;
     const aiPlaying = !view.over && (ui.aiPlaying || !selfActive);
@@ -162,7 +173,8 @@ export function render(ui) {
     $('opponent-hero').classList.toggle('is-active', aiPlaying);
     if (aiPlaying) {
         $('turn-indicator').innerHTML = `<span class="turn-number">Turn ${view.turnNumber} / ${getCatalog().maxTurns}</span>
-           <span class="turn-owner is-opponent"><span class="thinking-dot"></span>${esc(who)} (AI) is playing…</span>`;
+           <span class="turn-owner is-opponent"><span class="thinking-dot"></span>AI is thinking…</span>
+           <span class="turn-phase">${esc(who)}</span>`;
     }
 
     loadArtwork();
@@ -187,13 +199,14 @@ export function loadArtwork() {
 
 export function flash(element, kind, amount) {
     if (!element) return;
-    element.classList.remove('fx-damage', 'fx-heal');
+    if (kind === 'damage' && amount === 0) kind = 'block';
+    element.classList.remove('fx-damage', 'fx-heal', 'fx-block');
     void element.offsetWidth; // restart the animation
-    element.classList.add(kind === 'heal' ? 'fx-heal' : 'fx-damage');
+    element.classList.add(`fx-${kind}`);
     if (amount !== undefined) {
         const bubble = document.createElement('span');
         bubble.className = `fx-number fx-number--${kind}`;
-        bubble.textContent = (kind === 'heal' ? '+' : '-') + amount;
+        bubble.textContent = kind === 'block' ? '🛡 0' : (kind === 'heal' ? '+' : '-') + amount;
         element.appendChild(bubble);
         bubble.addEventListener('animationend', () => bubble.remove());
     }
@@ -212,6 +225,8 @@ export function lunge(attacker, target) {
 export function log(message, container = $('action-log'), max = 10) {
     const entry = document.createElement('div');
     entry.className = 'log-entry';
+    if (/Turn \d/.test(message) && message.length < 60) entry.classList.add('log-entry--turn');
+    if (message.startsWith('✖')) entry.classList.add('log-entry--error');
     entry.textContent = message;
     container.prepend(entry);
     while (container.children.length > max) container.lastChild.remove();

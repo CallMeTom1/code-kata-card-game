@@ -1,220 +1,295 @@
-/* Category accent shared by cards, minions and Hero Powers */
-.cat--attack   { --accent: var(--cat-attack); }
-.cat--defense  { --accent: var(--cat-defense); }
-.cat--utility  { --accent: var(--cat-utility); }
-.cat--resource { --accent: var(--cat-resource); }
+/* ==========================================================================================
+   Card system: hand cards (Pokémon / Item), board Pokémon, Heroes and Hero Powers.
+   Colours come from the variables in style.css.
+   ========================================================================================== */
 
+/* Category accent shared by cards, board Pokémon, Hero Powers and menu choices */
+.cat--attack   { --accent-cat: var(--cat-attack); }
+.cat--defense  { --accent-cat: var(--cat-defense); }
+.cat--utility  { --accent-cat: var(--cat-utility); }
+.cat--resource { --accent-cat: var(--cat-resource); }
+.deck-mix i.cat--attack, .deck-mix i.cat--defense, .deck-mix i.cat--utility, .deck-mix i.cat--resource { background: var(--accent-cat); }
+.choice--hero .art { background: radial-gradient(circle, rgba(255, 255, 255, .4), transparent 70%), var(--accent-cat, var(--accent)); }
+
+/* --- shared gems ---------------------------------------------------------------------------- */
 .cost {
     position: absolute;
-    top: -8px; left: -8px;
-    z-index: 2;
-    width: 30px; height: 30px;
+    top: -9px; left: -9px;
+    z-index: 3;
+    width: 32px; height: 32px;
     display: grid; place-items: center;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, #9bd4ff, var(--mana) 60%, #134d8a);
-    border: 2px solid #dff1ff;
-    font-weight: 800;
-    text-shadow: 0 1px 2px #000;
+    background: radial-gradient(circle at 35% 30%, #d6efff, var(--mana) 55%, var(--mana-deep));
+    border: 2px solid #eaf6ff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .5), 0 0 10px rgba(63, 167, 255, .5);
+    color: #fff;
+    font-weight: 900; font-size: 1.05rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .7);
 }
-
 .stat {
     position: absolute;
-    bottom: -8px;
-    z-index: 2;
-    width: 28px; height: 28px;
+    bottom: -9px;
+    z-index: 3;
+    width: 30px; height: 30px;
     display: grid; place-items: center;
-    font-weight: 800;
-    text-shadow: 0 1px 2px #000;
-    border: 2px solid #fff4d0;
+    color: #fff;
+    font-weight: 900; font-size: 1rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .8);
+    border: 2px solid rgba(255, 255, 255, .85);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .5);
 }
-.stat--attack { left: -8px; background: var(--attack); border-radius: 6px; }
-.stat--hp { right: -8px; background: var(--hp); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
-.stat--hp.is-damaged { color: #ffd0cc; box-shadow: 0 0 8px var(--hp); }
+.stat--attack { left: -9px; background: radial-gradient(circle at 35% 30%, #ffe0a0, var(--attack-stat) 60%, #a4620a); border-radius: 6px 6px 50% 50%; }
+.stat--hp { right: -9px; background: radial-gradient(circle at 35% 30%, #ffb0ba, var(--hp) 60%, #8a1426); border-radius: 50%; }
+.stat--hp.is-damaged { color: #ffd9dd; box-shadow: 0 0 10px var(--damage); }
 
-/* Artwork */
+/* HP bar */
+.hp-bar { position: relative; height: 7px; border-radius: 4px; overflow: hidden; background: rgba(0, 0, 0, .55); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); }
+.hp-bar i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: linear-gradient(90deg, #2fbf6a, var(--heal)); transition: width .45s ease; }
+.hp-bar--mid i { background: linear-gradient(90deg, #d99a14, #ffcb3d); }
+.hp-bar--low i { background: linear-gradient(90deg, #b3142a, var(--damage)); }
+.replay-hero .hp-bar i { background: linear-gradient(90deg, #2fbf6a, var(--heal)); }
+
+/* --- artwork -------------------------------------------------------------------------------- */
 .art {
     position: relative;
     display: grid; place-items: center;
     overflow: hidden;
-    background: radial-gradient(circle, rgba(255, 255, 255, .35), transparent 70%), var(--accent, #555);
+    background:
+        radial-gradient(circle at 50% 60%, rgba(255, 255, 255, .55), transparent 62%),
+        linear-gradient(160deg, color-mix(in srgb, var(--accent-cat, #6b7aa8) 70%, #fff), var(--accent-cat, #3a4468));
 }
-.art img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .5)); }
-.art-fallback { font-size: 2rem; font-weight: 800; opacity: .8; }
-.art--item { font-size: 2.2rem; }
+.art img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .45)); }
+.art-fallback { font-size: 2rem; font-weight: 900; color: rgba(255, 255, 255, .85); text-shadow: 0 2px 6px rgba(0, 0, 0, .5); }
+.art--item { font-size: 2.1rem; color: #fff; text-shadow: 0 2px 8px rgba(0, 0, 0, .45); }
 
-/* Hand cards */
+/* ==========================================================================================
+   Hand cards
+   ========================================================================================== */
 .card {
     position: relative;
-    width: 128px;
-    height: 170px;
+    width: var(--card-w);
+    height: var(--card-h);
     display: flex; flex-direction: column;
-    padding: 6px;
-    border-radius: 10px;
+    padding: 7px 7px 12px;
+    border-radius: 12px;
     cursor: pointer;
-    transition: transform .15s ease, box-shadow .15s ease;
     outline: none;
+    transform-origin: 50% 100%;
+    transition: transform .18s cubic-bezier(.2, .8, .3, 1.2), box-shadow .18s ease, filter .18s ease;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .5);
 }
+/* Pokémon: warm holo frame with a category-coloured inner border */
 .card--pokemon {
-    background: linear-gradient(160deg, #fdf3c4, #e6c96d);
-    border: 3px solid #b88a2a;
-    color: #2b2210;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, .55), transparent 40%),
+        linear-gradient(160deg, #fff4c8, #f2d57a 60%, #d9aa3f);
+    border: 3px solid #c89a32;
+    color: var(--text-dark);
 }
+.card--pokemon::before {
+    content: ""; position: absolute; inset: 3px; border-radius: 9px; pointer-events: none;
+    border: 2px solid var(--accent-cat);
+    opacity: .75;
+}
+/* Items: cool metallic frame, notched corners, round emblem */
 .card--item {
-    background: linear-gradient(160deg, #e9eef5, #aab7c9);
-    border: 3px solid #56647a;
-    border-radius: 4px 18px 4px 18px;
-    color: #182030;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, .6), transparent 45%),
+        linear-gradient(165deg, #f1f4fa, #c3cddd 55%, #8d9ab0);
+    border: 3px solid #5d6b85;
+    border-radius: 4px 20px 4px 20px;
+    color: var(--text-dark);
 }
-.card .art { height: 60px; flex-shrink: 0; border-radius: 6px; }
-.card--pokemon .art { border: 2px solid var(--accent); }
-.card--item .art { border-radius: 50%; width: 60px; margin: 0 auto; border: 3px solid var(--accent); }
-.card-name { margin-top: 4px; font-weight: 800; font-size: .85rem; text-align: center; }
+.card--item::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: repeating-linear-gradient(135deg, rgba(255, 255, 255, .0) 0 6px, rgba(255, 255, 255, .18) 6px 7px);
+}
+.card .art { flex: 0 0 44%; border-radius: 8px; box-shadow: inset 0 0 0 2px rgba(0, 0, 0, .15); }
+.card--item .art {
+    flex: 0 0 auto;
+    width: calc(var(--card-h) * .36); height: calc(var(--card-h) * .36);
+    margin: 2px auto 0;
+    border-radius: 50%;
+    border: 3px solid var(--accent-cat);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, .7), 0 4px 10px rgba(0, 0, 0, .3);
+}
+.card-name {
+    margin-top: 5px;
+    font-weight: 900; font-size: .88rem; line-height: 1.1;
+    text-align: center; letter-spacing: .01em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.card--item .card-name { font-style: italic; text-transform: uppercase; font-size: .78rem; letter-spacing: .06em; }
 .card-category {
     align-self: center;
-    margin: 2px 0;
-    padding: 0 6px;
-    border-radius: 6px;
-    font-size: .6rem;
-    font-weight: 700;
-    letter-spacing: .05em;
+    margin: 3px 0;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: .6rem; font-weight: 800; letter-spacing: .08em;
     white-space: nowrap;
     color: #fff;
-    background: var(--accent);
+    background: var(--accent-cat);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
 }
 .card-text {
-    font-size: .62rem; line-height: 1.2; text-align: center;
+    flex: 1;
+    padding: 3px 4px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, .55);
+    font-size: .68rem; line-height: 1.25; font-weight: 600; text-align: center;
+    color: #1d2433;
     display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 
-.card:hover, .card:focus-visible { transform: translateY(-18px) scale(1.12); z-index: 5; box-shadow: 0 12px 24px rgba(0, 0, 0, .5); }
-.card.is-playable { box-shadow: 0 0 0 2px #7df08f, 0 0 14px #7df08f; }
-.card:not(.is-playable) { filter: saturate(.6) brightness(.85); }
-.card.is-selected { transform: translateY(-26px) scale(1.12); box-shadow: 0 0 0 3px var(--gold), 0 0 22px var(--gold); }
+/* states */
+.card:hover, .card:focus-visible { transform: translateY(-22px) scale(1.12); z-index: 8; box-shadow: 0 18px 30px rgba(0, 0, 0, .6); }
+.card.is-playable { box-shadow: 0 0 0 2px var(--success), 0 0 16px rgba(78, 224, 138, .7), 0 6px 16px rgba(0, 0, 0, .5); }
+.card.is-playable:hover { box-shadow: 0 0 0 3px var(--success), 0 0 28px rgba(78, 224, 138, .9), 0 18px 30px rgba(0, 0, 0, .6); }
+.card.is-unplayable { filter: saturate(.35) brightness(.72); cursor: not-allowed; }
+.card.is-unplayable:hover { filter: saturate(.6) brightness(.9); transform: translateY(-12px) scale(1.06); }
+.card.is-selected, .card.is-selected:hover {
+    transform: translateY(-34px) scale(1.16);
+    z-index: 9;
+    box-shadow: 0 0 0 3px var(--accent), 0 0 34px rgba(255, 203, 61, .9), 0 20px 34px rgba(0, 0, 0, .6);
+    animation: selected-bob 1.6s ease-in-out infinite;
+}
 
-/* Minions on the Board */
+/* ==========================================================================================
+   Board Pokémon
+   ========================================================================================== */
 .minion {
     position: relative;
-    width: 110px;
-    height: 130px;
-    border-radius: 50% / 40%;
-    border: 4px solid var(--accent);
-    background: #222;
+    width: var(--minion-w);
+    height: var(--minion-h);
+    border-radius: 16px;
+    padding: 4px;
+    background: linear-gradient(160deg, color-mix(in srgb, var(--accent-cat) 55%, #fff), var(--accent-cat) 60%, color-mix(in srgb, var(--accent-cat) 60%, #000));
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .55), inset 0 0 0 1px rgba(255, 255, 255, .3);
     cursor: pointer;
-    transition: transform .15s ease, box-shadow .15s ease;
     outline: none;
+    transition: transform .15s ease, box-shadow .15s ease, filter .2s ease;
 }
-.minion .art { position: absolute; inset: 0; border-radius: inherit; }
+.minion .art { position: absolute; inset: 4px 4px 22px; border-radius: 12px; }
+.minion .art img { animation: idle 3.2s ease-in-out infinite; }
 .minion-name {
-    position: absolute; left: 50%; bottom: 14px;
+    position: absolute; left: 50%; bottom: 17px;
     transform: translateX(-50%);
-    padding: 0 6px;
+    max-width: 92%;
+    padding: 1px 8px;
     border-radius: 6px;
-    background: rgba(0, 0, 0, .6);
-    font-size: .7rem; font-weight: 700;
-    white-space: nowrap;
+    background: rgba(8, 12, 30, .8);
+    color: #fff;
+    font-size: .72rem; font-weight: 800;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.minion:hover { transform: scale(1.06); }
-.minion.can-attack { box-shadow: 0 0 0 2px #7df08f, 0 0 16px #7df08f; }
-.minion.is-sleeping .art { filter: grayscale(.4) brightness(.8); }
-.minion.is-sleeping::after { content: "z z"; position: absolute; top: 4px; right: 10px; font-weight: 800; opacity: .8; }
-.minion.is-selected { transform: translateY(-8px) scale(1.08); box-shadow: 0 0 0 3px var(--gold), 0 0 22px var(--gold); }
-.is-targetable { animation: target-pulse 1s ease-in-out infinite; cursor: crosshair; }
+.minion .hp-bar { position: absolute; left: 24px; right: 24px; bottom: 6px; height: 6px; }
+.status-badge {
+    position: absolute; top: 6px; right: 6px; z-index: 3;
+    padding: 1px 6px; border-radius: 8px;
+    background: rgba(8, 12, 30, .8); color: #b9c6ff;
+    font-size: .68rem; font-weight: 900; letter-spacing: .05em;
+    animation: snooze 2s ease-in-out infinite;
+}
+.minion:hover { transform: translateY(-4px) scale(1.05); }
+.minion.is-sleeping { filter: saturate(.55) brightness(.82); }
+.minion.is-sleeping .art img { animation: none; }
+.minion.can-attack { box-shadow: 0 0 0 2px var(--success), 0 0 18px rgba(78, 224, 138, .75), 0 8px 18px rgba(0, 0, 0, .55); }
+.minion.is-selected { transform: translateY(-10px) scale(1.1); box-shadow: 0 0 0 3px var(--accent), 0 0 30px rgba(255, 203, 61, .9), 0 14px 24px rgba(0, 0, 0, .6); z-index: 5; }
 
-/* Heroes */
+/* Valid targets (opposing Pokémon and Hero) */
+.is-targetable { cursor: crosshair; animation: target-pulse 1s ease-in-out infinite; }
+.minion.is-targetable::after, .hero.is-targetable::after {
+    content: "🎯"; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    z-index: 4; font-size: 1.1rem; filter: drop-shadow(0 0 6px var(--target));
+}
+
+/* ==========================================================================================
+   Heroes
+   ========================================================================================== */
 .hero {
     position: relative;
-    width: 130px; height: 150px;
-    clip-path: polygon(50% 0, 100% 18%, 100% 82%, 50% 100%, 0 82%, 0 18%);
-    background: linear-gradient(160deg, var(--gold), #7a5a14);
-    padding: 5px;
+    width: calc(var(--hero-size) + 36px);
+    display: flex; flex-direction: column; align-items: center;
     outline: none;
+    border-radius: 18px;
 }
 .hero .art {
-    width: 100%; height: 100%;
-    clip-path: inherit;
-    background: radial-gradient(circle, #ffe9a8, #3b2c0c 80%);
+    width: var(--hero-size); height: var(--hero-size);
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 50% 60%, rgba(255, 255, 255, .6), transparent 60%),
+        conic-gradient(from 200deg, #ffe38a, #c98a1c, #ffe38a, #b8741a, #ffe38a);
+    border: 4px solid #1a1f3a;
+    box-shadow: 0 0 0 3px var(--accent), 0 10px 24px rgba(0, 0, 0, .6);
+    transition: box-shadow .25s ease;
 }
-.hero-name {
-    position: absolute; left: 50%; top: 10px;
-    transform: translateX(-50%);
-    font-weight: 800; font-size: .8rem;
-    text-shadow: 0 1px 3px #000;
+.hero-plate {
+    margin-top: -12px; z-index: 2;
+    width: 100%;
+    padding: 3px 10px 6px;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #2a3570, #141a3c);
+    border: 1px solid rgba(255, 203, 61, .55);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .5);
+    text-align: center;
 }
+.hero-name { font-weight: 900; font-size: .9rem; letter-spacing: .04em; text-transform: uppercase; }
+.hero-plate .hp-bar { height: 8px; margin-top: 2px; }
 .hero-hp {
-    position: absolute; right: 16px; bottom: 16px;
-    width: 34px; height: 34px;
+    position: absolute; right: 0; top: calc(var(--hero-size) - 34px);
+    z-index: 3;
+    width: 42px; height: 42px;
     display: grid; place-items: center;
-    background: var(--hp);
-    border: 2px solid #fff4d0;
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    font-weight: 800; font-size: 1.05rem;
-    text-shadow: 0 1px 2px #000;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffb0ba, var(--hp) 60%, #8a1426);
+    border: 3px solid #fff;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, .6);
+    color: #fff; font-weight: 900; font-size: 1.2rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .8);
 }
-.hero-hp.is-damaged { color: #ffd0cc; }
-.effects { position: absolute; left: 12px; bottom: 16px; display: flex; flex-direction: column; gap: 2px; }
-.effect-badge { padding: 0 4px; border-radius: 6px; background: rgba(0, 0, 0, .7); font-size: .7rem; font-weight: 700; }
+.hero-hp.is-damaged { color: #ffe1e4; }
+.effects { position: absolute; left: 0; top: 0; z-index: 3; display: flex; flex-direction: column; gap: 3px; }
+.effect-badge {
+    padding: 1px 7px; border-radius: 8px;
+    background: rgba(8, 12, 30, .85); border: 1px solid var(--block);
+    color: var(--block); font-size: .74rem; font-weight: 800;
+    box-shadow: 0 0 8px rgba(124, 196, 255, .45);
+}
+.is-active > .hero .art { box-shadow: 0 0 0 3px var(--accent), 0 0 26px 6px rgba(255, 203, 61, .65), 0 10px 24px rgba(0, 0, 0, .6); animation: hero-active 2s ease-in-out infinite; }
+#opponent-hero.is-active > .hero .art { box-shadow: 0 0 0 3px var(--ai), 0 0 26px 6px rgba(255, 157, 92, .65), 0 10px 24px rgba(0, 0, 0, .6); }
 
-/* Hero Power */
+/* ==========================================================================================
+   Hero Power
+   ========================================================================================== */
 .hero-power {
     position: relative;
-    width: 150px;
-    padding: 10px 10px 8px 26px;
+    width: 168px;
+    padding: 10px 12px 9px 30px;
     border-radius: 14px;
-    border: 3px solid var(--accent);
-    background: linear-gradient(160deg, #2a3350, #151b2e);
+    border: 2px solid var(--accent-cat);
+    background: var(--glass), linear-gradient(160deg, #283463, #121833);
     color: var(--text);
     text-align: left;
     cursor: pointer;
-    font: inherit;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .5);
+    transition: transform .15s ease, box-shadow .15s ease, filter .2s ease;
 }
 .hero-power:disabled { cursor: default; }
-.hero-power .cost { top: 50%; transform: translateY(-50%); left: -12px; }
-.power-name { display: block; font-weight: 800; font-size: .85rem; }
-.power-text { display: block; font-size: .65rem; opacity: .85; }
-.hero-power.is-playable { box-shadow: 0 0 14px #7df08f; }
-.hero-power.is-used { filter: grayscale(1) brightness(.6); }
+.hero-power .cost { top: 50%; transform: translateY(-50%); left: -14px; }
+.power-name { display: block; font-weight: 900; font-size: .86rem; }
+.power-text { display: block; font-size: .7rem; line-height: 1.25; color: var(--text-muted); }
+.power-state {
+    position: absolute; right: 8px; top: -9px;
+    padding: 0 7px; border-radius: 6px;
+    font-size: .6rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase;
+}
+.power-state:empty { display: none; }
+.hero-power.is-playable { box-shadow: 0 0 0 2px var(--success), 0 0 18px rgba(78, 224, 138, .7), 0 6px 16px rgba(0, 0, 0, .5); }
+.hero-power.is-playable:hover { transform: translateY(-3px); }
+.hero-power.is-playable .power-state { background: var(--success); color: #062b14; }
+.hero-power.is-used { filter: grayscale(.9) brightness(.65); }
+.hero-power.is-used .power-state { background: #59607a; color: #e8eaf5; }
 
 @media (max-width: 800px) {
-    .card { width: 100px; height: 160px; }
-    .card .art { height: 52px; }
-    .card--item .art { width: 52px; }
-    .minion, .slot--empty { width: 86px; height: 104px; }
-    .hero { width: 100px; height: 118px; }
-    .hero-power { width: 120px; }
+    .hero-power { width: 130px; }
 }
-
-
-/* --- Polish pass ------------------------------------------------------------------------ */
-
-/* Card text readability */
-.card-name { letter-spacing: .01em; }
-.card-text { font-size: .66rem; line-height: 1.25; color: #1d2433; font-weight: 500; }
-
-/* Playable / unplayable / selected */
-.card { transition: transform .15s ease, box-shadow .15s ease, filter .15s ease; }
-.card.is-playable { transform: translateY(-6px); box-shadow: 0 0 0 2px #7df08f, 0 0 18px rgba(125, 240, 143, .8); cursor: pointer; }
-.card.is-unplayable { filter: grayscale(.7) brightness(.7); cursor: not-allowed; }
-.card.is-unplayable:hover { transform: translateY(-8px) scale(1.06); }
-.card.is-selected, .card.is-selected:hover {
-    transform: translateY(-30px) scale(1.14);
-    box-shadow: 0 0 0 3px var(--gold), 0 0 28px var(--gold), 0 16px 26px rgba(0, 0, 0, .55);
-    z-index: 6;
-}
-.minion.can-attack { box-shadow: 0 0 0 2px #7df08f, 0 0 14px rgba(125, 240, 143, .7); cursor: pointer; }
-.is-targetable { outline: 3px solid #ff5a4f; outline-offset: 3px; }
-
-/* Heroes: stronger HP, active glow */
-.hero-hp {
-    width: 40px; height: 40px; font-size: 1.15rem;
-    border: 2px solid #fff3; box-shadow: 0 2px 6px rgba(0, 0, 0, .6);
-}
-.hero.is-active, .is-active > .hero { filter: drop-shadow(0 0 12px var(--gold)); }
-
-/* Hero Power ready / used */
-.power-state {
-    display: block; margin-top: 2px;
-    font-size: .6rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
-}
-.hero-power.is-playable { box-shadow: 0 0 0 2px #7df08f, 0 0 16px #7df08f; cursor: pointer; }
-.hero-power.is-playable .power-state { color: #7df08f; }
-.hero-power.is-used .power-state { color: #ddd; }

@@ -10,32 +10,43 @@
 </head>
 <body>
 <section id="menu" class="screen menu" aria-label="Main menu">
-    <h1 class="menu-title">Pokémon Skirmish Arena</h1>
-    <div class="menu-panels">
-        <form id="play-form" class="panel">
-            <h2>Play</h2>
-            <p class="panel-hint">You against the AI.</p>
-            <label>Your Hero <select name="humanHero" data-options="hero" data-default="zapdos"></select></label>
-            <label>Your Deck <select name="humanDeck" data-options="deck" data-default="AGGRO"></select></label>
-            <label>AI Hero <select name="aiHero" data-options="hero" data-default="articuno"></select></label>
-            <label>AI Deck <select name="aiDeck" data-options="deck" data-default="CONTROL"></select></label>
-            <label>AI Bot <select name="aiBot" data-options="bot" data-default="Defensive"></select></label>
-            <label>Seed <input name="seed" inputmode="numeric" placeholder="random"></label>
-            <button type="submit" class="primary">Start Match</button>
-        </form>
-        <div class="panel">
-            <h2>Simulation</h2>
-            <p class="panel-hint">Bot against Bot, many matches, aggregate statistics.</p>
-            <button type="button" id="open-simulation" class="primary">Open Simulation</button>
+    <header class="logo">
+        <span class="logo-ball" aria-hidden="true"></span>
+        <h1 class="menu-title">Pokémon <em>Skirmish</em> Arena</h1>
+        <p class="logo-tag">A tactical card battle for legendary trainers</p>
+    </header>
+    <form id="play-form" class="menu-play">
+        <div class="setup-columns">
+            <div class="panel setup">
+                <h2><span class="tag tag--you">You</span> Choose your Hero</h2>
+                <div class="choice-grid choice-grid--hero" data-choice="hero" data-name="humanHero" data-default="zapdos"></div>
+                <h3>Deck</h3>
+                <div class="choice-grid choice-grid--deck" data-choice="deck" data-name="humanDeck" data-default="AGGRO"></div>
+            </div>
+            <div class="versus" aria-hidden="true">VS</div>
+            <div class="panel setup">
+                <h2><span class="tag tag--ai">AI</span> Choose the opponent</h2>
+                <div class="choice-grid choice-grid--hero" data-choice="hero" data-name="aiHero" data-default="articuno"></div>
+                <h3>Deck</h3>
+                <div class="choice-grid choice-grid--deck" data-choice="deck" data-name="aiDeck" data-default="CONTROL"></div>
+                <h3>Strategy</h3>
+                <div class="choice-grid choice-grid--bot" data-choice="bot" data-name="aiBot" data-default="Defensive"></div>
+            </div>
         </div>
-    </div>
+        <div class="menu-actions">
+            <label class="seed">Seed <input name="seed" inputmode="numeric" placeholder="random"></label>
+            <button type="submit" class="primary primary--hero">▶ Play</button>
+            <button type="button" id="open-simulation" class="secondary-btn">⚙ Simulation mode</button>
+        </div>
+    </form>
     <p id="menu-error" class="error" role="alert"></p>
 </section>
 
 <section id="simulation" class="screen simulation" aria-label="Simulation" hidden>
     <button type="button" class="back" data-back>← Menu</button>
     <form id="simulation-form" class="panel sim-form">
-        <h2>Simulation</h2>
+        <h2>AI vs AI Simulation</h2>
+        <p class="panel-hint">Bots play many matches; the first one can be replayed.</p>
         <fieldset>
             <legend>Player 1</legend>
             <label>Hero <select name="p1Hero" data-options="hero" data-default="zapdos"></select></label>
