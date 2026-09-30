@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class HeroClassesTest {
 
     private static final HeroClass MAGE =
-            new HeroClass("Mage", new HeroPower("Fireblast", 2, Effect.NONE), List.of());
+            new HeroClass("Mage", new HeroPower("Fireblast", 2, Effect.NONE), List.of(), List.of());
 
     @Test
     void given_a_registry_with_mage_when_looking_up_mage_in_any_case_then_it_is_found() {
