@@ -129,7 +129,8 @@
       reveal(fx, captured) {
         const middle = { x: layer.clientWidth / 2, y: layer.clientHeight / 2 };
         const start = captured.reveal ? centerOf(captured.reveal) : middle;
-        const node = spawn("fx-reveal", middle, bigCardHtml(fx.card));
+        const node = spawn("fx-reveal", middle, bigCardHtml({ ...fx.card,
+          icon: Arena.Themes.artHtml(root.document.documentElement.dataset.theme, "card", fx.card.name, fx.card.category) }));
         const dx = start.x - middle.x;
         const dy = start.y - middle.y;
         run(node, [

@@ -79,6 +79,8 @@
     sound.unlock();
     if ((e.key === "m" || e.key === "M") && !e.target.closest("input, select, textarea")) sound.toggle();
     if ((e.key === "b" || e.key === "B") && !e.target.closest("input, select, textarea")) sound.toggleMusic();
+    if ((e.key === "d" || e.key === "D") && !e.target.closest("input, select, textarea")) design.next();
+    if ((e.key === "f" || e.key === "F") && !e.target.closest("input, select, textarea")) toggleFullscreen();
     if (doc.getElementById("tab-replay").hidden || !replay.isLoaded()) return;
     if (e.target.closest("input, select, textarea")) return;
     const keys = { " ": "play", ArrowRight: e.shiftKey ? "next-turn" : "next", ArrowLeft: e.shiftKey ? "prev-turn" : "prev",
@@ -95,7 +97,9 @@
     const toggleButton = doc.getElementById("sound-toggle");
     const musicButton = doc.getElementById("music-toggle");
     const volume = doc.getElementById("volume");
-    const settings = { enabled: true, music: true, volume: 60 };
+    const themeSelect = doc.getElementById("music-theme");
+    const settings = { enabled: true, music: true, volume: 60, theme: "epic" };
+    themeSelect.innerHTML = Arena.Sound.MUSIC_THEMES.map((t) => `<option value="${t.id}">${t.name}</option>`).join("");
     let music = null;
     let lastState = null;
     let tab = "replay";
@@ -127,6 +131,8 @@
       musicButton.setAttribute("aria-pressed", String(settings.music));
       musicButton.setAttribute("aria-label", settings.music ? "Couper la musique" : "Activer la musique");
       musicButton.title = settings.music ? "Musique activée (B)" : "Musique coupée (B)";
+      themeSelect.value = Arena.Sound.musicTheme(settings.theme).id;
+      if (music) music.setTheme(settings.theme);
       updateMusic();
     }
 
@@ -144,6 +150,7 @@
         synth = Arena.Sound.createSynth(ctx);
         synth.setVolume(settings.volume / 100);
         music = Arena.Sound.createMusic(ctx);
+        music.setTheme(settings.theme);
         music.setVolume((settings.volume / 100) * 0.7);
       }
       if (ctx.state === "suspended") ctx.resume();
@@ -187,6 +194,13 @@
       unlock();
       toggleMusic();
     });
+    themeSelect.addEventListener("change", () => {
+      settings.theme = themeSelect.value;
+      if (!settings.music) settings.music = true;
+      unlock();
+      save();
+      show();
+    });
     volume.addEventListener("input", () => {
       settings.volume = Number(volume.value);
       if (settings.volume > 0 && !settings.enabled) settings.enabled = true;
@@ -196,6 +210,68 @@
     show();
     return { unlock, onStep, onFrame, onTab, toggle, toggleMusic };
   }
+
+  /** Design themes swap palette and pictures; the choice is kept like the sound settings. */
+  function createDesignController() {
+    const select = doc.getElementById("design-theme");
+    const credits = doc.getElementById("theme-credits");
+    const themes = Arena.Themes.THEMES;
+    select.innerHTML = themes.map((t) => `<option value="${t.id}">${t.name}</option>`).join("");
+    let current = "classic";
+    try {
+      current = root.localStorage.getItem("arena.design") || current;
+    } catch (e) {
+      /* storage unavailable: classic theme */
+    }
+
+    function apply(id) {
+      const theme = Arena.Themes.themeById(id);
+      current = theme.id;
+      doc.documentElement.dataset.theme = theme.id;
+      select.value = theme.id;
+      credits.textContent = theme.credits;
+      credits.hidden = !theme.credits;
+      replay.redraw();
+      try {
+        root.localStorage.setItem("arena.design", theme.id);
+      } catch (e) {
+        /* storage unavailable: the theme lasts for this visit only */
+      }
+    }
+
+    function next() {
+      const i = themes.findIndex((t) => t.id === current);
+      apply(themes[(i + 1) % themes.length].id);
+    }
+
+    select.addEventListener("change", () => apply(select.value));
+    apply(current);
+    return { apply, next };
+  }
+  const design = createDesignController();
+
+  /** The page layout follows the window; the real fullscreen hides the browser around it. */
+  function toggleFullscreen() {
+    if (doc.fullscreenElement) doc.exitFullscreen();
+    else if (doc.documentElement.requestFullscreen) doc.documentElement.requestFullscreen().catch(() => {});
+  }
+
+  const fullscreenButton = doc.getElementById("fullscreen-toggle");
+  fullscreenButton.addEventListener("click", toggleFullscreen);
+  doc.addEventListener("fullscreenchange", () => {
+    const on = !!doc.fullscreenElement;
+    fullscreenButton.setAttribute("aria-pressed", String(on));
+    fullscreenButton.setAttribute("aria-label", on ? "Quitter le plein écran" : "Plein écran");
+    fullscreenButton.title = on ? "Quitter le plein écran (F ou Échap)" : "Plein écran (F)";
+    fitToWindow();
+  });
+
+  /** Lets the CSS size the game to the window below the top bar, whose height changes when it wraps. */
+  function fitToWindow() {
+    doc.documentElement.style.setProperty("--topbar-h", doc.querySelector(".topbar").offsetHeight + "px");
+  }
+  root.addEventListener("resize", fitToWindow);
+  fitToWindow();
 
   if (new URLSearchParams(root.location.search).has("sample")) {
     doc.getElementById("load-samples").click();

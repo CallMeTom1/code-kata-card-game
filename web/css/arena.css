@@ -90,12 +90,19 @@ main { padding: 16px; }
 body.dragging .empty-card { outline: 3px dashed var(--gold-1); outline-offset: 8px; }
 
 /* ---------- Replay layout ---------- */
-.replay { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 16px; }
+/* The game fills the window under the top bar; the HP section sits below it. */
+.replay {
+  position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px;
+  /* min-height, not height: on a small window the board keeps its size and the page scrolls
+     instead of the board overlapping the controls. */
+  min-height: calc(100dvh - var(--topbar-h, 64px) - 32px);
+}
+.arena { display: grid; grid-template-rows: 1fr auto; gap: 12px; }
 @media (max-width: 1100px) { .replay { grid-template-columns: minmax(0, 1fr); } }
 
 .board {
   position: relative; display: grid; grid-template-rows: auto auto 1fr auto 1fr auto auto; gap: 8px;
-  min-height: 640px; padding: 14px;
+  height: 100%; min-height: 560px; padding: 14px;
   background:
     radial-gradient(ellipse at 50% 50%, rgba(255, 245, 220, 0.45), transparent 65%),
     radial-gradient(ellipse at 50% 50%, #c4aa7a, #97794f 70%, #6e5536);
@@ -235,7 +242,7 @@ body.dragging .empty-card { outline: 3px dashed var(--gold-1); outline-offset: 8
 
 /* ---------- Controls ---------- */
 .controls {
-  margin-top: 12px; padding: 10px 14px; border-radius: 12px;
+  padding: 10px 14px; border-radius: 12px;
   background: linear-gradient(#3a2716, #1e140b); border: 2px solid var(--gold-3);
   display: grid; gap: 8px;
 }
@@ -244,6 +251,8 @@ body.dragging .empty-card { outline: 3px dashed var(--gold-1); outline-offset: 8
 .ctl-play { min-width: 64px; color: var(--gold-1); }
 .sound { display: flex; align-items: center; gap: 6px; margin-left: auto; }
 .sound input { width: 90px; accent-color: var(--gold-2); }
+.sound select, .speed select { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--gold-3); border-radius: 6px; padding: 3px 6px; }
+#fullscreen-toggle[aria-pressed="true"] { color: var(--gold-1); border-color: var(--gold-1); }
 #sound-toggle[aria-pressed="false"], #music-toggle[aria-pressed="false"] { filter: grayscale(1); opacity: 0.6; text-decoration: line-through; }
 .speed { color: var(--text-secondary); display: flex; gap: 6px; align-items: center; }
 .speed select { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--gold-3); border-radius: 6px; padding: 3px 6px; }
@@ -252,7 +261,8 @@ body.dragging .empty-card { outline: 3px dashed var(--gold-1); outline-offset: 8
 
 /* ---------- Log ---------- */
 .log-panel {
-  display: flex; flex-direction: column; max-height: calc(100vh - 110px); min-height: 400px;
+  /* height 0 + min-height 100%: the journal fills the row without making the row taller. */
+  display: flex; flex-direction: column; height: 0; min-height: 100%;
   background: linear-gradient(var(--parchment-1), var(--parchment-2)); color: var(--ink);
   border: 3px solid var(--gold-3); border-radius: 12px; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
 }
@@ -384,6 +394,7 @@ body.dragging .empty-card { outline: 3px dashed var(--gold-1); outline-offset: 8
 
 /* ---------- Effects layer ---------- */
 .board-wrap { position: relative; }
+@media (max-width: 1100px) { .log-panel { height: 420px; min-height: 0; } }
 .fx-layer { position: absolute; inset: 0; pointer-events: none; z-index: 8; }
 .fx-layer > * { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); will-change: transform, opacity; }
 .fx-reveal { z-index: 3; }
@@ -432,7 +443,7 @@ body.dragging .empty-card { outline: 3px dashed var(--gold-1); outline-offset: 8
 
 /* ---------- HP chart ---------- */
 .hp-panel {
-  margin-top: 12px; border-radius: 12px; background: var(--surface-1); border: 2px solid var(--gold-3);
+  margin-top: 16px; border-radius: 12px; background: var(--surface-1); border: 2px solid var(--gold-3);
 }
 .hp-panel > summary {
   cursor: pointer; list-style: none; padding: 8px 14px; font-family: var(--font-title); font-size: 16px;
@@ -454,3 +465,78 @@ body.dragging .empty-card { outline: 3px dashed var(--gold-1); outline-offset: 8
 .hp-chart .hp-star { fill: var(--gold-1); font-size: 15px; }
 .hp-chart .hp-cursor line { stroke: var(--gold-1); stroke-width: 2; }
 @media (max-width: 700px) { .big-card { width: 160px; min-height: 220px; } .fx-banner span { font-size: 22px; padding: 8px 30px; } }
+
+/* ---------- Short windows (laptops): a denser board so the game still fits on one screen ---------- */
+@media (max-height: 900px) and (min-width: 1101px) {
+  main { padding: 10px 16px; }
+  .board { gap: 4px; padding: 8px; border-width: 8px; min-height: 0; }
+  .hero { width: 76px; height: 90px; font-size: 34px; }
+  .hand { min-height: 70px; }
+  .card { width: 64px; height: 72px; padding-top: 12px; }
+  .minions { min-height: 78px; }
+  .minion { width: 56px; height: 72px; padding: 6px 4px; }
+  .minion-icon { font-size: 18px; }
+  .power { width: 46px; height: 46px; font-size: 9px; }
+  .controls { padding: 6px 10px; gap: 4px; }
+}
+
+/* ---------- Design themes (web/js/themes.js) ---------- */
+/* Pictures from a theme: sized by the box that holds them, like the emoji they replace. */
+.art { display: block; width: 1.25em; height: 1.25em; object-fit: contain; margin: 0 auto; pointer-events: none; }
+.hero-art .art { width: 72px; height: 72px; }
+.big-card-art .art { width: 96px; height: 96px; }
+.setup-art .art { display: inline-block; width: 1.1em; height: 1.1em; vertical-align: -0.15em; }
+.design-picker { display: flex; align-items: center; gap: 6px; margin-left: 12px; font-size: 20px; }
+.design-picker select, #music-theme {
+  color: var(--text-primary); background: var(--surface-2); border: 2px solid var(--gold-3); border-radius: 8px; padding: 4px 6px; font-size: 15px;
+}
+.credits { padding: 4px 16px 12px; font-size: 12px; color: var(--text-muted); text-align: right; }
+
+/* Grimoire: night-blue stone, arcane violet, gold engraved SVG icons (game-icons.net). */
+[data-theme="grimoire"] {
+  --wood-1: #1d2140; --wood-2: #07081a;
+  --gold-1: #f4d58d; --gold-2: #b9a0e8; --gold-3: #4b3c7a;
+  --parchment-1: #2b2d4f; --parchment-2: #1b1c38; --ink: #e7e2ff;
+  --text-primary: #ece8ff; --text-secondary: #b7b0d9; --text-muted: #8a84ad;
+  --surface-2: #1e1f3d;
+  --font-title: "Cinzel", Georgia, serif;
+}
+[data-theme="grimoire"] .topbar, [data-theme="grimoire"] .controls { background: linear-gradient(#262a52, #0e0f24); }
+[data-theme="plein-air"] .topbar, [data-theme="plein-air"] .controls { background: linear-gradient(#2f7fb5, #1b5580); }
+[data-theme="grimoire"] body {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(185, 160, 232, 0.12), transparent 40%),
+    radial-gradient(ellipse at 50% 20%, var(--wood-1), var(--wood-2) 75%);
+}
+[data-theme="grimoire"] .board {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(185, 160, 232, 0.18), transparent 60%),
+    repeating-conic-gradient(from 45deg, #232548 0 25%, #1d1f3f 0 50%) 0 0 / 48px 48px;
+  color: var(--ink);
+}
+[data-theme="grimoire"] .hero,
+[data-theme="grimoire"] .minion { background: radial-gradient(circle at 50% 35%, #3c3470, #120f2a); }
+[data-theme="grimoire"] .card { color: var(--ink); }
+[data-theme="grimoire"] .card-icon .art, [data-theme="grimoire"] .minion-icon .art { filter: drop-shadow(0 0 3px rgba(244, 213, 141, 0.6)); }
+[data-theme="grimoire"] .side-info, [data-theme="grimoire"] .center-line { color: var(--ink); }
+
+/* Plein air: a sunny meadow (JPG built from Kenney CC0 hex tiles), heroes as their home tile (PNG). */
+[data-theme="plein-air"] {
+  --wood-1: #5fa8d3; --wood-2: #1f5f8b;
+  --gold-1: #fff3c4; --gold-2: #f2c14e; --gold-3: #8a5a19;
+  --parchment-1: #fffaf0; --parchment-2: #f3e3c3;
+}
+[data-theme="plein-air"] body { background: linear-gradient(#8fd3f4, #3d8fc4 60%, #2d6e98); }
+[data-theme="plein-air"] .board {
+  background: linear-gradient(rgba(255, 255, 240, 0.18), rgba(255, 255, 240, 0.18)),
+    url("../assets/plein-air/meadow.jpg") center / 720px auto repeat;
+  box-shadow: inset 0 0 40px rgba(0, 40, 0, 0.45), 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+[data-theme="plein-air"] .hero { background: radial-gradient(circle at 50% 35%, #bfe8ff, #4f9cc9); }
+[data-theme="plein-air"] .hero-art .art { width: 84px; height: 98px; }
+[data-theme="plein-air"] .minion {
+  background: url("../assets/plein-air/minion-base.png") center / 100% auto no-repeat;
+  border: none; border-radius: 0; box-shadow: none; filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.45));
+}
+[data-theme="plein-air"] .minion.is-taunt { border: none; filter: drop-shadow(0 0 0 #3b424b) drop-shadow(0 0 4px #8e9aa6); }
+[data-theme="plein-air"] .center-line, [data-theme="plein-air"] .side-info { color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9); }

@@ -15,6 +15,9 @@
       <button class="tab is-active" role="tab" aria-selected="true" data-tab="replay">Replay</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="stats">Statistiques</button>
     </nav>
+    <label class="design-picker" title="Thème du design (D)">🎨
+      <select id="design-theme" aria-label="Thème du design"></select>
+    </label>
     <div class="loaders">
       <label class="btn">Charger un fichier…
         <input type="file" id="file-input" accept=".jsonl,.json,.txt" hidden>
@@ -41,10 +44,6 @@
             <div class="board" id="board" aria-live="polite"></div>
             <div class="fx-layer" id="fx-layer" aria-hidden="true"></div>
           </div>
-          <details class="hp-panel" id="hp-panel" hidden>
-            <summary>📈 Points de vie au fil de la partie</summary>
-            <div class="hp-chart" id="hp-chart" title="Cliquez pour aller à ce moment de la partie"></div>
-          </details>
           <div class="controls" id="controls">
             <div class="buttons">
               <button class="ctl" data-action="start" title="Début (Home)" aria-label="Début">⏮</button>
@@ -56,9 +55,11 @@
               <button class="ctl" data-action="end" title="Fin (End)" aria-label="Fin">⏭</button>
               <div class="sound">
                 <button class="ctl" id="music-toggle" aria-pressed="true" title="Musique activée (B)" aria-label="Couper la musique">🎵</button>
+                <select id="music-theme" aria-label="Thème musical" title="Thème musical"></select>
                 <button class="ctl" id="sound-toggle" aria-pressed="true" title="Son activé (M)" aria-label="Couper le son">🔊</button>
                 <input type="range" id="volume" min="0" max="100" value="60" aria-label="Volume">
               </div>
+              <button class="ctl" id="fullscreen-toggle" title="Plein écran (F)" aria-label="Plein écran" aria-pressed="false">⛶</button>
               <label class="speed">Vitesse
                 <select id="speed">
                   <option value="1">×1</option>
@@ -78,6 +79,10 @@
         </aside>
         <div class="overlay" id="overlay" hidden></div>
       </div>
+      <details class="hp-panel" id="hp-panel" hidden>
+        <summary>📈 Points de vie au fil de la partie</summary>
+        <div class="hp-chart" id="hp-chart" title="Cliquez pour aller à ce moment de la partie"></div>
+      </details>
     </section>
 
     <section id="tab-stats" class="tab-panel" role="tabpanel" hidden>
@@ -93,6 +98,8 @@
     </section>
   </main>
 
+  <footer class="credits" id="theme-credits"></footer>
+
   <div class="toast" id="toast" role="alert" hidden></div>
   <div class="tooltip" id="tooltip" hidden></div>
   <div class="card-zoom" id="card-zoom" hidden></div>
@@ -102,6 +109,7 @@
   <script src="js/stats.js"></script>
   <script src="js/sound.js"></script>
   <script src="js/visuals.js"></script>
+  <script src="js/themes.js"></script>
   <script src="js/fx.js"></script>
   <script src="js/view-replay.js"></script>
   <script src="js/view-stats.js"></script>
