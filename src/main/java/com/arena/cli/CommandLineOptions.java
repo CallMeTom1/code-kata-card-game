@@ -5,7 +5,8 @@ import java.util.List;
 
 /** Everything Main needs from the command line, validated in one place. */
 public record CommandLineOptions(int matches, PlayerSpec player1, PlayerSpec player2, long seed, boolean log,
-                                 boolean presetDecks, List<String> names, Path jsonFile, boolean help) {
+                                 boolean presetDecks, List<String> names, Path jsonFile, Path statsJsonFile,
+                                 boolean help) {
 
     /** Printed on --help and after any wrong argument. */
     public static final String USAGE = """
@@ -19,7 +20,8 @@ public record CommandLineOptions(int matches, PlayerSpec player1, PlayerSpec pla
               --log                  print the first match turn by turn
               --preset-decks         use the preset decks of DESIGN.md instead of bot-built decks
               --names A,B            player names (default P1,P2)
-              --json FILE            also write the first match as JSON lines (for a future front)
+              --json FILE            also write the first match as JSON lines (open it in web/index.html)
+              --stats-json FILE      also write the stats of every match as JSON (Statistics tab of web/)
               --help                 show this help""";
 
     /** Reads the arguments; throws with a clear message on anything unexpected. */
@@ -32,6 +34,7 @@ public record CommandLineOptions(int matches, PlayerSpec player1, PlayerSpec pla
         boolean preset = false;
         List<String> names = List.of("P1", "P2");
         Path json = null;
+        Path statsJson = null;
         boolean help = false;
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
@@ -44,11 +47,12 @@ public record CommandLineOptions(int matches, PlayerSpec player1, PlayerSpec pla
                 case "--preset-decks" -> preset = true;
                 case "--names" -> names = names(value(args, ++i, arg));
                 case "--json" -> json = Path.of(value(args, ++i, arg));
+                case "--stats-json" -> statsJson = Path.of(value(args, ++i, arg));
                 case "--help", "-h" -> help = true;
                 default -> throw new IllegalArgumentException("Unknown option " + arg);
             }
         }
-        return new CommandLineOptions(matches, p1, p2, seed, log, preset, names, json, help);
+        return new CommandLineOptions(matches, p1, p2, seed, log, preset, names, json, statsJson, help);
     }
 
     private static String value(String[] args, int index, String option) {

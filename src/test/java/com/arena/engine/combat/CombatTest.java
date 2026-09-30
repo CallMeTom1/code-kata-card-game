@@ -38,7 +38,7 @@ class CombatTest {
 
         // Then
         assertThat(target.hp()).isEqualTo(26);
-        assertThat(listener.events()).containsExactly(new DamageDealt("Strike", "P2", 4, 0, 30, 26));
+        assertThat(listener.events()).containsExactly(new DamageDealt("Strike", "P2", 4, 0, 30, 26, 0));
     }
 
     @Test
@@ -55,6 +55,19 @@ class CombatTest {
         assertThat(target.defenses().armor()).isZero();
         assertThat(listener.eventsOfType(DamageDealt.class)).first()
                 .extracting(DamageDealt::absorbed).isEqualTo(3);
+    }
+
+    @Test
+    void given_armor_5_when_dealt_2_damage_then_the_event_reports_3_armor_left() {
+        // Given
+        Champion target = aChampion().named("P2").build();
+        target.defenses().addArmor(5, 2);
+
+        // When
+        combat.deal("Quick Jab", target, 2);
+
+        // Then
+        assertThat(listener.events()).containsExactly(new DamageDealt("Quick Jab", "P2", 2, 2, 30, 30, 3));
     }
 
     @Test

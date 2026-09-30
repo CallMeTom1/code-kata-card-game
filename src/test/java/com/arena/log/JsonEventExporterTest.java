@@ -18,11 +18,11 @@ class JsonEventExporterTest {
         JsonEventExporter exporter = new JsonEventExporter(out);
 
         // When
-        exporter.on(new DamageDealt("Fireball", "Bob", 6, 2, 26, 22));
+        exporter.on(new DamageDealt("Fireball", "Bob", 6, 2, 26, 22, 0));
 
         // Then
         assertThat(out.toString()).isEqualTo("{\"type\":\"DamageDealt\",\"source\":\"Fireball\",\"target\":\"Bob\","
-                + "\"amount\":6,\"absorbed\":2,\"hpBefore\":26,\"hpAfter\":22}\n");
+                + "\"amount\":6,\"absorbed\":2,\"hpBefore\":26,\"hpAfter\":22,\"armorAfter\":0}\n");
     }
 
     @Test

@@ -3,10 +3,13 @@ package com.arena;
 import com.arena.cli.CommandLineOptions;
 import com.arena.cli.MatchFactory;
 import com.arena.cli.MatchRunner;
-import com.arena.stats.AggregateStats;
+import com.arena.cli.RunReport;
+import com.arena.stats.StatsJsonWriter;
 import com.arena.stats.StatsReport;
 
+import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -42,14 +45,28 @@ public final class Main {
             out.println(CommandLineOptions.USAGE);
             return 0;
         }
-        AggregateStats stats = new MatchRunner(factory).run(options, out);
+        RunReport report = new MatchRunner(factory).run(options, out);
         if (options.log()) {
             out.println();
         }
         String label1 = options.player1().bot() + ":" + options.player1().heroClass();
         String label2 = options.player2().bot() + ":" + options.player2().heroClass();
-        out.println(StatsReport.format(stats, options.names().get(0), label1, options.names().get(1), label2,
+        out.println(StatsReport.format(report.stats(), options.names().get(0), label1, options.names().get(1), label2,
                 options.seed()));
+        if (options.jsonFile() != null) {
+            out.println("[EXPORT ] first match written to " + options.jsonFile());
+        }
+        if (options.statsJsonFile() != null) {
+            String json = StatsJsonWriter.write(options.names().get(0), label1, options.names().get(1), label2,
+                    options.seed(), report.stats(), report.records());
+            try {
+                Files.writeString(options.statsJsonFile(), json, StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                out.println("Error: cannot write " + options.statsJsonFile() + ": " + e.getMessage());
+                return 1;
+            }
+            out.println("[EXPORT ] stats written to " + options.statsJsonFile());
+        }
         return 0;
     }
 }

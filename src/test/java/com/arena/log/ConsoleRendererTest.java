@@ -63,7 +63,7 @@ class ConsoleRendererTest {
     void given_damage_with_absorbed_armor_when_rendered_then_it_shows_absorbed_and_hp_change() {
         // Given / When
         render(new TurnStarted(3, "Alice", 28, 0, 4, 13),
-                new DamageDealt("Fireball", "Bob", 6, 2, 26, 22));
+                new DamageDealt("Fireball", "Bob", 6, 2, 26, 22, 0));
 
         // Then
         assertThat(lines().getLast())

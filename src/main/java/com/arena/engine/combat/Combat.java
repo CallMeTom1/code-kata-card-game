@@ -53,6 +53,7 @@ public final class Combat implements DamageResolver {
         int absorbedByArmor = ignoreArmor ? 0 : target.defenses().absorbWithArmor(amount);
         int passing = Math.max(0, amount - absorbedByArmor - target.defenses().parry());
         target.loseHp(passing);
-        events.publish(new DamageDealt(source, target.name(), amount, amount - passing, hpBefore, target.hp()));
+        events.publish(new DamageDealt(source, target.name(), amount, amount - passing, hpBefore, target.hp(),
+                target.defenses().armor()));
     }
 }

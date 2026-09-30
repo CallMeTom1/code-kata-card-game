@@ -153,7 +153,7 @@ class MatchTest {
         assertThat(listener.eventsOfType(CardPlayed.class)).first()
                 .isEqualTo(new CardPlayed("P1", "Strike", 2, 0));
         assertThat(listener.eventsOfType(DamageDealt.class)).first()
-                .isEqualTo(new DamageDealt("Strike", "P2", 4, 0, 30, 26));
+                .isEqualTo(new DamageDealt("Strike", "P2", 4, 0, 30, 26, 0));
     }
 
     @Test
@@ -200,7 +200,7 @@ class MatchTest {
 
         // Then
         assertThat(listener.eventsOfType(DamageDealt.class)).first()
-                .isEqualTo(new DamageDealt("Slam", "P2", 2, 0, 30, 28));
+                .isEqualTo(new DamageDealt("Slam", "P2", 2, 0, 30, 28, 0));
     }
 
     @Test
@@ -335,6 +335,6 @@ class MatchTest {
 
         // Then
         assertThat(listener.eventsOfType(DamageDealt.class)).first()
-                .isEqualTo(new DamageDealt("Strike", "P1", 4, 0, 30, 26));
+                .isEqualTo(new DamageDealt("Strike", "P1", 4, 0, 30, 26, 0));
     }
 }

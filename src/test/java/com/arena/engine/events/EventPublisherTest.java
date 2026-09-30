@@ -51,7 +51,7 @@ class EventPublisherTest {
         EventPublisher publisher = new EventPublisher();
 
         // When / Then
-        assertThatCode(() -> publisher.publish(new DamageDealt("Strike", "P2", 4, 0, 30, 26)))
+        assertThatCode(() -> publisher.publish(new DamageDealt("Strike", "P2", 4, 0, 30, 26, 0)))
                 .doesNotThrowAnyException();
     }
 }

@@ -26,7 +26,7 @@ class CommandLineOptionsTest {
     void given_all_options_when_parsed_then_each_value_is_read() {
         // Given
         String[] args = {"--matches", "1000", "--p1", "Random:auto", "--p2", "Aggressive:Cleric", "--seed", "7",
-                "--log", "--preset-decks", "--names", "Alice,Bob", "--json", "match.jsonl"};
+                "--log", "--preset-decks", "--names", "Alice,Bob", "--json", "match.jsonl", "--stats-json", "stats.json"};
 
         // When
         CommandLineOptions options = CommandLineOptions.parse(args);
@@ -40,6 +40,7 @@ class CommandLineOptionsTest {
         assertThat(options.presetDecks()).isTrue();
         assertThat(options.names()).containsExactly("Alice", "Bob");
         assertThat(options.jsonFile()).hasToString("match.jsonl");
+        assertThat(options.statsJsonFile()).hasToString("stats.json");
     }
 
     @Test
