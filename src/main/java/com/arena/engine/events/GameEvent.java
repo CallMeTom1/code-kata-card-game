@@ -5,5 +5,6 @@ package com.arena.engine.events;
  * events exhaustively and the compiler flags any event a renderer forgot.
  */
 public sealed interface GameEvent
-        permits MatchStarted, TurnStarted, CardPlayed, DamageDealt, MatchEnded {
+        permits MatchStarted, TurnStarted, CardPlayed, DamageDealt, MatchEnded,
+        EvasionTriggered, MinionDamaged, MinionDied {
 }

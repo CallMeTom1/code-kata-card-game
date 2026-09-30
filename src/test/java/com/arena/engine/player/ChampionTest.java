@@ -133,4 +133,102 @@ class ChampionTest {
         // Then
         assertThat(champion.hand()).containsExactly(card);
     }
+
+    @Test
+    void given_max_mana_3_when_mana_grows_then_max_mana_is_4_and_full() {
+        // Given
+        Champion champion = aChampion().withMana(3).build();
+
+        // When
+        champion.growMana();
+
+        // Then
+        assertThat(champion.maxMana()).isEqualTo(4);
+        assertThat(champion.mana()).isEqualTo(4);
+    }
+
+    @Test
+    void given_a_frozen_champion_when_mana_grows_then_it_gets_1_mana_less_once() {
+        // Given
+        Champion champion = aChampion().withMana(3).build();
+        champion.freeze();
+
+        // When
+        champion.growMana();
+        int frozenMana = champion.mana();
+        champion.growMana();
+
+        // Then
+        assertThat(frozenMana).isEqualTo(3);
+        assertThat(champion.mana()).isEqualTo(5);
+    }
+
+    @Test
+    void given_10_mana_when_gaining_temporary_mana_then_it_stays_at_10() {
+        // Given
+        Champion champion = aChampion().withMana(10).build();
+
+        // When
+        champion.gainMana(1);
+
+        // Then
+        assertThat(champion.mana()).isEqualTo(10);
+    }
+
+    @Test
+    void given_max_mana_4_when_gaining_a_crystal_then_max_mana_is_5_but_current_mana_unchanged() {
+        // Given
+        Champion champion = aChampion().withMana(4).build();
+        champion.spendMana(4);
+
+        // When
+        champion.gainMaxMana(1);
+
+        // Then
+        assertThat(champion.maxMana()).isEqualTo(5);
+        assertThat(champion.mana()).isZero();
+    }
+
+    @Test
+    void given_two_attack_buffs_when_taken_then_they_stack_and_reset() {
+        // Given
+        Champion champion = aChampion().build();
+        champion.addAttackBonus(2);
+        champion.addAttackBonus(3);
+
+        // When
+        int bonus = champion.takeAttackBonus();
+
+        // Then
+        assertThat(bonus).isEqualTo(5);
+        assertThat(champion.takeAttackBonus()).isZero();
+    }
+
+    @Test
+    void given_poison_2_for_2_turns_when_ticking_3_times_then_it_deals_2_2_then_0() {
+        // Given
+        Champion champion = aChampion().build();
+        champion.applyPoison(2, 2);
+
+        // When
+        int first = champion.tickPoison();
+        int second = champion.tickPoison();
+        int third = champion.tickPoison();
+
+        // Then
+        assertThat(first).isEqualTo(2);
+        assertThat(second).isEqualTo(2);
+        assertThat(third).isZero();
+    }
+
+    @Test
+    void given_an_empty_deck_when_fatigue_is_taken_three_times_then_it_grows_1_2_3() {
+        // Given
+        Champion champion = aChampion().build();
+
+        // When / Then
+        assertThat(champion.nextFatigue()).isEqualTo(1);
+        assertThat(champion.nextFatigue()).isEqualTo(2);
+        assertThat(champion.nextFatigue()).isEqualTo(3);
+    }
 }

@@ -1,10 +1,17 @@
 package com.arena.engine.combat;
 
+import com.arena.engine.board.Minion;
 import com.arena.engine.player.Champion;
 
-/** Single entry point for damage, so defensive rules can be added by swapping the implementation. */
+/** Single entry point for damage, so defensive rules live in one place. */
 public interface DamageResolver {
 
-    /** Applies damage from a named source (card, minion, hero power) to a champion. */
+    /** Normal damage to a champion: Evasion, then armor, then Parry. */
     void deal(String source, Champion target, int amount);
+
+    /** Damage that goes through armor (Eviscerate); Evasion and Parry still apply. */
+    void dealIgnoringArmor(String source, Champion target, int amount);
+
+    /** Damage to a minion; removes it from its owner's board when it dies. */
+    void damageMinion(String source, Champion owner, Minion minion, int amount);
 }
