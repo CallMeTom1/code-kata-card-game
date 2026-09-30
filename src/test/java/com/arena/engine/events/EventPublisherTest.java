@@ -16,7 +16,7 @@ class EventPublisherTest {
         RecordingListener second = new RecordingListener();
         publisher.subscribe(first);
         publisher.subscribe(second);
-        GameEvent event = new TurnStarted(1, "P1");
+        GameEvent event = new TurnStarted(1, "P1", 30, 0, 3, 17);
 
         // When
         publisher.publish(event);
@@ -32,9 +32,9 @@ class EventPublisherTest {
         EventPublisher publisher = new EventPublisher();
         RecordingListener listener = new RecordingListener();
         publisher.subscribe(listener);
-        GameEvent started = new MatchStarted("P1", "P2", 42L, "P1");
+        GameEvent started = new MatchStarted("P1", "Aggressive:Mage", "P2", "Defensive:Tank", 42L);
         GameEvent played = new CardPlayed("P1", "Strike", 2, 0);
-        GameEvent ended = new MatchEnded("P1", "HP 0", 7);
+        GameEvent ended = new MatchEnded("P1", "HP 0", 7, "P1", 12, 30, "P2", 0, 18);
 
         // When
         publisher.publish(started);

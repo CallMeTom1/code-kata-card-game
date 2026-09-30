@@ -39,7 +39,7 @@ public final class Assassin {
 
     /** The Assassin class with its preset deck from DESIGN.md. */
     public static HeroClass definition() {
-        return new HeroClass("Assassin", new HeroPower("Poisoned Dagger", 2, new ApplyPoison(1, 2)), CARDS,
+        return new HeroClass("Assassin", new HeroPower("Poisoned Dagger", 2, new ApplyPoison(1, 2), "Poison 1 (2 turns)"), CARDS,
                 Decks.preset(CARDS, List.of(QUICK_JAB, WILD_WOLF, MANA_CRYSTAL, HEALING_POTION)));
     }
 }

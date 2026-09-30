@@ -44,7 +44,7 @@ public final class Cleric {
 
     /** The Cleric class with its preset deck from DESIGN.md. */
     public static HeroClass definition() {
-        return new HeroClass("Cleric", new HeroPower("Lesser Heal", 2, new Heal(2)), CARDS,
+        return new HeroClass("Cleric", new HeroPower("Lesser Heal", 2, new Heal(2), "heal 2 HP"), CARDS,
                 Decks.preset(CARDS, List.of(SHIELDBEARER, HEALING_POTION, INSIGHT, STRIKE)));
     }
 }

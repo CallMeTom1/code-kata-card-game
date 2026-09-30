@@ -40,7 +40,7 @@ public final class Tank {
 
     /** The Tank class with its preset deck from DESIGN.md. */
     public static HeroClass definition() {
-        return new HeroClass("Tank", new HeroPower("Armor Up", 2, new GainArmor(2, 3)), CARDS,
+        return new HeroClass("Tank", new HeroPower("Armor Up", 2, new GainArmor(2, 3), "Armor 2 (3 turns)"), CARDS,
                 Decks.preset(CARDS, List.of(IRON_WALL, STRIKE, CRUSHING_BLOW, HEALING_POTION)));
     }
 }

@@ -36,7 +36,7 @@ public final class Mage {
 
     /** The Mage class with its preset deck from DESIGN.md. */
     public static HeroClass definition() {
-        return new HeroClass("Mage", new HeroPower("Fireblast", 2, new DealDamage(1)), CARDS,
+        return new HeroClass("Mage", new HeroPower("Fireblast", 2, new DealDamage(1), "deal 1 damage"), CARDS,
                 Decks.preset(CARDS, List.of(MANA_CRYSTAL, INSIGHT, QUICK_JAB, WOODEN_SHIELD)));
     }
 }

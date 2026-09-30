@@ -7,5 +7,7 @@ package com.arena.engine.events;
 public sealed interface GameEvent
         permits MatchStarted, TurnStarted, CardPlayed, DamageDealt, MatchEnded,
         EvasionTriggered, MinionDamaged, MinionDied, CardDrawn, CardBurned, FatigueDamage, Healed,
-        ArmorGained, ManaGained, StatusApplied, MinionSummoned, SummonFizzled {
+        ArmorGained, ManaGained, StatusApplied, MinionSummoned, SummonFizzled, PlayerSetUp,
+        FirstPlayerChosen, OpeningHand, MulliganDone, ArmorExpired, PoisonTicked, ManaRefilled, HeroPowerUsed,
+        IllegalAction, MinionAttacked {
 }

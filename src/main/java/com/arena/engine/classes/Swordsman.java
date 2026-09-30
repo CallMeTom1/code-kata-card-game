@@ -37,7 +37,7 @@ public final class Swordsman {
 
     /** The Swordsman class with its preset deck from DESIGN.md. */
     public static HeroClass definition() {
-        return new HeroClass("Swordsman", new HeroPower("Sharpen", 2, new BuffNextAttack(2)), CARDS,
+        return new HeroClass("Swordsman", new HeroPower("Sharpen", 2, new BuffNextAttack(2), "next Attack card +2 damage"), CARDS,
                 Decks.preset(CARDS, List.of(QUICK_JAB, STRIKE, WILD_WOLF, MANA_CRYSTAL, WOODEN_SHIELD)));
     }
 }

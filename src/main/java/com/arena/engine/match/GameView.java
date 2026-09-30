@@ -33,4 +33,13 @@ public interface GameView {
 
     /** Only the size of the enemy hand: bots must not see hidden cards. */
     int opponentHandSize();
+
+    /** Cost of the hero power, so bots can plan their mana. */
+    int heroPowerCost();
+
+    /** Number of own minions, to avoid summoning onto a full board. */
+    int myBoardSize();
+
+    /** Number of enemy minions, to value area effects. */
+    int opponentBoardSize();
 }

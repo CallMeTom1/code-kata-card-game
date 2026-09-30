@@ -11,7 +11,7 @@ import java.util.Deque;
 import java.util.List;
 
 /** Test fake that replays a fixed list of actions, so engine tests control every decision. */
-public final class ScriptedBot implements Bot {
+public class ScriptedBot implements Bot {
 
     private final String name;
     private final Deque<Action> script;

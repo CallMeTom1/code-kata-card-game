@@ -5,7 +5,7 @@ import com.arena.engine.effects.Effect;
 import java.util.Objects;
 
 /** The class ability usable once per turn; built from the same effects as cards. */
-public record HeroPower(String name, int cost, Effect effect) {
+public record HeroPower(String name, int cost, Effect effect, String description) {
 
     /** Rejects impossible values early, like {@link com.arena.engine.cards.Card} does. */
     public HeroPower {
@@ -13,5 +13,10 @@ public record HeroPower(String name, int cost, Effect effect) {
             throw new IllegalArgumentException("Hero power cost cannot be negative: " + name);
         }
         Objects.requireNonNull(effect, "effect");
+    }
+
+    /** For tests and powers that need no description in the log. */
+    public HeroPower(String name, int cost, Effect effect) {
+        this(name, cost, effect, "");
     }
 }
