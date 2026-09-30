@@ -18,6 +18,8 @@ looks off:
 - a first-player win rate far from 50% (The Coin may need tuning)
 - most matches hitting the 50-turn limit (damage too low / armor too strong)
 - average match length under ~5 turns (damage too high)
+- boards that stay full for most of the match (minions too cheap or too
+  hard to remove)
 If the build fails, report the error instead of guessing the numbers.
 When suggesting balance changes, name the card and the new number, and
 remind the user to update DESIGN.md.
