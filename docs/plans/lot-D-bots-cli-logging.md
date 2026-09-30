@@ -54,9 +54,23 @@ les bots reçoivent un faux `GameView`.
 - [ ] Les bots ont besoin de connaître les dégâts d'une carte : ajouter au besoin
       une méthode `estimatedDamage()` sur `Card` → **commit de contrat séparé, validé par le groupe**.
 
+### D.6 Préparation du match : classe et deck (voir `DESIGN.md`, section Decks)
+- [ ] `DeckValidator` : `given_deck_with_3_copies_when_validated_then_rejected` ;
+      `given_deck_with_19_cards_when_validated_then_rejected` ;
+      `given_deck_with_5_class_cards_when_validated_then_rejected`
+- [ ] Interface `DeckStrategy` : `chooseClass(...)` et `buildDeck(heroClass, cardPool)`
+- [ ] `given_aggressive_strategy_when_building_mage_deck_then_no_heal_and_valid_deck`
+- [ ] `given_defensive_strategy_when_building_deck_then_at_least_6_attack_cards`
+- [ ] `given_random_strategy_and_same_seed_when_building_twice_then_same_deck`
+- [ ] CLI : `Bot:auto`, `Bot:Class` et `--preset-decks`
+- [ ] Événements `ClassChosen`, `DeckBuilt` et `MatchSetUp`, et leur rendu
+      (`[SETUP]`, `[POWER]`, `[DECK]` par catégorie, `[CURVE]`, `[START]`) :
+      `given_deck_built_event_when_rendered_then_cards_grouped_by_category_with_counts`
+
 ## Jalon M3 — livrables et ouverture
 - [ ] Sauvegarder un log d'exemple dans `docs/sample-match.log` (livrable n°2 de l'énoncé).
 - [ ] Vérifier le skill `.claude/skills/run-simulation` et l'utiliser pour l'équilibrage.
+- [ ] (Plus tard) `LlmBot` : voir la section « Later: LLM bots » de `DESIGN.md`.
 - [ ] (Bonus, ouverture front) `JsonEventExporter` : un listener qui écrit les
       événements d'un match en JSON Lines (`--json fichier`), sans bibliothèque
       externe. Le moteur ne doit pas changer d'une ligne.

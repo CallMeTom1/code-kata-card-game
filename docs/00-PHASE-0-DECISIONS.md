@@ -178,7 +178,17 @@ que ce qui s'est passé, jamais ce qui ne s'est pas passé.
 
 Exemple proposé :
 ```
-[MATCH  ] Alice [Aggressive:Mage] vs Bob [Defensive:Tank] | seed 42 | Alice starts
+[MATCH  ] Alice [Aggressive:Mage] vs Bob [Defensive:Tank] | seed 42
+[SETUP  ][Alice] [Aggressive] plays [Mage] (imposed) | deck: preset
+[POWER  ][Alice] Fireblast (2) — deal 1 damage
+[DECK   ][Alice] [ATTACK   10] Quick Jab x2, Frostbolt x2, Fireball x2, Raise Skeletons x2, Pyroblast x2
+[DECK   ][Alice] [DEFENSE   4] Wooden Shield x2, Ice Barrier x2
+[DECK   ][Alice] [RESOURCE  2] Mana Crystal x2
+[DECK   ][Alice] [UTILITY   4] Insight x2, Arcane Intellect x2
+[CURVE  ][Alice] [1: 8] [2: 2] [3: 6] [4: 2] [5+: 2] | avg cost 2.7
+[SETUP  ][Bob  ] ...
+[START  ] Alice goes first (coin flip) | Bob gets The Coin
+...
 [T03] ======================================================================
 [T03][Alice][TURN   ] [HP 28/30] [ARMOR 0] [MANA 3/3] [HAND 4] [DECK 13]
 [T03][Alice][DRAW   ] Fireball
@@ -201,7 +211,7 @@ Exemple proposé :
 ...
 [RESULT ] Alice WINS | reason: HP 0 | turns: 18 | damage Alice 34 / Bob 21
 ```
-Étiquettes : `MATCH`, `TURN`, `DRAW`, `BURN`, `FATIGUE`, `PLAY`, `POWER`,
+Étiquettes : `MATCH`, `SETUP`, `DECK`, `CURVE`, `START`, `TURN`, `DRAW`, `BURN`, `FATIGUE`, `PLAY`, `POWER`,
 `DAMAGE`, `HEAL`, `ARMOR`, `STATUS`, `SUMMON`, `MINION`, `DEATH`, `RESULT`.
 Les noms de joueur sont complétés par des espaces pour que les colonnes restent alignées.
 Décision : ______
@@ -255,9 +265,10 @@ Recommandation :
 | 4 | `ConsoleRenderer`, `RandomBot`, CLI (D.1 → D.3) | **M1 : un match visible en console** |
 | 5 | Statistiques + `MatchRunner` (D.4) | **Livrables 1 à 3 de l'énoncé** |
 | 6 | Armure, Parry, statuts, départage (A.4 → A.6) | |
-| 7 | Mage, Tank, pouvoirs (B.3 → B.5) + bots Aggressive/Defensive (D.5) | **M2** |
+| 7 | Mage, Tank, pouvoirs (B.3 → B.5) + bots Aggressive/Defensive (D.5) + préparation du match, decks construits par les bots (D.6) | **M2** |
 | 8 | Minions, Taunt, zone (C.1 → C.4) | |
 | 9 | Épéiste, Assassin, Clerc (C.5 → C.7), équilibrage, JSON | **M3 (bonus)** |
+| 10 | Bots LLM (`DESIGN.md` → « Later: LLM bots ») | après les livrables |
 
 Décision : ______
 

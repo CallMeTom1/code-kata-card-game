@@ -22,7 +22,7 @@
 
 ## Architecture
 - Root package `com.arena`; entry point `com.arena.Main`
-  (`--matches N --p1 <Bot>:<Class> --p2 <Bot>:<Class> [--seed S] [--log]`)
+  (`--matches N --p1 <Bot>:<Class|auto> --p2 <Bot>:<Class|auto> [--seed S] [--log] [--preset-decks]`)
 - Hearthstone-like: 30 HP, 20-card class decks, a hero power per class,
   minions on a board (max 5, Taunt). Categories: Attack, Defense, Resource, Utility.
 - Turn phases: draw → mana → play → resolve → end. Mana +1/turn, cap 10.

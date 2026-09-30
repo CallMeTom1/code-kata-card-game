@@ -135,7 +135,19 @@ Skeletons, Wolves and Spiders. Taunt minions slow down aggressive decks.
 These counters are on purpose, so class matchups actually differ.
 
 ## Decks (20 cards)
-Each class deck = its class cards ×2 + neutral cards to reach 20:
+Deck rules: exactly 20 cards, at most 2 copies of a card, at least 6 class
+cards, only the cards of the chosen class plus neutral cards. The engine
+checks these rules and rejects an invalid deck before the match starts.
+
+Decks come from two sources:
+- **Preset** decks (below): stable reference decks, used for balancing.
+- **Built by the bot**: each bot has a `DeckStrategy` (separate from its
+  play strategy — Interface Segregation) that picks a class and builds a
+  deck from the card pool. With `--p1 Aggressive:auto` the bot chooses its
+  class too; with `--p1 Aggressive:Mage` the class is imposed. Add
+  `--preset-decks` to use the presets instead.
+
+Preset decks = the class cards ×2 + neutral cards to reach 20:
 - **Mage** (12 + 8): Mana Crystal×2, Insight×2, Quick Jab×2, Wooden Shield×2
 - **Tank** (12 + 8): Iron Wall×2, Strike×2, Crushing Blow×2, Healing Potion×2
 - **Épéiste** (10 + 10): Quick Jab×2, Strike×2, Wild Wolf×2, Mana Crystal×2, Wooden Shield×2
@@ -146,7 +158,18 @@ Build order: engine + neutral cards without minions + Mage and Tank spells
 first (MVP), then minions, then the other classes.
 
 ## Bots
-Any bot can play any class.
+Any bot can play any class. Each bot = a play strategy + a deck strategy.
+
+Deck strategies:
+- **Aggressive**: picks the class with the most damage per mana (default:
+  Assassin), then fills the deck with the cheapest Attack cards and
+  attacking minions first, Resource cards second, no heals.
+- **Defensive**: picks the class with the most armor and healing (default:
+  Tank or Clerc), then Defense, heals and Taunt minions first, and at
+  least 6 Attack cards so it can still win.
+- **Random**: random class, random legal deck (seeded).
+
+Play strategies:
 - **Aggressive**: plays Resource cards first, then the highest-damage
   affordable Attack, repeating while mana allows. An attacking minion is
   valued at twice its Attack, because it hits every turn. It uses buffs
@@ -173,5 +196,36 @@ and a future JSON export for an HTML/JS replay are all listeners. We chose
 this so we can add a front without touching the engine, and so that
 "everything is visible" can be checked by tests. `--log` prints the first
 match in full; the other matches only feed the stats.
+
+Console format: one line per event, starting with bracket tags
+`[turn][player][EVENT  ]` of fixed width, so the log is easy to read and to
+filter with `grep`. Before turn 1, a **setup block** shows each side's class,
+hero power, deck (grouped by category) and mana curve, so a reader knows
+what each bot chose before the fight starts:
+```
+[MATCH  ] Alice [Aggressive:Mage] vs Bob [Defensive:Tank] | seed 42
+[SETUP  ][Alice] [Aggressive] plays [Mage] (imposed) | deck: preset
+[POWER  ][Alice] Fireblast (2) — deal 1 damage
+[DECK   ][Alice] [ATTACK   10] Quick Jab x2, Frostbolt x2, Fireball x2, Raise Skeletons x2, Pyroblast x2
+[DECK   ][Alice] [DEFENSE   4] Wooden Shield x2, Ice Barrier x2
+[DECK   ][Alice] [RESOURCE  2] Mana Crystal x2
+[DECK   ][Alice] [UTILITY   4] Insight x2, Arcane Intellect x2
+[CURVE  ][Alice] [1: 8] [2: 2] [3: 6] [4: 2] [5+: 2] | avg cost 2.7
+[SETUP  ][Bob  ] ...
+[START  ] Alice goes first (coin flip) | Bob gets The Coin
+[T01] ======================================================================
+[T01][Alice][TURN   ] [HP 30/30] [ARMOR 0] [MANA 1/1] [HAND 3] [DECK 17]
+```
+The full list of tags and a longer example are in
+`docs/00-PHASE-0-DECISIONS.md` (section G1).
+
+## Later: LLM bots
+Once the required deliverables are done, an `LlmBot` (another `Bot`
+implementation, behind an `LlmClient` interface faked in tests) could let
+real LLMs duel. Constraints already agreed: a few matches only (API cost),
+one call per turn, a structured JSON answer with a `reason` shown as a
+`[THINK  ]` log line, fallback to a classic bot on illegal moves or API
+errors, API key only in the `ANTHROPIC_API_KEY` environment variable.
+LLM matches are not replayable from the seed.
 
 All numbers are a first draft, to rebalance with the `run-simulation` skill.
