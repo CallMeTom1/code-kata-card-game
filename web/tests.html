@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,13 +20,14 @@
   </style>
 </head>
 <body>
-  <h1>Tests du front</h1>
-  <p class="summary" id="summary">Exécution…</p>
+  <h1>Front-end tests</h1>
+  <p class="summary" id="summary">Running…</p>
   <ol id="results"></ol>
 
   <script src="tests/harness.js"></script>
   <script src="data/sample-match.js"></script>
   <script src="tests/expected-log.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/replay.js"></script>
   <script src="js/logformat.js"></script>
   <script src="js/stats.js"></script>
@@ -39,17 +40,18 @@
   <script src="tests/sound.test.js"></script>
   <script src="tests/visuals.test.js"></script>
   <script src="tests/themes.test.js"></script>
+  <script src="tests/i18n.test.js"></script>
   <script>
     if (!window.Arena || !window.Arena.Test) {
-      document.getElementById("summary").textContent = "Les scripts n'ont pas pu être chargés. Ouvrez web/tests.html "
-        + "dans Chrome, Edge ou Firefox depuis le dossier du projet (pas dans un aperçu).";
+      document.getElementById("summary").textContent = "The scripts could not be loaded. Open web/tests.html "
+        + "in Chrome, Edge or Firefox from the project folder (not in a preview).";
       document.getElementById("summary").className = "summary ko";
       throw new Error("Arena scripts not loaded");
     }
     const results = Arena.Test.run();
     const failed = results.filter((r) => !r.passed).length;
     const summary = document.getElementById("summary");
-    summary.textContent = `${results.length - failed} réussis, ${failed} en échec`;
+    summary.textContent = `${results.length - failed} passed, ${failed} failed`;
     summary.className = "summary " + (failed ? "ko" : "ok");
     document.title = (failed ? "✘ " : "✔ ") + "Arena Tests";
     document.getElementById("results").innerHTML = results.map((r) =>

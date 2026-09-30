@@ -85,7 +85,7 @@
 
   test("given_a_turn_start_and_statuses_when_choosing_effects_then_banner_and_auras_are_shown", () => {
     eq(effects([{ type: "TurnStarted", round: 2, player: "Bob", hp: 30, armor: 0, handSize: 0, deckSize: 0 }]),
-      [{ kind: "banner", text: "Tour 2 · Bob", player: "Bob" }]);
+      [{ kind: "banner", round: 2, player: "Bob" }]);
     eq(effects([{ type: "StatusApplied", target: "Bob", source: "Frostbolt", status: "FROZEN (-1 mana next turn)" }]),
       [{ kind: "aura", style: "frost", target: { hero: "Bob" } }]);
     eq(effects([{ type: "Healed", player: "Alice", source: "Potion", amount: 4, hpBefore: 20, hpAfter: 24 }]),

@@ -54,7 +54,7 @@
   function effectsFor(event, before, after) {
     switch (event.type) {
       case "TurnStarted":
-        return [{ kind: "banner", text: `Tour ${event.round} · ${event.player}`, player: event.player }];
+        return [{ kind: "banner", round: event.round, player: event.player }];
       case "ManaRefilled": return [{ kind: "mana", player: event.player }];
       case "CardDrawn": return [{ kind: "draw", player: event.player }];
       case "HeroPowerUsed": return [{ kind: "power", player: event.player }];

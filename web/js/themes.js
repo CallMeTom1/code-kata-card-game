@@ -23,20 +23,20 @@
   };
 
   const THEMES = [
-    { id: "classic", name: "🍺 Taverne", credits: "" },
+    { id: "classic", name: "🍺 Tavern", credits: "" },
     {
       id: "grimoire", name: "📜 Grimoire", dir: "assets/grimoire/", ext: ".svg",
       heroes: { Mage: "wizard-face", Tank: "visored-helm", Swordsman: "broadsword", Assassin: "hooded-assassin", Cleric: "sun-priest" },
       cards: GRIMOIRE_CARDS,
       categories: { ATTACK: "crossed-swords", DEFENSE: "shield", RESOURCE: "gems", UTILITY: "magic-potion" },
-      credits: "Icônes game-icons.net (Lorc, Delapouite et al.), CC BY 3.0",
+      credits: "Icons from game-icons.net (Lorc, Delapouite et al.), CC BY 3.0",
     },
     {
-      id: "plein-air", name: "🌿 Plein air", dir: "assets/plein-air/", ext: ".png",
+      id: "plein-air", name: "🌿 Open air", dir: "assets/plein-air/", ext: ".png",
       heroes: { Mage: "hero-mage", Tank: "hero-tank", Swordsman: "hero-swordsman", Assassin: "hero-assassin", Cleric: "hero-cleric" },
       cards: {},
       categories: {},
-      credits: "Tuiles Kenney Hexagon Pack (kenney.nl), CC0",
+      credits: "Kenney Hexagon Pack tiles (kenney.nl), CC0",
     },
   ];
 

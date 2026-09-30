@@ -2,6 +2,8 @@
 (function (root) {
   const Arena = root.Arena;
   const doc = root.document;
+  const t = Arena.I18n.t;
+  Arena.I18n.applyStatic();
   const sound = createSoundController();
   const replay = Arena.ReplayView.create({ onStep: (event) => sound.onStep(event), onFrame: (state) => sound.onFrame(state) });
   const stats = Arena.StatsView.create();
@@ -39,14 +41,14 @@
         selectTab("stats");
       }
     } catch (e) {
-      showError((fileName ? fileName + " : " : "") + e.message);
+      showError((fileName ? fileName + ": " : "") + e.message);
     }
   }
 
   function loadFile(file) {
     const reader = new FileReader();
     reader.onload = () => loadText(String(reader.result), file.name);
-    reader.onerror = () => showError("Impossible de lire " + file.name);
+    reader.onerror = () => showError(t("app.cannot-read", { name: file.name }));
     reader.readAsText(file);
   }
 
@@ -57,8 +59,8 @@
   });
   doc.getElementById("load-samples").addEventListener("click", () => {
     const samples = root.ArenaSamples || {};
-    if (samples.statsJson) loadText(samples.statsJson, "exemple stats");
-    if (samples.matchJsonl) loadText(samples.matchJsonl, "exemple partie");
+    if (samples.statsJson) loadText(samples.statsJson, t("app.sample-stats"));
+    if (samples.matchJsonl) loadText(samples.matchJsonl, t("app.sample-match"));
   });
 
   doc.addEventListener("dragover", (e) => {
@@ -80,6 +82,7 @@
     if ((e.key === "m" || e.key === "M") && !e.target.closest("input, select, textarea")) sound.toggle();
     if ((e.key === "b" || e.key === "B") && !e.target.closest("input, select, textarea")) sound.toggleMusic();
     if ((e.key === "d" || e.key === "D") && !e.target.closest("input, select, textarea")) design.next();
+    if ((e.key === "l" || e.key === "L") && !e.target.closest("input, select, textarea")) Arena.I18n.next();
     if ((e.key === "f" || e.key === "F") && !e.target.closest("input, select, textarea")) toggleFullscreen();
     if (doc.getElementById("tab-replay").hidden || !replay.isLoaded()) return;
     if (e.target.closest("input, select, textarea")) return;
@@ -99,7 +102,6 @@
     const volume = doc.getElementById("volume");
     const themeSelect = doc.getElementById("music-theme");
     const settings = { enabled: true, music: true, volume: 60, theme: "epic" };
-    themeSelect.innerHTML = Arena.Sound.MUSIC_THEMES.map((t) => `<option value="${t.id}">${t.name}</option>`).join("");
     let music = null;
     let lastState = null;
     let tab = "replay";
@@ -119,18 +121,24 @@
       }
     }
 
+    /** Music theme names follow the page language; the selected theme is restored by show(). */
+    function fillThemes() {
+      themeSelect.innerHTML = Arena.Sound.MUSIC_THEMES.map((theme) =>
+        `<option value="${theme.id}">${t("music." + theme.id, null, theme.name)}</option>`).join("");
+    }
+
     function show() {
       toggleButton.textContent = settings.enabled ? "🔊" : "🔇";
       toggleButton.setAttribute("aria-pressed", String(settings.enabled));
-      toggleButton.setAttribute("aria-label", settings.enabled ? "Couper le son" : "Activer le son");
-      toggleButton.title = settings.enabled ? "Son activé (M)" : "Son coupé (M)";
+      toggleButton.setAttribute("aria-label", t(settings.enabled ? "sound.on.label" : "sound.off.label"));
+      toggleButton.title = t(settings.enabled ? "sound.on.title" : "sound.off.title");
       volume.value = String(settings.volume);
       if (synth) synth.setVolume(settings.volume / 100);
       if (music) music.setVolume((settings.volume / 100) * 0.7);
       musicButton.textContent = "🎵";
       musicButton.setAttribute("aria-pressed", String(settings.music));
-      musicButton.setAttribute("aria-label", settings.music ? "Couper la musique" : "Activer la musique");
-      musicButton.title = settings.music ? "Musique activée (B)" : "Musique coupée (B)";
+      musicButton.setAttribute("aria-label", t(settings.music ? "music.on.label" : "music.off.label"));
+      musicButton.title = t(settings.music ? "music.on.title" : "music.off.title");
       themeSelect.value = Arena.Sound.musicTheme(settings.theme).id;
       if (music) music.setTheme(settings.theme);
       updateMusic();
@@ -207,8 +215,14 @@
       save();
       show();
     });
+    function relabel() {
+      fillThemes();
+      show();
+    }
+
+    fillThemes();
     show();
-    return { unlock, onStep, onFrame, onTab, toggle, toggleMusic };
+    return { unlock, onStep, onFrame, onTab, toggle, toggleMusic, relabel };
   }
 
   /** Design themes swap palette and pictures; the choice is kept like the sound settings. */
@@ -216,7 +230,6 @@
     const select = doc.getElementById("design-theme");
     const credits = doc.getElementById("theme-credits");
     const themes = Arena.Themes.THEMES;
-    select.innerHTML = themes.map((t) => `<option value="${t.id}">${t.name}</option>`).join("");
     let current = "classic";
     try {
       current = root.localStorage.getItem("arena.design") || current;
@@ -224,13 +237,21 @@
       /* storage unavailable: classic theme */
     }
 
+    /** Theme names and credits follow the page language. */
+    function relabel() {
+      select.innerHTML = themes.map((theme) =>
+        `<option value="${theme.id}">${t("design." + theme.id, null, theme.name)}</option>`).join("");
+      select.value = current;
+      const theme = Arena.Themes.themeById(current);
+      credits.textContent = t("credits." + theme.id, null, theme.credits);
+      credits.hidden = !theme.credits;
+    }
+
     function apply(id) {
       const theme = Arena.Themes.themeById(id);
       current = theme.id;
       doc.documentElement.dataset.theme = theme.id;
-      select.value = theme.id;
-      credits.textContent = theme.credits;
-      credits.hidden = !theme.credits;
+      relabel();
       replay.redraw();
       try {
         root.localStorage.setItem("arena.design", theme.id);
@@ -246,7 +267,7 @@
 
     select.addEventListener("change", () => apply(select.value));
     apply(current);
-    return { apply, next };
+    return { apply, next, relabel };
   }
   const design = createDesignController();
 
@@ -258,11 +279,30 @@
 
   const fullscreenButton = doc.getElementById("fullscreen-toggle");
   fullscreenButton.addEventListener("click", toggleFullscreen);
-  doc.addEventListener("fullscreenchange", () => {
+
+  function showFullscreenState() {
     const on = !!doc.fullscreenElement;
     fullscreenButton.setAttribute("aria-pressed", String(on));
-    fullscreenButton.setAttribute("aria-label", on ? "Quitter le plein écran" : "Plein écran");
-    fullscreenButton.title = on ? "Quitter le plein écran (F ou Échap)" : "Plein écran (F)";
+    fullscreenButton.setAttribute("aria-label", t(on ? "fullscreen.exit.label" : "fullscreen.enter.label"));
+    fullscreenButton.title = t(on ? "fullscreen.exit.title" : "fullscreen.enter.title");
+  }
+  doc.addEventListener("fullscreenchange", () => {
+    showFullscreenState();
+    fitToWindow();
+  });
+  showFullscreenState();
+
+  /** Language picker: English by default; a change redraws every text the views wrote themselves. */
+  const langSelect = doc.getElementById("lang-select");
+  langSelect.value = Arena.I18n.lang();
+  langSelect.addEventListener("change", () => Arena.I18n.setLang(langSelect.value));
+  Arena.I18n.onChange((lang) => {
+    langSelect.value = lang;
+    sound.relabel();
+    design.relabel();
+    showFullscreenState();
+    replay.relabel();
+    stats.relabel();
     fitToWindow();
   });
 

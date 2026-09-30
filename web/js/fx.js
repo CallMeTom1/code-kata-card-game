@@ -6,7 +6,6 @@
 (function (root) {
   const Arena = (root.Arena = root.Arena || {});
   const doc = root.document;
-  const CATEGORY_NAMES = { ATTACK: "Attaque", DEFENSE: "Défense", RESOURCE: "Ressource", UTILITY: "Utilitaire" };
   const BASE_MS = 900;
 
   const esc = (text) => String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;",
@@ -19,7 +18,7 @@
       <div class="big-card-art">${card.icon || "🎴"}</div>
       <div class="big-card-name">${esc(card.name)}</div>
       <div class="big-card-text">${esc(card.text || "")}</div>
-      <div class="big-card-cat">${esc(CATEGORY_NAMES[card.category] || card.category || "")}</div>
+      <div class="big-card-cat">${esc(card.category ? Arena.I18n.t("cat." + card.category, null, card.category) : "")}</div>
     </div>`;
   }
 
@@ -93,7 +92,8 @@
     const handlers = {
       banner(fx) {
         if (fast()) return;
-        const node = spawn("fx-banner", { x: layer.clientWidth / 2, y: layer.clientHeight / 2 }, `<span>${esc(fx.text)}</span>`);
+        const text = Arena.I18n.t("banner.turn", { round: fx.round, player: fx.player });
+        const node = spawn("fx-banner", { x: layer.clientWidth / 2, y: layer.clientHeight / 2 }, `<span>${esc(text)}</span>`);
         run(node, [
           { transform: "translate(-150%, -50%) skewX(-12deg)", opacity: 0 },
           { transform: "translate(-50%, -50%) skewX(-12deg)", opacity: 1, offset: 0.25 },
