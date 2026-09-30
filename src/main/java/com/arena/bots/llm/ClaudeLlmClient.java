@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -24,6 +25,9 @@ import java.util.stream.Collectors;
 public final class ClaudeLlmClient implements LlmClient {
 
     private static final long MAX_TOKENS = 16_000L;
+    /** Models that accept the server-side refusal fallback ("default" form); others would answer 400. */
+    private static final Set<String> FALLBACK_MODELS = Set.of("claude-fable-5-1", "claude-opus-5-5", "claude-opus-5",
+            "claude-sonnet-5-5");
 
     private final AnthropicClient client;
     private final String model;
@@ -51,20 +55,29 @@ public final class ClaudeLlmClient implements LlmClient {
 
     /** The request, separated so a test can check it without calling the API. */
     MessageCreateParams params(String system, String prompt, String jsonSchema) {
-        return MessageCreateParams.builder()
+        OutputConfig.Builder output = OutputConfig.builder()
+                .format(JsonOutputFormat.builder().schema(schema(jsonSchema)).build());
+        if (supportsEffort()) {
+            output.effort(OutputConfig.Effort.LOW);
+        }
+        MessageCreateParams.Builder builder = MessageCreateParams.builder()
                 .model(model)
                 .maxTokens(MAX_TOKENS)
                 .systemOfTextBlockParams(List.of(TextBlockParam.builder().text(system)
                         .cacheControl(CacheControlEphemeral.builder().build()).build()))
-                .outputConfig(OutputConfig.builder()
-                        .effort(OutputConfig.Effort.LOW)
-                        .format(JsonOutputFormat.builder().schema(schema(jsonSchema)).build())
-                        .build())
-                // server-side refusal fallback: a refused request is retried on another model
-                .putAdditionalHeader("anthropic-beta", "server-side-fallback-2026-07-01")
-                .putAdditionalBodyProperty("fallbacks", JsonValue.from("default"))
-                .addUserMessage(prompt)
-                .build();
+                .outputConfig(output.build())
+                .addUserMessage(prompt);
+        if (FALLBACK_MODELS.contains(model)) {
+            // server-side refusal fallback: a refused request is retried on another model
+            builder.putAdditionalHeader("anthropic-beta", "server-side-fallback-2026-07-01")
+                    .putAdditionalBodyProperty("fallbacks", JsonValue.from("default"));
+        }
+        return builder.build();
+    }
+
+    /** Haiku 4.5 rejects the effort setting (400); every newer model accepts it. */
+    private boolean supportsEffort() {
+        return !model.startsWith("claude-haiku");
     }
 
     private static JsonOutputFormat.Schema schema(String jsonSchema) {

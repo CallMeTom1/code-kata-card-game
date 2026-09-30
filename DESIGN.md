@@ -307,8 +307,9 @@ Two AIs can duel: `--p1 Llm:auto --p2 Llm:auto`. An `Llm` player is two classes 
   runtime dependency; nothing outside `bots.llm` and `Main` sees it.
 - **Settings**: the key is read from `ANTHROPIC_API_KEY` (environment), then `.env.local`
   (git-ignored), then `.env` (committed, placeholder only). Model: `--llm-model`, then
-  `ARENA_LLM_MODEL`, then `claude-opus-5-5`, at `low` effort to keep turns fast and cheap; a refused
-  request falls back server-side to another model. The rules and card catalog are one cached system prompt.
+  `ARENA_LLM_MODEL` (the committed `.env` sets `claude-haiku-4-5`: cheapest and fastest for tests),
+  then `claude-opus-5-5`. Models that accept it run at `low` effort, and a refused request falls back
+  server-side to another model; Haiku 4.5 rejects both options, so they are only sent to newer models. The rules and card catalog are one cached system prompt.
 - About 25 calls per match (2 decks, 2 mulligans, ~20 turns): run a few matches, not 1000.
   LLM matches are not replayable from the seed.
 

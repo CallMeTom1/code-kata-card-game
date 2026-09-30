@@ -28,4 +28,31 @@ class ClaudeLlmClientTest {
         // Given / When / Then
         assertThat(StopReason.END_TURN.toString()).isEqualTo("end_turn");
     }
+
+    @Test
+    void given_haiku_when_the_request_is_built_then_effort_and_server_fallbacks_are_not_sent() {
+        // Given
+        ClaudeLlmClient client = new ClaudeLlmClient("test-key", "claude-haiku-4-5");
+
+        // When
+        MessageCreateParams params = client.params("rules", "your turn", LlmBot.TURN_SCHEMA);
+
+        // Then
+        assertThat(params.outputConfig().orElseThrow().effort()).isEmpty();
+        assertThat(params._additionalBodyProperties()).doesNotContainKey("fallbacks");
+        assertThat(params._additionalHeaders().names()).doesNotContain("anthropic-beta");
+    }
+
+    @Test
+    void given_opus_5_5_when_the_request_is_built_then_low_effort_and_server_fallbacks_are_sent() {
+        // Given
+        ClaudeLlmClient client = new ClaudeLlmClient("test-key", "claude-opus-5-5");
+
+        // When
+        MessageCreateParams params = client.params("rules", "your turn", LlmBot.TURN_SCHEMA);
+
+        // Then
+        assertThat(params.outputConfig().orElseThrow().effort()).isPresent();
+        assertThat(params._additionalBodyProperties()).containsKey("fallbacks");
+    }
 }
