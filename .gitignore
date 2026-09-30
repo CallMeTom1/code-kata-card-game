@@ -6,3 +6,6 @@ target/
 # match and stats exports generated at the project root
 /*.jsonl
 /stats*.json
+
+# private settings (API keys): never commit
+.env.local
