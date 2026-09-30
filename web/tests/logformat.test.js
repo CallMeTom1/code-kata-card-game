@@ -10,4 +10,12 @@
     eq(lines.length, matchLines.length, "line count");
     lines.forEach((line, i) => eq(line, matchLines[i], "line " + (i + 1)));
   });
+
+  test("given_a_bot_that_thinks_and_speaks_when_formatted_then_think_and_say_lines_match_the_java_console", () => {
+    const format = root.Arena.LogFormat.create();
+    format({ type: "MatchStarted", player1: "Alice", player1Label: "Llm:auto", player2: "Bob", player2Label: "Llm:auto", seed: 1 });
+    eq(format({ type: "BotSpoke", player: "Alice", thought: "Bob has no Taunt.", message: "Your castle will fall!" }),
+      ["[THINK  ][Alice] Bob has no Taunt.", "[SAY    ][Alice] « Your castle will fall! »"]);
+    eq(format({ type: "BotSpoke", player: "Bob", thought: "", message: "Never!" }), ["[SAY    ][Bob  ] « Never! »"]);
+  });
 })(typeof window !== "undefined" ? window : globalThis);

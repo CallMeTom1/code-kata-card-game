@@ -67,8 +67,25 @@
           <div class="cost"><span>${p.heroPowerCost}</span></div>${esc(p.heroPower)}
         </div>
       </div>
-      <div class="side-info right">${manaHtml(p)}</div>
+      <div class="side-info right">${manaHtml(p)}${speechHtml(p, highlight)}</div>
     </div>`;
+  }
+
+  /** The last words of a talking bot (LLM) as a bubble; its private thought in small italics. */
+  function speechHtml(p, highlight) {
+    if (!p.speech) return "";
+    const fresh = highlight && highlight.kind === "speech" && highlight.player === p.name;
+    return `<div class="speech${fresh ? " is-fresh" : ""}">`
+      + (p.speech.message ? `<div class="speech-say">« ${esc(p.speech.message)} »</div>` : "")
+      + (p.speech.thought ? `<div class="speech-think" title="Pensée (non entendue par l'adversaire)">💭 ${esc(p.speech.thought)}</div>` : "")
+      + `</div>`;
+  }
+
+  function dialogueHtml(state) {
+    const [first] = state.order;
+    return state.dialogue.filter((d) => d.message).map((d) =>
+      `<li class="${d.player === first ? "is-p1" : "is-p2"}"><b>${esc(d.player)}</b>`
+      + (d.round ? ` <span class="dialogue-round">T${d.round}</span>` : "") + ` ${esc(d.message)}</li>`).join("");
   }
 
   function handHtml(state, name, highlight) {
@@ -105,6 +122,8 @@
       case "PoisonTicked": return [event.player, `subit <b>${event.amount}</b> de poison`];
       case "FatigueDamage": return [event.player, `n'a plus de cartes : fatigue <b>${event.amount}</b>`];
       case "CardBurned": return [event.player, `main pleine, <b>${esc(event.card)}</b> est détruite`];
+      case "BotSpoke": return event.message ? [event.player, `dit : <b>« ${esc(event.message)} »</b>`]
+        : [event.player, `réfléchit : <i>${esc(event.thought)}</i>`];
       case "IllegalAction": return [event.player, `action refusée : ${esc(event.reason)}`];
       case "ManaGained": return [event.source, `mana ${event.mana}/${event.maxMana}`];
       default: return null;
@@ -121,6 +140,13 @@
       case "ArmorGained": return { target: event.player, text: "+" + event.amount + " 🛡", kind: "armor" };
       default: return null;
     }
+  }
+
+  function logClass(line) {
+    if (/^\[T\d+\] =/.test(line)) return "is-separator";
+    if (/\[SAY {4}\]/.test(line)) return "is-say";
+    if (/\[THINK {2}\]/.test(line)) return "is-think";
+    return "";
   }
 
   function curveBars(deck) {
@@ -232,6 +258,7 @@
       position: doc.getElementById("position"), speed: doc.getElementById("speed"),
       play: doc.querySelector('[data-action="play"]'), fxLayer: doc.getElementById("fx-layer"),
       hpChart: doc.getElementById("hp-chart"), zoom: doc.getElementById("card-zoom"),
+      dialogue: doc.getElementById("dialogue"), dialogueTitle: doc.getElementById("dialogue-title"),
     };
     const fx = Arena.Fx.create({ board: el.board, layer: el.fxLayer, speed: () => Number(el.speed.value || 1) });
     let curve = null;
@@ -248,7 +275,10 @@
       if (!timeline.frames.length) throw new Error("Le fichier ne contient aucun événement.");
       el.scrubber.max = String(timeline.frames.length - 1);
       el.log.innerHTML = timeline.frames.map((f) => f.lines.map((line) =>
-        `<li data-frame="${f.index}" tabindex="-1" class="${/^\[T\d+\] =/.test(line) ? "is-separator" : ""}">${esc(line)}</li>`).join("")).join("");
+        `<li data-frame="${f.index}" tabindex="-1" class="${logClass(line)}">${esc(line)}</li>`).join("")).join("");
+      const talking = timeline.frames.some((f) => f.event.type === "BotSpoke");
+      el.dialogue.hidden = !talking;
+      el.dialogueTitle.hidden = !talking;
       el.empty.hidden = true;
       el.root.hidden = false;
       setupShown = false;
@@ -293,6 +323,7 @@
       el.position.textContent = `Événement ${index + 1} / ${timeline.frames.length}` + (state.round ? ` · manche ${state.round}` : "")
         + (turnNumber ? ` · tour de jeu ${turnNumber}/${timeline.turnStarts.length}` : "");
       updateLog();
+      updateDialogue(state);
       updateOverlay(state);
       updateChartCursor();
       if (options.onFrame) options.onFrame(state);
@@ -331,6 +362,15 @@
         if (top < el.log.scrollTop || top > el.log.scrollTop + el.log.clientHeight - 40) {
           el.log.scrollTop = top - el.log.clientHeight / 3;
         }
+      }
+    }
+
+    function updateDialogue(state) {
+      if (el.dialogue.hidden) return;
+      const html = dialogueHtml(state);
+      if (el.dialogue.innerHTML !== html) {
+        el.dialogue.innerHTML = html;
+        el.dialogue.scrollTop = el.dialogue.scrollHeight;
       }
     }
 

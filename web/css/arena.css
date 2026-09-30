@@ -259,6 +259,23 @@ body.dragging .empty-card { outline: 3px dashed var(--gold-1); outline-offset: 8
 .log-panel h2 { margin: 0; padding: 8px 14px; font-family: var(--font-title); font-size: 18px; border-bottom: 2px solid var(--gold-3); }
 .log { list-style: none; margin: 0; padding: 6px 0; overflow: auto; font-family: var(--font-mono); font-size: 11.5px; }
 .log li { padding: 1px 10px; white-space: pre-wrap; cursor: pointer; border-left: 3px solid transparent; }
+.log li.is-say { color: #1f4e8c; font-weight: 600; }
+.log li.is-think { color: #6b5a45; font-style: italic; }
+.dialogue { list-style: none; margin: 0; padding: 6px 10px; flex: 0 0 auto; height: 230px; overflow: auto; font-size: 15px;
+  border-bottom: 2px solid var(--gold-3); display: flex; flex-direction: column; gap: 6px; }
+.dialogue li { max-width: 88%; padding: 6px 10px; border-radius: 12px; background: #fff8e6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); }
+.dialogue li.is-p1 { align-self: flex-start; border-left: 4px solid var(--p1); }
+.dialogue li.is-p2 { align-self: flex-end; border-right: 4px solid var(--p2); }
+.dialogue-round { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+.speech { position: relative; max-width: 260px; padding: 8px 12px; border-radius: 14px; background: #fffaf0;
+  color: var(--ink); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45); text-shadow: none; font-size: 15px; }
+.speech::before { content: ""; position: absolute; left: -8px; top: 14px; border: 8px solid transparent;
+  border-left: 0; border-right-color: #fffaf0; }
+.speech.is-fresh { animation: speech-pop 0.35s ease-out; box-shadow: 0 0 0 2px var(--gold-2), 0 3px 10px rgba(0, 0, 0, 0.5); }
+.speech-say { font-weight: 600; }
+.speech-think { margin-top: 4px; font-size: 13px; font-style: italic; color: #6b5a45; }
+@keyframes speech-pop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .log li:hover { background: rgba(122, 90, 34, 0.15); }
 .log li.is-past { color: #5a4630; }
 .log li.is-future { color: #a08c6d; }

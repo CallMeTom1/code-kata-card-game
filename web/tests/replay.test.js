@@ -135,4 +135,14 @@
     eq(last.players[last.result.player1].hp, last.result.hp1);
     eq(last.players[last.result.player2].hp, last.result.hp2);
   });
+
+  test("given_two_bots_talking_when_applied_then_each_keeps_its_last_words_and_the_dialogue_keeps_the_order", () => {
+    const state = replay(START.concat([
+      { type: "BotSpoke", player: "Alice", thought: "Burn him.", message: "Feel the heat!" },
+      { type: "BotSpoke", player: "Bob", thought: "", message: "My armor laughs." },
+    ]));
+    eq(state.players.Alice.speech, { thought: "Burn him.", message: "Feel the heat!", round: 0 });
+    eq(state.dialogue.map((d) => d.player + ": " + d.message), ["Alice: Feel the heat!", "Bob: My armor laughs."]);
+    eq(state.highlight.kind, "speech");
+  });
 })(typeof window !== "undefined" ? window : globalThis);

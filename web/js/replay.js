@@ -27,14 +27,14 @@
 
   function initialState() {
     return { phase: "setup", round: 0, current: null, order: [], players: {}, first: null, second: null,
-      seed: null, result: null, highlight: null, nextMinionId: 1 };
+      seed: null, result: null, highlight: null, nextMinionId: 1, dialogue: [] };
   }
 
   function newPlayer(name, label) {
     return { name, label, bot: "", heroClass: "", classChoice: "", deckSource: "", heroPower: "", heroPowerCost: 2,
       heroPowerText: "", deck: [], catalog: {}, mulligan: null, hp: 30, maxHp: 30, armor: 0, mana: 0, maxMana: 0,
       hand: [], deckCount: 0, board: [], frozen: false, frozenThisTurn: false, poisons: [], evasion: false,
-      evasionTurns: 0, parry: 0, attackBuff: 0, fatigue: 0 };
+      evasionTurns: 0, parry: 0, attackBuff: 0, fatigue: 0, speech: null };
   }
 
   function card(player, name) {
@@ -132,6 +132,13 @@
         p(event.player).mana = event.manaLeft;
         s.highlight = { kind: "power", player: event.player, card: event.power };
         break;
+      case "BotSpoke": {
+        const speech = { thought: event.thought, message: event.message, round: s.round };
+        p(event.player).speech = speech;
+        s.dialogue.push({ player: event.player, ...speech });
+        s.highlight = { kind: "speech", player: event.player };
+        break;
+      }
       case "IllegalAction":
         s.highlight = { kind: "illegal", player: event.player, reason: event.reason };
         break;

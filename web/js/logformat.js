@@ -95,6 +95,9 @@
         case "PoisonTicked": return [act("POISON", e.amount + " dmg [HP " + e.hpBefore + " → " + e.hpAfter + "]")];
         case "CardPlayed": return [act("PLAY", e.card + " (" + e.cost + ") → " + mana(e.player, e.manaLeft))];
         case "HeroPowerUsed": return [act("POWER", e.power + " (" + e.cost + ") → " + mana(e.player, e.manaLeft))];
+        case "BotSpoke":
+          return [e.thought ? log(e.player, "THINK", e.thought) : null,
+            e.message ? log(e.player, "SAY", "« " + e.message + " »") : null].filter((line) => line !== null);
         case "IllegalAction": return [act("ILLEGAL", e.reason + " → turn ends")];
         case "DamageDealt":
           return [act("DAMAGE", e.source + " → " + e.target + " : " + e.amount + " dmg [ABSORBED " + e.absorbed
