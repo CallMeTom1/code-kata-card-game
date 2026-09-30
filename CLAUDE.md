@@ -3,7 +3,8 @@
 ## Rules for this project
 - This is a 100% vibecoding exercise — write nothing by hand, express every
   change as a prompt. Always show me the diff before I approve it.
-- Plain Java 21, Maven, no frameworks (JUnit 5 + AssertJ for tests only).
+- Plain Java 21, Maven, no frameworks (JUnit 5 + AssertJ for tests only; the
+  `anthropic-java` SDK only for the Llm bots, team decision).
   No UI, no web layer, no database.
 - Strict TDD: write one failing test, run it and show it fails (red), write
   the minimal code to pass (green), then refactor. No production code
@@ -22,7 +23,7 @@
 
 ## Architecture
 - Root package `com.arena`; entry point `com.arena.Main`
-  (`--matches N --p1 <Bot>:<Class|auto> --p2 <Bot>:<Class|auto> [--seed S] [--log] [--preset-decks] [--names A,B]`)
+  (`--matches N --p1 <Bot>:<Class|auto> --p2 <Bot>:<Class|auto> [--seed S] [--log] [--preset-decks] [--names A,B] [--llm-model ID]`)
 - Follow Hearthstone rules unless DESIGN.md says otherwise: 30 HP, 20-card
   class decks, a hero power per class, minions on a board (max 7, Taunt).
   Categories: Attack, Defense, Resource, Utility.

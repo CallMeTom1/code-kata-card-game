@@ -278,14 +278,31 @@ less, silence at the end). Animations use the Web Animations API:
 no asset files, no library. Both only run when the replay moves one event forward, get
 shorter at high speed, and animations are skipped when the OS asks for reduced motion.
 
-## Later: LLM bots
-Once the required deliverables are done, an `LlmBot` (another `Bot`
-implementation, behind an `LlmClient` interface faked in tests) could let
-real LLMs duel. Constraints already agreed: a few matches only (API cost),
-one call per turn, a structured JSON answer with a `reason` shown as a
-`[THINK  ]` log line, fallback to a classic bot on illegal moves or API
-errors, API key only in the `ANTHROPIC_API_KEY` environment variable.
-LLM matches are not replayable from the seed.
+## LLM bots (Claude API)
+Two AIs can duel: `--p1 Llm:auto --p2 Llm:auto`. An `Llm` player is two classes behind the
+`LlmClient` interface (faked in tests, `ClaudeLlmClient` in `Main`):
+- **`LlmDeckStrategy`** asks the model for its class and 20 cards. `DeckValidator` stays the
+  judge: an illegal deck gets one more try with the errors, then the Aggressive deck is used.
+- **`LlmBot`** makes **one call per turn**: the model returns an ordered plan (`PLAY <card>`,
+  `HERO_POWER`) that the bot plays step by step (the engine still asks one action at a time).
+  A step that is not legal any more, or an API error, hands the rest of the turn to the Aggressive
+  bot, so a model mistake never stalls a match. The mulligan is also asked to the model.
+- Answers are **structured outputs** (a JSON schema per question), so they always parse. Each
+  answer has a private `thought` and a `message` said aloud to the opponent (in French).
+- **Talking**: bots stay free of IO; `Bot.takeSpeech()` (silent by default) hands the words to the
+  engine, which publishes a `BotSpoke` event (`[THINK  ]` and `[SAY    ]` log lines, speech bubbles and
+  a Dialogue panel in the web replay). The opponent reads the last message in
+  `GameView.opponentLastWords()`, so the two AIs answer each other.
+- **Richer `GameView`** (team decision): both class names, own max mana and deck size, and the
+  minions of both boards (`MinionView`), because a model plays blind without them.
+- **Dependency** (team decision): the official `com.anthropic:anthropic-java` SDK is the only
+  runtime dependency; nothing outside `bots.llm` and `Main` sees it.
+- **Settings**: the key is read from `ANTHROPIC_API_KEY` (environment), then `.env.local`
+  (git-ignored), then `.env` (committed, placeholder only). Model: `--llm-model`, then
+  `ARENA_LLM_MODEL`, then `claude-opus-5-5`, at `low` effort to keep turns fast and cheap; a refused
+  request falls back server-side to another model. The rules and card catalog are one cached system prompt.
+- About 25 calls per match (2 decks, 2 mulligans, ~20 turns): run a few matches, not 1000.
+  LLM matches are not replayable from the seed.
 
 ## Deliberate differences from Hearthstone
 We follow Hearthstone wherever the brief allows. The exceptions:

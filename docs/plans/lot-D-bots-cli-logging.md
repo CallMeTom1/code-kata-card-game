@@ -74,7 +74,7 @@ les bots reçoivent un faux `GameView`.
 ## Jalon M3 — livrables et ouverture
 - [x] Sauvegarder un log d'exemple dans `docs/sample-match.log` (livrable n°2 de l'énoncé).
 - [x] Vérifier le skill `.claude/skills/run-simulation` et l'utiliser pour l'équilibrage.
-- [ ] (Plus tard) `LlmBot` : voir la section « Later: LLM bots » de `DESIGN.md`.
+- [x] `LlmBot` + `LlmDeckStrategy` (Claude API) : voir la section « LLM bots » de `DESIGN.md`.
 - [x] (Bonus, ouverture front) `JsonEventExporter` : un listener qui écrit les
       événements d'un match en JSON Lines (`--json fichier`), sans bibliothèque
       externe. Le moteur ne doit pas changer d'une ligne.

@@ -139,6 +139,9 @@ Un bot = une stratégie de deck (classe + 20 cartes) et une stratégie de jeu. A
 | Aggressive | Attaques pas chères et serviteurs d'attaque d'abord, puis Ressources, aucun soin | rend les cartes de coût 4 ou plus | Ressources d'abord, puis l'Attaque la plus forte payable, en boucle ; pouvoir avec le mana restant |
 | Defensive | Défense, soins et Taunt d'abord, au moins 6 Attaques | rend les cartes de coût 5 ou plus | comme Aggressive au-dessus de 15 PV ; à 15 PV ou moins, soins, Taunt et Défense d'abord |
 | Random | deck légal tiré au hasard | rend un sous-ensemble au hasard | cartes payables au hasard (sert de référence) |
+| Llm | Claude choisit sa classe et ses 20 cartes (deck vérifié, repli sur Aggressive) | choisi par Claude | un appel par tour qui renvoie un plan ; repli sur Aggressive en cas de coup illégal ; il parle à l'adversaire |
+
+Le bot Llm a besoin d'une clé dans `.env.local` (`ANTHROPIC_API_KEY=...`). Ses pensées et ses répliques apparaissent dans le log (`[THINK]`, `[SAY]`) et dans le replay web (bulles et panneau Dialogue).
 
 Sur 1000 parties (seed 42), Aggressive:Mage contre Defensive:Tank donne 46,7 % de victoires à Aggressive et dure 9,6 tours en moyenne. Les deux vrais bots battent Random environ 9 fois sur 10.
 

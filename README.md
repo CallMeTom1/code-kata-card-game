@@ -16,13 +16,31 @@ mvn -q compile exec:java -Dexec.args="--help"
 | Option | Meaning |
 |---|---|
 | `--matches N` | number of matches (default 100) |
-| `--p1 / --p2 <Bot>:<Class\|auto>` | bots `Aggressive`, `Defensive`, `Random`; classes `Mage`, `Tank`, `Swordsman`, `Assassin`, `Cleric` or `auto` |
+| `--p1 / --p2 <Bot>:<Class\|auto>` | bots `Aggressive`, `Defensive`, `Random`, `Llm` (Claude API); classes `Mage`, `Tank`, `Swordsman`, `Assassin`, `Cleric` or `auto` |
 | `--seed S` | match *i* uses seed S + *i*; the same arguments always give the same output |
 | `--log` | print the first match turn by turn (bracket-tagged, easy to `grep`) |
 | `--preset-decks` | use the preset decks of `DESIGN.md` instead of bot-built decks |
 | `--names A,B` | player names (default `P1,P2`) |
 | `--json FILE` | also write the first match as JSON lines, to replay it in `web/index.html` |
+| `--llm-model ID` | model of the `Llm` bots (default `ARENA_LLM_MODEL`, else `claude-opus-5-5`) |
 | `--stats-json FILE` | also write the stats of every match as JSON, for the Statistics tab of `web/index.html` |
+
+## Two AIs duelling (Claude API)
+
+The `Llm` bot lets Claude choose its class, its deck, its mulligan and every turn, and talk to its opponent.
+
+1. Put your key in `.env.local` at the project root (git-ignored; `.env` only holds the placeholder):
+   `ANTHROPIC_API_KEY=sk-ant-...`
+2. Run a match and export it for the web replay:
+
+   ```bash
+   mvn -q compile exec:java -Dexec.args="--matches 1 --p1 Llm:auto --p2 Llm:auto --names Claude-A,Claude-B --log --json duel.jsonl"
+   ```
+
+3. Drop `duel.jsonl` onto `web/index.html`: speech bubbles, a **Dialogue** panel and the `[THINK]`/`[SAY]` lines
+   show what each AI thinks and says. An AI can also face a classic bot (`--p2 Defensive:Tank`).
+
+About 25 API calls per match: keep `--matches` small. Details and fallbacks: `DESIGN.md` → "LLM bots".
 
 ## Web replay (bonus, outside the brief)
 
@@ -75,6 +93,7 @@ Plain HTML/CSS/JavaScript in [`web/`](web/): no framework, no build, no server, 
 | `engine.events` | every state change is a `GameEvent`; the engine never prints |
 | `engine.decks` | deck rules and deck-building strategy contract |
 | `bots` | Aggressive, Defensive, Random play and deck strategies |
+| `bots.llm` | `LlmBot`, `LlmDeckStrategy`, `LlmClient` and its Claude implementation |
 | `log`, `json` | console renderer and JSON exporter (both event listeners), minimal JSON writer |
 | `cli`, `stats` | command line, match runner, stats and stats JSON export |
 | `web/` | HTML/CSS/JS replay and statistics (reads the JSON exports) |
