@@ -1,0 +1,55 @@
+@keyframes target-pulse {
+    0%, 100% { box-shadow: 0 0 0 2px #ff5a4a, 0 0 8px #ff5a4a; }
+    50%      { box-shadow: 0 0 0 4px #ff5a4a, 0 0 22px #ff5a4a; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+
+@keyframes damage-tint {
+    0%   { filter: none; }
+    30%  { filter: brightness(1.6) sepia(1) hue-rotate(-40deg) saturate(4); }
+    100% { filter: none; }
+}
+
+@keyframes heal-glow {
+    0%   { filter: none; }
+    40%  { filter: brightness(1.4) drop-shadow(0 0 12px #7df08f); }
+    100% { filter: none; }
+}
+
+@keyframes float-up {
+    from { opacity: 1; transform: translate(-50%, 0) scale(1.2); }
+    to   { opacity: 0; transform: translate(-50%, -40px) scale(1); }
+}
+
+@keyframes lunge {
+    0%, 100% { transform: translate(0, 0); }
+    45%      { transform: translate(var(--dx), var(--dy)) scale(1.1); }
+}
+
+.fx-damage { animation: shake .4s ease, damage-tint .5s ease; }
+.fx-heal   { animation: heal-glow .6s ease; }
+.fx-lunge  { animation: lunge .45s ease-in-out; z-index: 10; }
+
+.fx-number {
+    position: absolute;
+    left: 50%; top: 30%;
+    z-index: 20;
+    font-size: 1.6rem;
+    font-weight: 900;
+    text-shadow: 0 2px 4px #000;
+    pointer-events: none;
+    animation: float-up .9s ease-out forwards;
+}
+.fx-number--damage { color: #ff5a4a; }
+.fx-number--heal { color: #7df08f; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition: none !important; }
+}

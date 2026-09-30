@@ -1,0 +1,14 @@
+target/
+out/
+*.class
+*.log
+
+# IDE
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+.background_output_*.txt

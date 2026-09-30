@@ -1,0 +1,220 @@
+/* Category accent shared by cards, minions and Hero Powers */
+.cat--attack   { --accent: var(--cat-attack); }
+.cat--defense  { --accent: var(--cat-defense); }
+.cat--utility  { --accent: var(--cat-utility); }
+.cat--resource { --accent: var(--cat-resource); }
+
+.cost {
+    position: absolute;
+    top: -8px; left: -8px;
+    z-index: 2;
+    width: 30px; height: 30px;
+    display: grid; place-items: center;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #9bd4ff, var(--mana) 60%, #134d8a);
+    border: 2px solid #dff1ff;
+    font-weight: 800;
+    text-shadow: 0 1px 2px #000;
+}
+
+.stat {
+    position: absolute;
+    bottom: -8px;
+    z-index: 2;
+    width: 28px; height: 28px;
+    display: grid; place-items: center;
+    font-weight: 800;
+    text-shadow: 0 1px 2px #000;
+    border: 2px solid #fff4d0;
+}
+.stat--attack { left: -8px; background: var(--attack); border-radius: 6px; }
+.stat--hp { right: -8px; background: var(--hp); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
+.stat--hp.is-damaged { color: #ffd0cc; box-shadow: 0 0 8px var(--hp); }
+
+/* Artwork */
+.art {
+    position: relative;
+    display: grid; place-items: center;
+    overflow: hidden;
+    background: radial-gradient(circle, rgba(255, 255, 255, .35), transparent 70%), var(--accent, #555);
+}
+.art img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .5)); }
+.art-fallback { font-size: 2rem; font-weight: 800; opacity: .8; }
+.art--item { font-size: 2.2rem; }
+
+/* Hand cards */
+.card {
+    position: relative;
+    width: 128px;
+    height: 170px;
+    display: flex; flex-direction: column;
+    padding: 6px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+    outline: none;
+}
+.card--pokemon {
+    background: linear-gradient(160deg, #fdf3c4, #e6c96d);
+    border: 3px solid #b88a2a;
+    color: #2b2210;
+}
+.card--item {
+    background: linear-gradient(160deg, #e9eef5, #aab7c9);
+    border: 3px solid #56647a;
+    border-radius: 4px 18px 4px 18px;
+    color: #182030;
+}
+.card .art { height: 60px; flex-shrink: 0; border-radius: 6px; }
+.card--pokemon .art { border: 2px solid var(--accent); }
+.card--item .art { border-radius: 50%; width: 60px; margin: 0 auto; border: 3px solid var(--accent); }
+.card-name { margin-top: 4px; font-weight: 800; font-size: .85rem; text-align: center; }
+.card-category {
+    align-self: center;
+    margin: 2px 0;
+    padding: 0 6px;
+    border-radius: 6px;
+    font-size: .6rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    white-space: nowrap;
+    color: #fff;
+    background: var(--accent);
+}
+.card-text {
+    font-size: .62rem; line-height: 1.2; text-align: center;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.card:hover, .card:focus-visible { transform: translateY(-18px) scale(1.12); z-index: 5; box-shadow: 0 12px 24px rgba(0, 0, 0, .5); }
+.card.is-playable { box-shadow: 0 0 0 2px #7df08f, 0 0 14px #7df08f; }
+.card:not(.is-playable) { filter: saturate(.6) brightness(.85); }
+.card.is-selected { transform: translateY(-26px) scale(1.12); box-shadow: 0 0 0 3px var(--gold), 0 0 22px var(--gold); }
+
+/* Minions on the Board */
+.minion {
+    position: relative;
+    width: 110px;
+    height: 130px;
+    border-radius: 50% / 40%;
+    border: 4px solid var(--accent);
+    background: #222;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+    outline: none;
+}
+.minion .art { position: absolute; inset: 0; border-radius: inherit; }
+.minion-name {
+    position: absolute; left: 50%; bottom: 14px;
+    transform: translateX(-50%);
+    padding: 0 6px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, .6);
+    font-size: .7rem; font-weight: 700;
+    white-space: nowrap;
+}
+.minion:hover { transform: scale(1.06); }
+.minion.can-attack { box-shadow: 0 0 0 2px #7df08f, 0 0 16px #7df08f; }
+.minion.is-sleeping .art { filter: grayscale(.4) brightness(.8); }
+.minion.is-sleeping::after { content: "z z"; position: absolute; top: 4px; right: 10px; font-weight: 800; opacity: .8; }
+.minion.is-selected { transform: translateY(-8px) scale(1.08); box-shadow: 0 0 0 3px var(--gold), 0 0 22px var(--gold); }
+.is-targetable { animation: target-pulse 1s ease-in-out infinite; cursor: crosshair; }
+
+/* Heroes */
+.hero {
+    position: relative;
+    width: 130px; height: 150px;
+    clip-path: polygon(50% 0, 100% 18%, 100% 82%, 50% 100%, 0 82%, 0 18%);
+    background: linear-gradient(160deg, var(--gold), #7a5a14);
+    padding: 5px;
+    outline: none;
+}
+.hero .art {
+    width: 100%; height: 100%;
+    clip-path: inherit;
+    background: radial-gradient(circle, #ffe9a8, #3b2c0c 80%);
+}
+.hero-name {
+    position: absolute; left: 50%; top: 10px;
+    transform: translateX(-50%);
+    font-weight: 800; font-size: .8rem;
+    text-shadow: 0 1px 3px #000;
+}
+.hero-hp {
+    position: absolute; right: 16px; bottom: 16px;
+    width: 34px; height: 34px;
+    display: grid; place-items: center;
+    background: var(--hp);
+    border: 2px solid #fff4d0;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    font-weight: 800; font-size: 1.05rem;
+    text-shadow: 0 1px 2px #000;
+}
+.hero-hp.is-damaged { color: #ffd0cc; }
+.effects { position: absolute; left: 12px; bottom: 16px; display: flex; flex-direction: column; gap: 2px; }
+.effect-badge { padding: 0 4px; border-radius: 6px; background: rgba(0, 0, 0, .7); font-size: .7rem; font-weight: 700; }
+
+/* Hero Power */
+.hero-power {
+    position: relative;
+    width: 150px;
+    padding: 10px 10px 8px 26px;
+    border-radius: 14px;
+    border: 3px solid var(--accent);
+    background: linear-gradient(160deg, #2a3350, #151b2e);
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+}
+.hero-power:disabled { cursor: default; }
+.hero-power .cost { top: 50%; transform: translateY(-50%); left: -12px; }
+.power-name { display: block; font-weight: 800; font-size: .85rem; }
+.power-text { display: block; font-size: .65rem; opacity: .85; }
+.hero-power.is-playable { box-shadow: 0 0 14px #7df08f; }
+.hero-power.is-used { filter: grayscale(1) brightness(.6); }
+
+@media (max-width: 800px) {
+    .card { width: 100px; height: 160px; }
+    .card .art { height: 52px; }
+    .card--item .art { width: 52px; }
+    .minion, .slot--empty { width: 86px; height: 104px; }
+    .hero { width: 100px; height: 118px; }
+    .hero-power { width: 120px; }
+}
+
+
+/* --- Polish pass ------------------------------------------------------------------------ */
+
+/* Card text readability */
+.card-name { letter-spacing: .01em; }
+.card-text { font-size: .66rem; line-height: 1.25; color: #1d2433; font-weight: 500; }
+
+/* Playable / unplayable / selected */
+.card { transition: transform .15s ease, box-shadow .15s ease, filter .15s ease; }
+.card.is-playable { transform: translateY(-6px); box-shadow: 0 0 0 2px #7df08f, 0 0 18px rgba(125, 240, 143, .8); cursor: pointer; }
+.card.is-unplayable { filter: grayscale(.7) brightness(.7); cursor: not-allowed; }
+.card.is-unplayable:hover { transform: translateY(-8px) scale(1.06); }
+.card.is-selected, .card.is-selected:hover {
+    transform: translateY(-30px) scale(1.14);
+    box-shadow: 0 0 0 3px var(--gold), 0 0 28px var(--gold), 0 16px 26px rgba(0, 0, 0, .55);
+    z-index: 6;
+}
+.minion.can-attack { box-shadow: 0 0 0 2px #7df08f, 0 0 14px rgba(125, 240, 143, .7); cursor: pointer; }
+.is-targetable { outline: 3px solid #ff5a4f; outline-offset: 3px; }
+
+/* Heroes: stronger HP, active glow */
+.hero-hp {
+    width: 40px; height: 40px; font-size: 1.15rem;
+    border: 2px solid #fff3; box-shadow: 0 2px 6px rgba(0, 0, 0, .6);
+}
+.hero.is-active, .is-active > .hero { filter: drop-shadow(0 0 12px var(--gold)); }
+
+/* Hero Power ready / used */
+.power-state {
+    display: block; margin-top: 2px;
+    font-size: .6rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+}
+.hero-power.is-playable { box-shadow: 0 0 0 2px #7df08f, 0 0 16px #7df08f; cursor: pointer; }
+.hero-power.is-playable .power-state { color: #7df08f; }
+.hero-power.is-used .power-state { color: #ddd; }

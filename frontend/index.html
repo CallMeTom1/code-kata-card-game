@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pokémon Skirmish Arena</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+<section id="menu" class="screen menu" aria-label="Main menu">
+    <h1 class="menu-title">Pokémon Skirmish Arena</h1>
+    <div class="menu-panels">
+        <form id="play-form" class="panel">
+            <h2>Play</h2>
+            <p class="panel-hint">You against the AI.</p>
+            <label>Your Hero <select name="humanHero" data-options="hero" data-default="zapdos"></select></label>
+            <label>Your Deck <select name="humanDeck" data-options="deck" data-default="AGGRO"></select></label>
+            <label>AI Hero <select name="aiHero" data-options="hero" data-default="articuno"></select></label>
+            <label>AI Deck <select name="aiDeck" data-options="deck" data-default="CONTROL"></select></label>
+            <label>AI Bot <select name="aiBot" data-options="bot" data-default="Defensive"></select></label>
+            <label>Seed <input name="seed" inputmode="numeric" placeholder="random"></label>
+            <button type="submit" class="primary">Start Match</button>
+        </form>
+        <div class="panel">
+            <h2>Simulation</h2>
+            <p class="panel-hint">Bot against Bot, many matches, aggregate statistics.</p>
+            <button type="button" id="open-simulation" class="primary">Open Simulation</button>
+        </div>
+    </div>
+    <p id="menu-error" class="error" role="alert"></p>
+</section>
+
+<section id="simulation" class="screen simulation" aria-label="Simulation" hidden>
+    <button type="button" class="back" data-back>← Menu</button>
+    <form id="simulation-form" class="panel sim-form">
+        <h2>Simulation</h2>
+        <fieldset>
+            <legend>Player 1</legend>
+            <label>Hero <select name="p1Hero" data-options="hero" data-default="zapdos"></select></label>
+            <label>Deck <select name="p1Deck" data-options="deck" data-default="AGGRO"></select></label>
+            <label>Bot <select name="p1Bot" data-options="bot" data-default="Aggressive"></select></label>
+        </fieldset>
+        <fieldset>
+            <legend>Player 2</legend>
+            <label>Hero <select name="p2Hero" data-options="hero" data-default="articuno"></select></label>
+            <label>Deck <select name="p2Deck" data-options="deck" data-default="CONTROL"></select></label>
+            <label>Bot <select name="p2Bot" data-options="bot" data-default="Defensive"></select></label>
+        </fieldset>
+        <label>Matches <input name="matches" type="number" min="1" max="10000" value="100" required></label>
+        <label>Seed <input name="seed" inputmode="numeric" placeholder="random"></label>
+        <button type="submit" class="primary">Start Simulation</button>
+    </form>
+    <div id="simulation-results" class="panel sim-results"></div>
+    <div id="replay" class="panel replay" hidden></div>
+</section>
+
+<main id="battle" class="arena" hidden>
+    <section class="side side--opponent" aria-label="Opponent">
+        <div class="hero-row">
+            <div id="opponent-hero"></div>
+            <div class="hero-info">
+                <div id="opponent-mana" class="mana"></div>
+                <div id="opponent-hand" class="opponent-hand" aria-label="Opponent hand"></div>
+                <div id="opponent-piles" class="piles"></div>
+            </div>
+            <div id="opponent-power"></div>
+        </div>
+        <div id="opponent-board" class="board" aria-label="Opponent Board"></div>
+    </section>
+
+    <section class="battlefield-divider" aria-label="Turn">
+        <button type="button" class="back" data-back>← Menu</button>
+        <div id="turn-indicator" class="turn-indicator"></div>
+        <button id="end-turn" class="end-turn" type="button">End Turn</button>
+    </section>
+
+    <section class="side side--player" aria-label="Player">
+        <div id="player-board" class="board" aria-label="Your Board"></div>
+        <div class="hero-row">
+            <div id="player-hero"></div>
+            <div class="hero-info">
+                <div id="player-mana" class="mana"></div>
+                <div id="player-piles" class="piles"></div>
+            </div>
+            <div id="player-power"></div>
+        </div>
+        <div id="player-hand" class="hand" aria-label="Your hand"></div>
+    </section>
+
+    <aside id="action-log" class="action-log" aria-live="polite"></aside>
+</main>
+
+<div id="picker" class="picker" hidden></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

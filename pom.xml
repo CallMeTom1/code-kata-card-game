@@ -1,19 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.arena</groupId>
-  <artifactId>skirmish-arena</artifactId>
+  <groupId>com.pokemonarena</groupId>
+  <artifactId>pokemon-skirmish-arena</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
+
+  <name>Pokemon Skirmish Arena</name>
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <junit.version>5.10.0</junit.version>
-    <assertj.version>3.24.2</assertj.version>
-    <exec.mainClass>com.arena.Main</exec.mainClass>
+    <junit.version>5.10.2</junit.version>
+    <!-- default for exec:java; override with -Dexec.mainClass=com.pokemonarena.server.GameServer -->
+    <exec.mainClass>com.pokemonarena.cli.Main</exec.mainClass>
   </properties>
 
   <dependencies>
@@ -23,12 +26,6 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>${assertj.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
@@ -36,15 +33,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.4</version>
+        <version>3.2.5</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.2.0</version>
-        <configuration>
-          <mainClass>com.arena.Main</mainClass>
-        </configuration>
       </plugin>
     </plugins>
   </build>
