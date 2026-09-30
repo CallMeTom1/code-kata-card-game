@@ -5,7 +5,8 @@
   change as a prompt. Always show me the diff before I approve it.
 - Plain Java 21, Maven, no frameworks (JUnit 5 + AssertJ for tests only; the
   `anthropic-java` SDK only for the Llm bots, team decision).
-  No UI, no web layer, no database.
+  No database. The only web layer is the small local live server (`--serve`,
+  JDK HttpServer, `com.arena.server`): it serves `web/` and streams events; no framework.
 - Strict TDD: write one failing test, run it and show it fails (red), write
   the minimal code to pass (green), then refactor. No production code
   without a failing test first.
@@ -23,7 +24,7 @@
 
 ## Architecture
 - Root package `com.arena`; entry point `com.arena.Main`
-  (`--matches N --p1 <Bot>:<Class|auto> --p2 <Bot>:<Class|auto> [--seed S] [--log] [--preset-decks] [--names A,B] [--llm-model ID]`)
+  (`--matches N --p1 <Bot>:<Class|auto> --p2 <Bot>:<Class|auto> [--seed S] [--log] [--preset-decks] [--names A,B] [--llm-model ID] [--serve [PORT]]`)
 - Follow Hearthstone rules unless DESIGN.md says otherwise: 30 HP, 20-card
   class decks, a hero power per class, minions on a board (max 7, Taunt).
   Categories: Attack, Defense, Resource, Utility.

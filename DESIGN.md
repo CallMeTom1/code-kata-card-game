@@ -312,6 +312,19 @@ Two AIs can duel: `--p1 Llm:auto --p2 Llm:auto`. An `Llm` player is two classes 
 - About 25 calls per match (2 decks, 2 mulligans, ~20 turns): run a few matches, not 1000.
   LLM matches are not replayable from the seed.
 
+## Live server (`--serve`)
+Starting a match from the page and watching it while it is played (LLM turns take seconds)
+needs a server; the brief asks for no UI, so it is a small optional extra, decided with the team:
+- `ArenaServer` uses the JDK `com.sun.net.httpserver.HttpServer` (no framework, no new dependency)
+  and listens on `localhost` only. It serves `web/`, `GET /api/options` (bots, classes, whether an
+  API key is set), `POST /api/matches` (`{"p1":"Llm:auto","p2":"Defensive:Tank","names":[..]}`) and
+  `GET /api/matches/{id}/events`, a Server-Sent Events stream.
+- The stream is just another `GameEventListener` (`LiveMatch`): it keeps every event as the same JSON
+  line as `--json`, so a browser connecting late still gets the whole match. The engine did not change.
+- The page shows **Nouvelle partie** only when served over http; opened as a file it stays the replay
+  viewer. The replay extends its timeline event by event and keeps playing at the chosen speed,
+  waiting at the end while the match is live.
+
 ## Deliberate differences from Hearthstone
 We follow Hearthstone wherever the brief allows. The exceptions:
 - **20-card decks** (not 30), **armor that expires after N turns** (not

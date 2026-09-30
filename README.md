@@ -22,8 +22,19 @@ mvn -q compile exec:java -Dexec.args="--help"
 | `--preset-decks` | use the preset decks of `DESIGN.md` instead of bot-built decks |
 | `--names A,B` | player names (default `P1,P2`) |
 | `--json FILE` | also write the first match as JSON lines, to replay it in `web/index.html` |
+| `--serve [PORT]` | start the local web server (default 8080) to launch matches from the page and watch them live |
 | `--llm-model ID` | model of the `Llm` bots (default `ARENA_LLM_MODEL`, else `claude-opus-5-5`) |
 | `--stats-json FILE` | also write the stats of every match as JSON, for the Statistics tab of `web/index.html` |
+
+## Play from the web page, live
+
+```bash
+mvn -q compile exec:java -Dexec.args="--serve"
+```
+
+Open <http://localhost:8080>, click **⚔ Nouvelle partie**, choose both bots and classes, then **Lancer le combat**:
+the board follows the match while it is played (for the `Llm` bot, each turn waits for Claude). `--serve 9000`
+picks another port; Ctrl+C stops the server. Opening `web/index.html` as a file still works as a replay viewer.
 
 ## Two AIs duelling (Claude API)
 
@@ -100,6 +111,7 @@ Plain HTML/CSS/JavaScript in [`web/`](web/): no framework, no build, no server, 
 | `bots` | Aggressive, Defensive, Random play and deck strategies |
 | `bots.llm` | `LlmBot`, `LlmDeckStrategy`, `LlmClient` and its Claude implementation |
 | `log`, `json` | console renderer and JSON exporter (both event listeners), minimal JSON writer |
+| `server` | local live server (`--serve`): serves `web/`, starts matches, streams their events |
 | `cli`, `stats` | command line, match runner, stats and stats JSON export |
 | `web/` | HTML/CSS/JS replay and statistics (reads the JSON exports) |
 

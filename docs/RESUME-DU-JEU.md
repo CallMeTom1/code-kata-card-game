@@ -153,6 +153,7 @@ Une seule commande simule les parties, puis exporte la première partie et les s
 mvn -q compile exec:java -Dexec.args="--matches 1000 --p1 Aggressive:Mage --p2 Defensive:Tank --seed 42 --names Alice,Bob --json partie.jsonl --stats-json stats.json"
 ```
 
+- **En direct depuis l'interface** : `mvn -q compile exec:java -Dexec.args="--serve"`, ouvrir http://localhost:8080, puis « ⚔ Nouvelle partie ».
 - `--log` affiche la première partie tour par tour dans la console.
 - Ouvrir `web/index.html` (double-clic), puis glisser-déposer `partie.jsonl` (onglet Replay) et/ou `stats.json` (onglet Statistiques).
 - Avec la même `--seed`, on retrouve exactement la même partie.
