@@ -12,7 +12,7 @@ attendant, commencez par le plateau (M1 et M2), puis les classes (M3).
 ### C.1 Minion et plateau (`engine.board`)
 - [ ] `Minion` : nom, attaque, PV, Taunt, `summonedOnTurn`, capacité passive optionnelle.
 - [ ] `given_empty_board_when_minion_summoned_then_board_has_1_minion` (+ `MinionSummoned`)
-- [ ] `given_board_of_5_when_minion_summoned_then_summon_fizzles` (+ `SummonFizzled`)
+- [ ] `given_board_of_7_when_minion_summoned_then_summon_fizzles` (+ `SummonFizzled`)
 - [ ] `given_minion_at_1_hp_when_it_takes_2_damage_then_it_dies_and_leaves_board` (+ `MinionDied`)
 - [ ] Effet `Summon(minionTemplate, count)` dans `engine.effects` (fichier propre à C).
 - [ ] Ajouter `myBoard()` / `opponentBoard()` à `GameView` → **commit de contrat séparé, validé par le groupe**.
@@ -26,7 +26,7 @@ attendant, commencez par le plateau (M1 et M2), puis les classes (M3).
 ## Jalon M2 — Taunt et effets de zone
 
 ### C.3 Taunt (`TauntDamageResolver`, un décorateur de `DamageResolver` : Open/Closed)
-- [ ] `given_enemy_taunt_when_attack_card_played_then_taunt_is_hit_instead_of_champion`
+- [ ] `given_enemy_taunt_when_attack_card_played_then_champion_is_hit_anyway` (comme dans Hearthstone, Taunt ne bloque que les attaques de minions)
 - [ ] `given_enemy_taunt_when_minion_attacks_then_both_minions_trade_damage`
 - [ ] `given_no_taunt_when_attack_then_champion_is_hit`
 - [ ] Les dégâts sur minions ne comptent **pas** dans les dégâts infligés (statistiques).

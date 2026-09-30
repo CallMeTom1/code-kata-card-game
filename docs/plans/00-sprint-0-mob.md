@@ -63,7 +63,8 @@ sur `main` (voir la décision C1 de la phase 0).
       `myHp()`, `myArmor()`, `myMana()`, `myHand()`, `heroPowerAvailable()`,
       `opponentHp()`, `opponentArmor()`, `opponentHandSize()`.
       Le lot C ajoutera `myBoard()` / `opponentBoard()`.
-- [ ] `engine.match.Bot` : `String name()` + `Action nextAction(GameView view)`.
+- [ ] `engine.match.Bot` : `String name()` + `Action nextAction(GameView view)`
+      + `List<Integer> mulligan(List<Card> openingHand)` (indices des cartes à remettre).
       Le moteur appelle `nextAction` en boucle jusqu'à `EndTurn` et refuse
       une action illégale (dans ce cas, il termine le tour).
 - [ ] Faux `ScriptedBot` (test) qui rejoue une liste d'actions.

@@ -12,6 +12,7 @@ test avec des lambdas (`ctx -> ctx.damage().deal("Test", ctx.opponent(), 3)`).
 - [ ] `given_two_champions_when_match_starts_then_each_has_30_hp_and_shuffled_deck`
 - [ ] `given_seed_42_when_match_starts_twice_then_both_decks_are_in_same_order` (déterminisme)
 - [ ] `given_coin_flip_when_match_starts_then_first_player_has_3_cards_and_second_has_4_plus_the_coin`
+- [ ] Mulligan : `given_bot_puts_back_2_cards_when_mulligan_then_hand_size_unchanged_and_cards_shuffled_back` (+ `MulliganDone`)
 - [ ] Publie `MatchStarted`.
 
 ### A.2 Phases du tour
@@ -23,7 +24,10 @@ test avec des lambdas (`ctx -> ctx.damage().deal("Test", ctx.opponent(), 3)`).
       `given_bot_plays_unaffordable_card_when_play_phase_then_turn_ends` ;
       `given_bot_uses_hero_power_twice_when_play_phase_then_second_use_is_refused`
 - [ ] Carte `immediate` appliquée tout de suite ; les autres vont dans la file du resolve phase.
-- [ ] Resolve : `given_attack_and_armor_played_when_resolve_phase_then_armor_applies_before_attack`
+- [ ] Resolve : `given_armor_then_shield_slam_played_when_resolve_phase_then_effects_apply_in_play_order`
+- [ ] `given_opponent_dies_mid_queue_when_resolve_phase_then_match_ends_immediately`
+- [ ] `given_both_champions_at_0_hp_when_checked_then_match_is_a_draw`
+- [ ] `given_10_mana_when_the_coin_is_played_then_mana_stays_10`
 - [ ] End : `given_one_champion_at_0_hp_when_end_phase_then_match_ends_with_winner` (+ `MatchEnded`)
 - [ ] `TurnStarted` publié à chaque tour ; un « tour » = une manche des deux joueurs.
 

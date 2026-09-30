@@ -160,8 +160,8 @@ Décision : ______
 | F2 | Avantage du 1er joueur | Le 2e reçoit 4 cartes + The Coin | ______ |
 | F3 | Deck vide | Fatigue 1, 2, 3… | ______ |
 | F4 | Départage après 50 tours | PV, puis dégâts infligés, puis match nul | ______ |
-| F5 | Ordre du resolve phase | Défense/soins → attaques → minions | ______ |
-| F6 | Minions | Dans le périmètre, mais après le MVP | ______ |
+| F5 | Ordre du resolve phase | Ordre de jeu (comme Hearthstone), puis les minions | ✅ décidé |
+| F6 | Minions | Dans le périmètre, mais après le MVP ; plateau de 7 | ______ |
 | F7 | Classes pour le MVP | Mage + Tank d'abord | ______ |
 | F8 | Seuil du bot Defensive | 15 PV | ______ |
 
@@ -188,6 +188,7 @@ Exemple proposé :
 [CURVE  ][Alice] [1: 8] [2: 2] [3: 6] [4: 2] [5+: 2] | avg cost 2.7
 [SETUP  ][Bob  ] ...
 [START  ] Alice goes first (coin flip) | Bob gets The Coin
+[SWAP   ][Alice] puts back Pyroblast → draws Strike
 ...
 [T03] ======================================================================
 [T03][Alice][TURN   ] [HP 28/30] [ARMOR 0] [MANA 3/3] [HAND 4] [DECK 13]
@@ -201,8 +202,8 @@ Exemple proposé :
 [T03][Bob  ][HEAL   ] Healing Potion → Bob : +5 [HP 24 → 29]
 [T04] ======================================================================
 [T04][Alice][PLAY   ] Raise Skeletons (3) → [MANA 1/4]
-[T04][Alice][SUMMON ] Skeleton [1/1] → [BOARD 2/5]
-[T04][Alice][SUMMON ] Skeleton [1/1] → [BOARD 3/5]
+[T04][Alice][SUMMON ] Skeleton [1/1] → [BOARD 2/7]
+[T04][Alice][SUMMON ] Skeleton [1/1] → [BOARD 3/7]
 [T04][Bob  ][POWER  ] Armor Up (2) → [ARMOR 2 (3 turns)] [MANA 2/4]
 ...
 [T09][Alice][DEATH  ] Skeleton [1/1] dies attacking Iron Golem [2/6] [TAUNT]
@@ -211,7 +212,7 @@ Exemple proposé :
 ...
 [RESULT ] Alice WINS | reason: HP 0 | turns: 18 | damage Alice 34 / Bob 21
 ```
-Étiquettes : `MATCH`, `SETUP`, `DECK`, `CURVE`, `START`, `TURN`, `DRAW`, `BURN`, `FATIGUE`, `PLAY`, `POWER`,
+Étiquettes : `MATCH`, `SETUP`, `DECK`, `CURVE`, `START`, `SWAP` (mulligan), `TURN`, `DRAW`, `BURN`, `FATIGUE`, `PLAY`, `POWER`,
 `DAMAGE`, `HEAL`, `ARMOR`, `STATUS`, `SUMMON`, `MINION`, `DEATH`, `RESULT`.
 Les noms de joueur sont complétés par des espaces pour que les colonnes restent alignées.
 Décision : ______

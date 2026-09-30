@@ -7,7 +7,9 @@ power and a set of class cards, mixed with neutral cards into a 20-card deck.
 Each champion starts with 30 HP and a shuffled 20-card deck. A seeded coin
 flip decides who goes first. Like in Hearthstone, the first player starts
 with 3 cards; the second starts with 4 cards plus **The Coin** (0 mana,
-+1 mana this turn only; not part of the deck). A "turn" is one full round:
++1 mana this turn only; not part of the deck). Then each player may
+**mulligan** once: put back any cards of their opening hand, shuffle them
+into the deck and draw the same number (the bot decides which). A "turn" is one full round:
 both players take their draw → mana → play → resolve → end phases in order.
 The 50-turn limit counts rounds.
 
@@ -17,27 +19,33 @@ are burned. Drawing from an empty deck deals fatigue damage (1, then 2,
 then 3…), as in Hearthstone. It guarantees long stalemates still end.
 
 Play phase: Resource and draw effects apply immediately, because they
-change what can still be played this turn. Everything else is queued and
-applied in the resolve phase: Defense and heal effects first, then Attacks
-in the order they were played, then minion attacks. Attacks hit the
-opponent's armor first, then HP.
+change what can still be played this turn. Everything else, hero power
+included, is queued and applied in the resolve phase **in the order it was
+played** (as in Hearthstone, where effects resolve in play order), then
+minions attack. Damage hits the champion's armor first, then HP.
+
+The match ends **immediately** when a champion reaches 0 HP: the rest of the
+queue is dropped and the other player does not play. HP never goes below 0.
+If both champions reach 0 HP at the same time, the match is a draw.
 
 ## Minions (summons)
-Some cards summon minions onto their owner's board (max 5; a summon onto a
-full board fizzles). A minion has Attack / Health, e.g. `2/3`.
+Some cards summon minions onto their owner's board (max 7 as in
+Hearthstone; a summon onto a full board fizzles). A minion has Attack / Health, e.g. `2/3`.
 - Summoning sickness: a minion attacks for the first time in its owner's
   next resolve phase. Minions attack once per turn, oldest first.
-- Targeting (no choice, keeps bots simple): an attack — card or minion —
-  must hit an enemy **Taunt** minion if there is one, otherwise the enemy
-  champion. When a minion hits a minion, both deal their Attack to each
-  other. A minion at 0 Health dies immediately.
-- Non-Taunt minions can only be damaged by area effects ("each enemy
-  minion"). That makes AoE cards (Whirlwind Slash, Holy Nova) valuable.
+- Targeting (no choice, keeps bots simple): a minion attack must hit an
+  enemy **Taunt** minion if there is one, otherwise the enemy champion.
+  As in Hearthstone, Taunt only stops attacks: Attack cards, poison and
+  hero powers ignore it and hit the champion. When a minion hits a minion,
+  both deal their Attack to each other. A minion at 0 Health dies immediately.
+- Cards never target a minion (no targeting choice), so minions are only
+  damaged by other minions and by area effects ("each enemy minion"). That
+  makes AoE cards (Whirlwind Slash, Holy Nova) valuable.
 - Category: a summon is an **Attack** card if the minion is there to deal
   damage, **Defense** if it has Taunt, **Utility** if it has a passive effect.
 - Minion damage to the enemy champion counts as damage dealt by its owner.
-- Minion hits count as hits: armor absorbs them and Parry reduces them.
-  Evasion only stops Attack cards.
+- Minion hits count as hits: armor absorbs them, Parry reduces them and
+  Evasion can prevent one.
 
 We added minions for two reasons: Hearthstone feel, and board
 presence, which rewards the Aggressive bot for playing early and forces
@@ -52,15 +60,28 @@ Defensive to value Taunt.
 ## Keywords
 - **Armor X (N turns)**: absorbs X damage; removed at the start of its
   owner's Nth next turn. Several armors stack.
-- **Parry X**: reduces each hit by X, applied after armor.
+- **Parry X (N turns)**: reduces each hit by X, applied after armor; expires
+  like armor.
 - **Poison X (N turns)**: opponent loses X HP at the start of each of their
   next N turns. It ignores armor and stacks.
 - **Freeze**: the opponent gets 1 less mana on their next turn.
-- **Combo**: bonus if another card was already played this turn.
-- **Evasion**: the next Attack card that hits you deals 0 damage.
+- **Combo**: bonus if another card was already played this turn (The Coin
+  counts, the hero power does not — as in Hearthstone).
+- **Evasion**: works like a Hearthstone Secret. The next damage the enemy
+  deals to your champion (card, hit of a minion or hero power) is prevented.
+  Poison ticks and fatigue are not prevented.
+- **Next Attack +X** (Sharpen, Battle Cry, Focus Training): like Hearthstone
+  Spell Damage, it adds X to **each** damage instance of the next Attack
+  card that deals damage (each hit of Twin Blades, each target of an area
+  effect). Summon and poison cards do not use it. Several buffs stack and
+  are all used by that card.
 - **Taunt**: enemy attacks must target this minion first.
 - **Hero power**: costs 2 mana and can be used once per turn, during the
-  play phase.
+  play phase. It resolves like a card, in play order.
+- **Mana**: max mana and available mana are both capped at 10, as in
+  Hearthstone. The Coin or Preparation at 10 mana give nothing more.
+- **Shield Slam** counts the armor the Tank has when it resolves, including
+  armor played earlier in the same turn: play order matters.
 
 ## Neutral cards (10)
 | Category | Card           | Cost | Effect                          |
@@ -169,6 +190,12 @@ Deck strategies:
   least 6 Attack cards so it can still win.
 - **Random**: random class, random legal deck (seeded).
 
+With `auto`, the class is fixed per bot so matches stay readable:
+Aggressive → Assassin, Defensive → Tank, Random → random.
+
+Mulligan: Aggressive puts back cards costing 4 or more, Defensive cards
+costing 5 or more, Random a random subset.
+
 Play strategies:
 - **Aggressive**: plays Resource cards first, then the highest-damage
   affordable Attack, repeating while mana allows. An attacking minion is
@@ -227,5 +254,16 @@ one call per turn, a structured JSON answer with a `reason` shown as a
 `[THINK  ]` log line, fallback to a classic bot on illegal moves or API
 errors, API key only in the `ANTHROPIC_API_KEY` environment variable.
 LLM matches are not replayable from the seed.
+
+## Deliberate differences from Hearthstone
+We follow Hearthstone wherever the brief allows. The exceptions:
+- **20-card decks** (not 30), **armor that expires after N turns** (not
+  permanent) and **a resolve phase**: all three are required by the brief.
+- **No targeting**: cards hit the enemy champion and minions attack
+  automatically. That keeps the bots simple and every match reproducible.
+- **Freeze** removes 1 mana from the opponent's next turn (there is nothing
+  to freeze, since champions do not attack). **Parry** and **Poison** are our
+  own keywords.
+- Players are named `P1` and `P2` by default (`--names Alice,Bob` to change).
 
 All numbers are a first draft, to rebalance with the `run-simulation` skill.

@@ -51,6 +51,7 @@ les bots reçoivent un faux `GameView`.
 - [ ] Defensive : `given_hp_15_when_heal_and_attack_in_hand_then_plays_heal_first`
 - [ ] `given_hp_20_when_asked_then_behaves_like_aggressive`
 - [ ] Minions : un minion offensif vaut 2× son attaque (après le lot C).
+- [ ] Mulligan : `given_aggressive_bot_and_opening_hand_with_a_5_cost_card_when_mulligan_then_it_is_put_back`
 - [ ] Les bots ont besoin de connaître les dégâts d'une carte : ajouter au besoin
       une méthode `estimatedDamage()` sur `Card` → **commit de contrat séparé, validé par le groupe**.
 
