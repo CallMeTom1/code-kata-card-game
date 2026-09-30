@@ -9,6 +9,7 @@ bots, and reports the results. No framework, no UI, no database.
 mvn test                                   # 168 tests (JUnit 5 + AssertJ)
 mvn -q compile exec:java -Dexec.args="--matches 1000 --p1 Aggressive:Mage --p2 Defensive:Tank"
 mvn -q compile exec:java -Dexec.args="--matches 1 --log --names Alice,Bob"
+mvn -q compile exec:java -Dexec.args="--matches 1000 --p1 Aggressive:Mage --p2 Defensive:Tank --seed 42 --names Alice,Bob --json partie.jsonl --stats-json stats.json"
 mvn -q compile exec:java -Dexec.args="--help"
 ```
 
@@ -27,10 +28,23 @@ mvn -q compile exec:java -Dexec.args="--help"
 
 Plain HTML/CSS/JavaScript in [`web/`](web/): no framework, no build, no server, nothing to install.
 
-1. Export a match and/or stats:
-   `--matches 1 --json partie.jsonl --names Alice,Bob` and `--matches 1000 --stats-json stats.json --names Alice,Bob`
-2. Open `web/index.html` in a browser (double-click), then drag and drop the file(s) onto the page,
-   or click **Exemples** to see the bundled sample.
+1. Export the files the front reads, in a single run (from the project root):
+
+   ```bash
+   mvn -q compile exec:java -Dexec.args="--matches 1000 --p1 Aggressive:Mage --p2 Defensive:Tank --seed 42 --names Alice,Bob --json partie.jsonl --stats-json stats.json"
+   ```
+
+   | File | Content | Used by |
+   |---|---|---|
+   | `partie.jsonl` (`--json`) | the **first** match, one `GameEvent` per line | **Replay** tab |
+   | `stats.json` (`--stats-json`) | summary + one row per match of the run | **Statistics** tab |
+
+   The console confirms with `[EXPORT ] first match written to partie.jsonl` and
+   `[EXPORT ] stats written to stats.json`. Both options are independent: use only `--json`
+   (e.g. with `--matches 1`) for a replay, or only `--stats-json` for the statistics.
+   Keep `--seed` to regenerate exactly the same files.
+2. Open `web/index.html` in a browser (double-click), then drag and drop `partie.jsonl` and/or
+   `stats.json` onto the page (or use the file picker), or click **Exemples** to see the bundled sample.
 3. Replay: Hearthstone-like board, hands, minions, heroes, mana, statuses, the same log as the console,
    play/pause, step by event or by turn (keys: Space, ←/→, Shift+←/→, Home/End), speed, scrubber,
    and synthesized sounds for each event (Web Audio, no audio files; 🔊 button or key M, volume slider).
