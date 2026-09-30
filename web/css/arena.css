@@ -256,7 +256,10 @@ body.dragging .empty-card { outline: 3px dashed var(--gold-1); outline-offset: 8
 #sound-toggle[aria-pressed="false"], #music-toggle[aria-pressed="false"] { filter: grayscale(1); opacity: 0.6; text-decoration: line-through; }
 .speed { color: var(--text-secondary); display: flex; gap: 6px; align-items: center; }
 .speed select { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--gold-3); border-radius: 6px; padding: 3px 6px; }
-#scrubber { width: 100%; accent-color: var(--gold-2); }
+.timeline { display: flex; align-items: center; gap: 10px; }
+.timeline .time { color: var(--text-secondary); font-size: 14px; font-variant-numeric: tabular-nums; min-width: 3.2em; }
+.timeline .time:last-child { text-align: right; }
+#scrubber { flex: 1; min-width: 0; width: 100%; accent-color: var(--gold-2); }
 .position { color: var(--text-secondary); font-size: 14px; }
 
 /* ---------- Log ---------- */

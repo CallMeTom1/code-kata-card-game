@@ -128,6 +128,54 @@
     eq(timeline.frames[4].state.players.Bob.hp, 29);
   });
 
+  const frames = (...types) => types.map((type, index) => ({ index, event: { type } }));
+
+  test("given_a_normal_frame_when_its_delay_is_asked_then_it_is_the_base_delay_divided_by_the_speed", () => {
+    eq(R().stepDelayMs({ event: { type: "CardPlayed" } }, 1), 900);
+    eq(R().stepDelayMs({ event: { type: "CardPlayed" } }, 2), 450);
+    eq(R().stepDelayMs({ event: { type: "CardPlayed" } }, 8), 112.5);
+  });
+
+  test("given_a_turn_start_frame_when_its_delay_is_asked_then_the_pause_is_longer", () => {
+    eq(R().stepDelayMs({ event: { type: "TurnStarted" } }, 1), 1440);
+  });
+
+  test("given_frames_when_the_elapsed_time_is_asked_then_it_sums_the_delays_up_to_that_frame", () => {
+    const list = frames("MatchStarted", "CardPlayed", "TurnStarted", "CardPlayed");
+    eq(R().elapsedMs(list, 0, 1), 0);
+    eq(R().elapsedMs(list, 1, 1), 900);
+    eq(R().elapsedMs(list, 3, 1), 900 + 1440 + 900);
+  });
+
+  test("given_the_same_frames_when_the_speed_doubles_then_the_total_time_is_halved", () => {
+    const list = frames("MatchStarted", "CardPlayed", "TurnStarted", "CardPlayed");
+    eq(R().elapsedMs(list, 3, 2), R().elapsedMs(list, 3, 1) / 2);
+    eq(R().elapsedMs(list, 3, 4), R().elapsedMs(list, 3, 1) / 4);
+  });
+
+  test("given_an_index_out_of_range_when_the_elapsed_time_is_asked_then_it_is_clamped", () => {
+    const list = frames("MatchStarted", "CardPlayed");
+    eq(R().elapsedMs(list, -3, 1), 0);
+    eq(R().elapsedMs(list, 99, 1), 900);
+    eq(R().elapsedMs([], 0, 1), 0);
+  });
+
+  test("given_milliseconds_when_formatted_as_a_clock_then_it_shows_minutes_and_seconds", () => {
+    eq(R().formatClock(0), "0:00");
+    eq(R().formatClock(9400), "0:09");
+    eq(R().formatClock(65000), "1:05");
+    eq(R().formatClock(600000), "10:00");
+    eq(R().formatClock(-5), "0:00");
+  });
+
+  test("given_the_sample_match_when_the_speed_goes_up_then_the_total_time_goes_down", () => {
+    const list = R().buildTimeline(R().parseJsonl(root.ArenaSamples.matchJsonl)).frames;
+    const slow = R().elapsedMs(list, list.length - 1, 1);
+    const fast = R().elapsedMs(list, list.length - 1, 8);
+    ok(slow > 0 && fast < slow, "total at x8 is shorter than at x1");
+    eq(fast, slow / 8);
+  });
+
   test("given_the_sample_match_when_replayed_to_the_end_then_final_hp_match_the_result_event", () => {
     const events = R().parseJsonl(root.ArenaSamples.matchJsonl);
     const last = R().buildTimeline(events).frames.at(-1).state;

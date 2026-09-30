@@ -228,5 +228,28 @@
     return frame;
   }
 
-  Arena.Replay = { parseJsonl, initialState, apply, buildTimeline, extendTimeline };
+  const BASE_DELAY_MS = 900;
+  const TURN_START_FACTOR = 1.6;
+
+  /** Pause before a frame is shown during playback: longer before a new turn, shorter at higher speed. */
+  function stepDelayMs(frame, speed) {
+    const factor = frame && frame.event.type === "TurnStarted" ? TURN_START_FACTOR : 1;
+    return (BASE_DELAY_MS * factor) / (speed || 1);
+  }
+
+  /** Playback time from the first frame to the given one, at the given speed. */
+  function elapsedMs(frames, index, speed) {
+    const last = Math.min(Math.max(index, 0), frames.length - 1);
+    let total = 0;
+    for (let i = 1; i <= last; i++) total += stepDelayMs(frames[i], speed);
+    return total;
+  }
+
+  /** m:ss, rounded down to the second. */
+  function formatClock(ms) {
+    const seconds = Math.floor(Math.max(0, ms) / 1000);
+    return Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");
+  }
+
+  Arena.Replay = { parseJsonl, initialState, apply, buildTimeline, extendTimeline, stepDelayMs, elapsedMs, formatClock };
 })(typeof window !== "undefined" ? window : globalThis);

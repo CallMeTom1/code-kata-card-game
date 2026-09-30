@@ -9,7 +9,6 @@
   const tr = Arena.I18n.t;
   const CATEGORIES = ["ATTACK", "DEFENSE", "RESOURCE", "UTILITY"];
   const categoryShort = (category) => tr("cat.short." + category, null, "?");
-  const BASE_DELAY_MS = 900;
 
   /** The design theme is read from the page, so switching it only needs a redraw. */
   const art = (kind, name, category) => Arena.Themes.artHtml(doc.documentElement.dataset.theme, kind, name, category);
@@ -235,6 +234,7 @@
       root: doc.getElementById("replay"), empty: doc.getElementById("replay-empty"), board: doc.getElementById("board"),
       log: doc.getElementById("log"), overlay: doc.getElementById("overlay"), scrubber: doc.getElementById("scrubber"),
       position: doc.getElementById("position"), speed: doc.getElementById("speed"),
+      timeElapsed: doc.getElementById("time-elapsed"), timeTotal: doc.getElementById("time-total"),
       play: doc.querySelector('[data-action="play"]'), fxLayer: doc.getElementById("fx-layer"),
       hpChart: doc.getElementById("hp-chart"), hpPanel: doc.getElementById("hp-panel"),
       zoom: doc.getElementById("card-zoom"),
@@ -291,6 +291,7 @@
       el.empty.hidden = true;
       el.root.hidden = false;
       el.position.textContent = tr("live.first-event");
+      el.timeElapsed.textContent = el.timeTotal.textContent = Arena.Replay.formatClock(0);
       el.play.textContent = "⏸";
       timer = setTimeout(tick, 150);
     }
@@ -351,6 +352,7 @@
         + (action ? `<div class="action"><span class="who">${esc(action[0])}</span>${action[1]}</div>` : "");
       showFloater(floater(frame.event));
       el.scrubber.value = String(index);
+      updateClock();
       const turnNumber = timeline.turnStarts.filter((i) => i <= index).length;
       el.position.textContent = tr("position.text", { index: index + 1, total: timeline.frames.length })
         + (state.round ? tr("position.round", { round: state.round }) : "")
@@ -361,6 +363,15 @@
       updateOverlay(state);
       updateChartCursor();
       if (options.onFrame) options.onFrame(state);
+    }
+
+    /** Elapsed and total playback time at the chosen speed; the total keeps growing while a live match is played. */
+    function updateClock() {
+      const speed = Number(el.speed.value || 1);
+      const frames = timeline.frames;
+      el.timeElapsed.textContent = Arena.Replay.formatClock(Arena.Replay.elapsedMs(frames, index, speed));
+      el.timeTotal.textContent = Arena.Replay.formatClock(Arena.Replay.elapsedMs(frames, frames.length - 1, speed))
+        + (live ? "+" : "");
     }
 
     function updateChartCursor() {
@@ -431,9 +442,7 @@
     }
 
     function delay() {
-      const next = timeline.frames[index + 1];
-      const factor = next && next.event.type === "TurnStarted" ? 1.6 : 1;
-      return (BASE_DELAY_MS * factor) / Number(el.speed.value || 1);
+      return Arena.Replay.stepDelayMs(timeline.frames[index + 1], Number(el.speed.value || 1));
     }
 
     function tick() {
@@ -499,6 +508,9 @@
     el.overlay.addEventListener("click", (e) => {
       const button = e.target.closest("[data-action]");
       if (button) action(button.dataset.action);
+    });
+    el.speed.addEventListener("change", () => {
+      if (timeline && timeline.frames.length) updateClock();
     });
     el.scrubber.addEventListener("input", () => {
       pause();

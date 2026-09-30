@@ -75,7 +75,11 @@
                 </select>
               </label>
             </div>
-            <input type="range" id="scrubber" min="0" max="0" value="0" aria-label="Position in the match" data-i18n-label="position.label">
+            <div class="timeline">
+              <span class="time" id="time-elapsed" title="Elapsed time" data-i18n-title="time.elapsed">0:00</span>
+              <input type="range" id="scrubber" min="0" max="0" value="0" aria-label="Position in the match" data-i18n-label="position.label">
+              <span class="time" id="time-total" title="Total time at the current speed" data-i18n-title="time.total">0:00</span>
+            </div>
             <div class="position" id="position"></div>
           </div>
         </div>
