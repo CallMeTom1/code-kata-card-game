@@ -28,7 +28,7 @@ public final class Mage {
             card("Pyroblast", 8, ATTACK).effect(new DealDamage(10)).directDamage(10).build(),
             card("Raise Skeletons", 3, ATTACK)
                     .effect(new Summon(new MinionTemplate("Skeleton", 1, 1, false), 2)).indirectDamage(4).build(),
-            card("Ice Barrier", 3, DEFENSE).effect(new GainArmor(8, 2)).armor(8).build(),
+            card("Ice Barrier", 3, DEFENSE).effect(new GainArmor(6, 2)).armor(6).build(),
             card("Arcane Intellect", 3, UTILITY).effect(new DrawCards(2)).immediate().build());
 
     private Mage() {

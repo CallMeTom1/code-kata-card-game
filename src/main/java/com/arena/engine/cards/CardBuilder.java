@@ -16,6 +16,7 @@ public final class CardBuilder {
     private boolean taunt;
     private boolean attackBuff;
     private boolean usesAttackBonus;
+    private boolean damageFromArmor;
 
     private CardBuilder(String name, int cost, CardCategory category) {
         this.name = name;
@@ -53,6 +54,13 @@ public final class CardBuilder {
         return this;
     }
 
+    /** Damage equal to the caster's armor when it resolves (Shield Slam). */
+    public CardBuilder damageFromArmor() {
+        this.damageFromArmor = true;
+        this.usesAttackBonus = true;
+        return this;
+    }
+
     public CardBuilder heal(int amount) {
         this.heal = amount;
         return this;
@@ -75,6 +83,6 @@ public final class CardBuilder {
 
     public Card build() {
         return new Card(name, cost, category, effect, immediate,
-                new CardTraits(damage, heal, armor, taunt, attackBuff, usesAttackBonus));
+                new CardTraits(damage, heal, armor, taunt, attackBuff, usesAttackBonus, damageFromArmor));
     }
 }

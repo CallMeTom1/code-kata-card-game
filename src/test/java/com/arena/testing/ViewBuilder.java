@@ -13,6 +13,7 @@ public final class ViewBuilder {
     private List<Card> hand = List.of();
     private boolean heroPower;
     private int boardSize;
+    private int armor;
 
     private ViewBuilder() {
     }
@@ -41,25 +42,26 @@ public final class ViewBuilder {
         return this;
     }
 
+    public ViewBuilder withArmor(int armor) {
+        this.armor = armor;
+        return this;
+    }
+
     public ViewBuilder withBoardSize(int size) {
         this.boardSize = size;
         return this;
     }
 
     public GameView build() {
-        return new Snapshot(hp, mana, hand, heroPower, boardSize);
+        return new Snapshot(hp, mana, hand, heroPower, boardSize, armor);
     }
 
-    private record Snapshot(int myHp, int myMana, List<Card> myHand, boolean heroPowerAvailable, int myBoardSize)
+    private record Snapshot(int myHp, int myMana, List<Card> myHand, boolean heroPowerAvailable, int myBoardSize,
+                            int myArmor)
             implements GameView {
         @Override
         public int turn() {
             return 1;
-        }
-
-        @Override
-        public int myArmor() {
-            return 0;
         }
 
         @Override

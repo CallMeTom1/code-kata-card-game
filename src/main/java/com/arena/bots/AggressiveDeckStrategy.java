@@ -10,7 +10,7 @@ import com.arena.engine.decks.RankedDeckBuilder;
 import java.util.Comparator;
 import java.util.List;
 
-/** Cheap attacks and attacking minions first, then Resource cards, no pure heals (DESIGN.md). */
+/** Attacks with the best damage per mana first, then Resource cards, no pure heals (DESIGN.md). */
 public final class AggressiveDeckStrategy implements DeckStrategy {
 
     /** Default class with {@code auto}: the most damage per mana. */
@@ -24,11 +24,15 @@ public final class AggressiveDeckStrategy implements DeckStrategy {
     @Override
     public List<Card> buildDeck(HeroClass heroClass, List<Card> neutralCards) {
         Comparator<Card> preference = Comparator.comparingInt(AggressiveDeckStrategy::group)
+                .thenComparing(Comparator.comparingDouble(AggressiveDeckStrategy::damagePerMana).reversed())
                 .thenComparingInt(Card::cost)
-                .thenComparing(Comparator.comparingInt((Card c) -> c.traits().damage()).reversed())
                 .thenComparing(Card::name);
         return RankedDeckBuilder.build(heroClass, neutralCards, preference,
                 c -> !(c.traits().heal() > 0 && c.traits().damage() == 0), 0);
+    }
+
+    private static double damagePerMana(Card card) {
+        return (double) card.traits().damage() / (card.cost() + 1);
     }
 
     private static int group(Card card) {

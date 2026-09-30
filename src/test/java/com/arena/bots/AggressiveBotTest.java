@@ -28,12 +28,21 @@ class AggressiveBotTest {
     private final AggressiveBot bot = new AggressiveBot();
 
     @Test
-    void given_a_resource_and_an_attack_in_hand_when_asked_then_it_plays_the_resource_first() {
+    void given_a_crystal_and_a_card_too_expensive_for_now_when_asked_then_it_plays_the_crystal_first() {
+        // Given / When
+        var action = bot.nextAction(aView().withMana(3).withHand(STRIKE, MANA_CRYSTAL, CRUSHING_BLOW).build());
+
+        // Then
+        assertThat(action).isEqualTo(new PlayCard(1));
+    }
+
+    @Test
+    void given_a_crystal_and_only_cheap_cards_when_asked_then_it_attacks_instead_of_ramping() {
         // Given / When
         var action = bot.nextAction(aView().withMana(3).withHand(STRIKE, MANA_CRYSTAL).build());
 
         // Then
-        assertThat(action).isEqualTo(new PlayCard(1));
+        assertThat(action).isEqualTo(new PlayCard(0));
     }
 
     @Test
@@ -97,5 +106,35 @@ class AggressiveBotTest {
 
         // Then
         assertThat(putBack).containsExactly(1);
+    }
+
+    private static final Card SHIELD_SLAM = card("Shield Slam", 1, com.arena.engine.cards.CardCategory.ATTACK)
+            .effect(new com.arena.engine.effects.DamageEqualToArmor()).damageFromArmor().build();
+
+    @Test
+    void given_shield_slam_and_no_armor_when_asked_then_it_keeps_it() {
+        // Given / When
+        var action = bot.nextAction(aView().withMana(1).withHand(SHIELD_SLAM).build());
+
+        // Then
+        assertThat(action).isEqualTo(new EndTurn());
+    }
+
+    @Test
+    void given_shield_slam_with_6_armor_and_a_strike_when_asked_then_it_prefers_the_slam() {
+        // Given / When
+        var action = bot.nextAction(aView().withMana(3).withArmor(6).withHand(STRIKE, SHIELD_SLAM).build());
+
+        // Then
+        assertThat(action).isEqualTo(new PlayCard(1));
+    }
+
+    @Test
+    void given_spare_mana_and_only_a_resource_left_when_asked_then_it_plays_it_rather_than_waste_mana() {
+        // Given / When
+        var action = bot.nextAction(aView().withMana(5).withHand(MANA_CRYSTAL).build());
+
+        // Then
+        assertThat(action).isEqualTo(new PlayCard(0));
     }
 }

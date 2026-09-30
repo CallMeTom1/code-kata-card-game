@@ -28,16 +28,16 @@ public final class Cleric {
 
     static final List<Card> CARDS = List.of(
             card("Smite", 1, ATTACK).effect(new DealDamage(2)).directDamage(2).build(),
-            card("Holy Nova", 4, ATTACK).effect(new DamageChampionAndAllEnemyMinions(2).andThen(new Heal(3)))
-                    .directDamage(2).heal(3).build(),
+            card("Holy Nova", 5, ATTACK).effect(new DamageChampionAndAllEnemyMinions(2).andThen(new Heal(2)))
+                    .directDamage(2).heal(2).build(),
             card("Power Word: Shield", 1, DEFENSE).effect(new GainArmor(3, 2).andThen(new DrawCards(1)))
                     .immediate().armor(3).build(),
             card("Divine Blessing", 2, RESOURCE).effect(new GainMaxMana(1).andThen(new Heal(2)))
                     .immediate().heal(2).build(),
-            card("Greater Heal", 3, UTILITY).effect(new Heal(7)).heal(7).build(),
+            card("Greater Heal", 3, UTILITY).effect(new Heal(6)).heal(6).build(),
             card("Spirit Healer", 3, UTILITY).effect(new Summon(
-                    new MinionTemplate("Spirit Healer", 0, 3, false, new MinionAbility.HealOwnerAtEndOfTurn(2)), 1))
-                    .heal(6).build());
+                    new MinionTemplate("Spirit Healer", 0, 3, true, new MinionAbility.HealOwnerAtEndOfTurn(2)), 1))
+                    .heal(6).taunt().build());
 
     private Cleric() {
     }

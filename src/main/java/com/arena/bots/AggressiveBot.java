@@ -35,10 +35,10 @@ public final class AggressiveBot implements Bot {
     @Override
     public Action nextAction(GameView view) {
         for (OptionalInt choice : List.of(
-                best(view, this::isCrystal, Comparator.comparingInt(Card::cost).reversed()),
+                best(view, c -> isCrystal(c) && needsMoreMana(view, c), Comparator.comparingInt(Card::cost).reversed()),
                 best(view, c -> isTempMana(c) && unlocksACard(view, c), Comparator.comparingInt(Card::cost)),
                 best(view, c -> c.traits().attackBuff() && attackCanFollow(view, c), Comparator.comparingInt(Card::cost)),
-                best(view, c -> isAttack(c) && fitsOnBoard(view, c), byDamage()),
+                best(view, c -> isAttack(view, c) && fitsOnBoard(view, c), byDamage(view)),
                 best(view, c -> isUsefulLeftover(view, c), Comparator.comparingInt(Card::cost)))) {
             if (choice.isPresent()) {
                 return new PlayCard(choice.getAsInt());
@@ -57,16 +57,26 @@ public final class AggressiveBot implements Bot {
         return IntStream.range(0, hand.size()).filter(i -> hand.get(i).cost() >= cost).boxed().toList();
     }
 
-    static Comparator<Card> byDamage() {
-        return Comparator.comparingInt((Card c) -> c.traits().damage()).thenComparingInt(Card::cost);
+    static Comparator<Card> byDamage(GameView view) {
+        return Comparator.comparingInt((Card c) -> damage(view, c)).thenComparingInt(Card::cost);
     }
 
-    static boolean isAttack(Card card) {
-        return card.category() == CardCategory.ATTACK && card.traits().damage() > 0 && !card.traits().attackBuff();
+    /** Expected damage now: Shield Slam is worth the current armor, everything else its printed value. */
+    static int damage(GameView view, Card card) {
+        return card.traits().damageFromArmor() ? view.myArmor() : card.traits().damage();
+    }
+
+    static boolean isAttack(GameView view, Card card) {
+        return card.category() == CardCategory.ATTACK && damage(view, card) > 0 && !card.traits().attackBuff();
     }
 
     private boolean isCrystal(Card card) {
         return card.category() == CardCategory.RESOURCE && card.cost() > 0;
+    }
+
+    /** Ramping only pays off when the hand holds a card the current mana cannot reach. */
+    private boolean needsMoreMana(GameView view, Card crystal) {
+        return anyOther(view, crystal, Integer.MAX_VALUE, c -> c.cost() > view.myMana());
     }
 
     private boolean isTempMana(Card card) {
@@ -88,7 +98,7 @@ public final class AggressiveBot implements Bot {
     }
 
     private boolean isUsefulLeftover(GameView view, Card card) {
-        if (card.category() == CardCategory.RESOURCE || card.traits().attackBuff()) {
+        if (isTempMana(card) || card.traits().attackBuff() || (card.traits().damageFromArmor() && view.myArmor() == 0)) {
             return false;
         }
         return card.traits().heal() == 0 || view.myHp() + card.traits().heal() <= 30;

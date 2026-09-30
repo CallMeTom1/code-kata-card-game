@@ -275,6 +275,9 @@ public final class Match {
             Optional<Minion> taunt = foe.board().firstTaunt();
             if (taunt.isPresent()) {
                 Minion blocker = taunt.get();
+                if (isSuicide(minion, blocker)) {
+                    continue;
+                }
                 events.publish(new MinionAttacked(me.name(), minion.name(), minion.attack(), minion.health(),
                         blocker.name()));
                 combat.damageMinion(minion.name(), foe, blocker, minion.attack());
@@ -291,6 +294,11 @@ public final class Match {
                 checkDeath();
             }
         }
+    }
+
+    /** Attacking is optional in Hearthstone: a minion stays back rather than die without killing the Taunt. */
+    private static boolean isSuicide(Minion attacker, Minion blocker) {
+        return blocker.attack() >= attacker.health() && attacker.attack() < blocker.health();
     }
 
     private void endOfTurn(Champion me) {

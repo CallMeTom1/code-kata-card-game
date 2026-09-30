@@ -302,4 +302,22 @@ class MatchTest {
         // Then
         assertThat(listener.eventsOfType(com.arena.engine.events.HeroPowerUsed.class)).hasSize(1);
     }
+
+    @Test
+    void given_an_enemy_taunt_that_would_kill_it_without_dying_when_a_minion_attacks_then_it_stays_back() {
+        // Given
+        Card wolf = new Card("Wolf Card", 1, CardCategory.ATTACK,
+                new Summon(new MinionTemplate("Wolf", 2, 2, false), 1), false);
+        Card golem = new Card("Golem Card", 1, CardCategory.DEFENSE,
+                new Summon(new MinionTemplate("Golem", 2, 6, true), 1), false);
+        Contender p1 = contender("P1", new ByNameBot("P1", "Wolf Card"), deckOf(wolf, 20));
+        Contender p2 = contender("P2", new ByNameBot("P2", "Golem Card"), deckOf(golem, 20));
+        Match match = p1First(p1, p2, events);
+
+        // When
+        match.play();
+
+        // Then
+        assertThat(listener.eventsOfType(MinionAttacked.class)).noneMatch(a -> a.minion().equals("Wolf"));
+    }
 }

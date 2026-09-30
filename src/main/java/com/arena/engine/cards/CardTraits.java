@@ -9,10 +9,11 @@ package com.arena.engine.cards;
  * @param taunt           summons a Taunt minion
  * @param attackBuff      buffs the next Attack card
  * @param usesAttackBonus a damaging Attack card that consumes "next Attack +X" buffs
+ * @param damageFromArmor damage equals the caster's armor (Shield Slam), so bots must read the armor
  */
 public record CardTraits(int damage, int heal, int armor, boolean taunt, boolean attackBuff,
-                         boolean usesAttackBonus) {
+                         boolean usesAttackBonus, boolean damageFromArmor) {
 
     /** Traits of a card with no combat value (draw, mana). */
-    public static final CardTraits NONE = new CardTraits(0, 0, 0, false, false, false);
+    public static final CardTraits NONE = new CardTraits(0, 0, 0, false, false, false, false);
 }

@@ -25,15 +25,15 @@ import static com.arena.engine.cards.NeutralCards.STRIKE;
 public final class Tank {
 
     static final List<Card> CARDS = List.of(
-            card("Shield Slam", 1, ATTACK).effect(new DamageEqualToArmor()).directDamage(3).build(),
-            card("Shield Block", 3, DEFENSE).effect(new GainArmor(5, 2).andThen(new DrawCards(1)))
-                    .immediate().armor(5).build(),
-            card("Fortress", 5, DEFENSE).effect(new GainArmor(12, 3)).armor(12).build(),
+            card("Shield Slam", 1, ATTACK).effect(new DamageEqualToArmor()).damageFromArmor().build(),
+            card("Shield Block", 3, DEFENSE).effect(new GainArmor(4, 2).andThen(new DrawCards(1)))
+                    .immediate().armor(4).build(),
+            card("Fortress", 5, DEFENSE).effect(new GainArmor(8, 2)).armor(8).build(),
             card("Iron Golem", 4, DEFENSE)
-                    .effect(new Summon(new MinionTemplate("Iron Golem", 2, 6, true), 1)).armor(6).taunt().build(),
+                    .effect(new Summon(new MinionTemplate("Iron Golem", 0, 6, true), 1)).armor(6).taunt().build(),
             card("War Chest", 2, RESOURCE).effect(new GainMaxMana(1).andThen(new GainArmor(2, 2)))
                     .immediate().armor(2).build(),
-            card("Last Stand", 4, UTILITY).effect(new Heal(8)).heal(8).build());
+            card("Last Stand", 4, UTILITY).effect(new Heal(6)).heal(6).build());
 
     private Tank() {
     }
