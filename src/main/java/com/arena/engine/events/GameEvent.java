@@ -9,5 +9,5 @@ public sealed interface GameEvent
         EvasionTriggered, MinionDamaged, MinionDied, CardDrawn, CardBurned, FatigueDamage, Healed,
         ArmorGained, ManaGained, StatusApplied, MinionSummoned, SummonFizzled, PlayerSetUp,
         FirstPlayerChosen, OpeningHand, MulliganDone, ArmorExpired, PoisonTicked, ManaRefilled, HeroPowerUsed,
-        IllegalAction, MinionAttacked {
+        IllegalAction, MinionAttacked, BotSpoke {
 }

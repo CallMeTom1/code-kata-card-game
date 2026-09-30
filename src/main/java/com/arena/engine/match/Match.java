@@ -9,6 +9,7 @@ import com.arena.engine.classes.HeroPower;
 import com.arena.engine.combat.Combat;
 import com.arena.engine.effects.Effect;
 import com.arena.engine.events.ArmorExpired;
+import com.arena.engine.events.BotSpoke;
 import com.arena.engine.events.CardPlayed;
 import com.arena.engine.events.DeckEntry;
 import com.arena.engine.events.EventPublisher;
@@ -100,7 +101,9 @@ public final class Match {
         events.publish(new MatchStarted(seat1.name(), seat1.contender.label(), seat2.name(),
                 seat2.contender.label(), seed));
         publishSetUp(seat1);
+        listen(seat1);
         publishSetUp(seat2);
+        listen(seat2);
         first = coinFlip.player1First(random) ? seat1 : seat2;
         Seat second = other(first);
         events.publish(new FirstPlayerChosen(first.name(), second.name()));
@@ -134,7 +137,9 @@ public final class Match {
         Champion champion = seat.champion;
         List<Card> hand = champion.hand();
         TreeSet<Integer> positions = new TreeSet<>();
-        for (Integer index : seat.contender.bot().mulligan(hand)) {
+        List<Integer> choice = seat.contender.bot().mulligan(hand);
+        listen(seat);
+        for (Integer index : choice) {
             if (index != null && index >= 0 && index < hand.size()) {
                 positions.add(index);
             }
@@ -208,6 +213,7 @@ public final class Match {
         int cardsPlayed = 0;
         for (int i = 0; i < MAX_ACTIONS_PER_TURN; i++) {
             Action action = seat.contender.bot().nextAction(view(seat, powerUsed));
+            listen(seat);
             switch (action) {
                 case EndTurn end -> {
                     return queue;
@@ -251,6 +257,19 @@ public final class Match {
             }
         }
         return queue;
+    }
+
+    /** Publishes what the bot said, and keeps its last words for the opponent's view. */
+    private void listen(Seat seat) {
+        seat.contender.bot().takeSpeech().ifPresent(speech -> {
+            if (speech.thought().isEmpty() && speech.message().isEmpty()) {
+                return;
+            }
+            events.publish(new BotSpoke(seat.name(), speech.thought(), speech.message()));
+            if (!speech.message().isEmpty()) {
+                seat.lastWords = speech.message();
+            }
+        });
     }
 
     private List<Pending> refuse(Champion me, String reason, List<Pending> queue) {

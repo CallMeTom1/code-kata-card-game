@@ -2,6 +2,7 @@ package com.arena.log;
 
 import com.arena.engine.events.ArmorExpired;
 import com.arena.engine.events.ArmorGained;
+import com.arena.engine.events.BotSpoke;
 import com.arena.engine.events.CardBurned;
 import com.arena.engine.events.CardDrawn;
 import com.arena.engine.events.CardPlayed;
@@ -93,6 +94,14 @@ public final class ConsoleRenderer implements GameEventListener {
             case PoisonTicked e -> act("POISON", e.amount() + " dmg [HP " + e.hpBefore() + " → " + e.hpAfter() + "]");
             case CardPlayed e -> act("PLAY", e.card() + " (" + e.cost() + ") → " + mana(e.player(), e.manaLeft()));
             case HeroPowerUsed e -> act("POWER", e.power() + " (" + e.cost() + ") → " + mana(e.player(), e.manaLeft()));
+            case BotSpoke e -> {
+                if (!e.thought().isEmpty()) {
+                    log(e.player(), "THINK", e.thought());
+                }
+                if (!e.message().isEmpty()) {
+                    log(e.player(), "SAY", "« " + e.message() + " »");
+                }
+            }
             case IllegalAction e -> act("ILLEGAL", e.reason() + " → turn ends");
             case DamageDealt e -> act("DAMAGE", e.source() + " → " + e.target() + " : " + e.amount() + " dmg [ABSORBED "
                     + e.absorbed() + "] [HP " + e.hpBefore() + " → " + e.hpAfter() + "]");

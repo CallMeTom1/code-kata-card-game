@@ -1,5 +1,6 @@
 package com.arena.log;
 
+import com.arena.engine.events.BotSpoke;
 import com.arena.engine.events.CardPlayed;
 import com.arena.engine.events.DamageDealt;
 import com.arena.engine.events.DeckEntry;
@@ -121,5 +122,15 @@ class ConsoleRendererTest {
         // Then
         assertThat(lines().getLast()).isEqualTo(
                 "[RESULT ] Alice WINS | reason: HP 0 | turns: 18 | HP Alice 12 / Bob 0 | damage Alice 34 / Bob 21");
+    }
+
+    @Test
+    void given_a_bot_that_thinks_and_speaks_when_rendered_then_it_prints_a_think_line_and_a_say_line() {
+        // Given / When
+        render(new BotSpoke("Alice", "Bob has no Taunt.", "Your castle will fall!"));
+
+        // Then
+        assertThat(lines()).contains("[THINK  ][Alice] Bob has no Taunt.",
+                "[SAY    ][Alice] « Your castle will fall! »");
     }
 }
