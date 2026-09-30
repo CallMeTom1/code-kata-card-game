@@ -71,7 +71,7 @@ public final class Match {
         this.seed = seed;
         this.events = events;
         this.coinFlip = coinFlip;
-        this.random = new Random(seed);
+        this.random = Seeds.random(seed);
         this.combat = new Combat(events);
         this.drawer = new CardDrawer(events);
         events.subscribe(damage);

@@ -19,7 +19,7 @@ public final class StatsReport {
                 .map(e -> e.getKey() + " " + pct(100.0 * e.getValue() / stats.matches()))
                 .collect(Collectors.joining(" | "));
         return String.join(System.lineSeparator(),
-                "=== Skirmish Arena — " + stats.matches() + " matches | " + name1 + " [" + label1 + "] vs " + name2
+                "=== Skirmish Arena — " + stats.matches() + (stats.matches() == 1 ? " match | " : " matches | ") + name1 + " [" + label1 + "] vs " + name2
                         + " [" + label2 + "] | seeds " + firstSeed + ".." + (firstSeed + stats.matches() - 1) + " ===",
                 row(name1 + " win rate", pct(stats.winRate1()) + " (" + stats.wins1() + ")"),
                 row(name2 + " win rate", pct(stats.winRate2()) + " (" + stats.wins2() + ")"),

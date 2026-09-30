@@ -15,6 +15,7 @@ import com.arena.engine.decks.DeckStrategy;
 import com.arena.engine.decks.DeckValidator;
 import com.arena.engine.match.Bot;
 import com.arena.engine.match.Contender;
+import com.arena.engine.match.Seeds;
 
 import java.util.List;
 import java.util.Random;
@@ -30,7 +31,7 @@ public final class MatchFactory {
 
     /** Builds one side; {@code seed} drives the Random bot and Random deck so matches stay replayable. */
     public Contender contender(String name, PlayerSpec spec, boolean presetDecks, long seed) {
-        Random random = new Random(seed);
+        Random random = Seeds.random(seed);
         Bot bot = bot(spec.bot(), random);
         DeckStrategy strategy = deckStrategy(spec.bot(), random);
         HeroClass heroClass = spec.autoClass() ? strategy.chooseClass(classes) : heroClass(spec.heroClass());
