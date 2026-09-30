@@ -242,7 +242,10 @@ body.dragging .empty-card { outline: 3px dashed var(--gold-1); outline-offset: 8
 .buttons { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .ctl { min-width: 44px; padding: 6px 10px; }
 .ctl-play { min-width: 64px; color: var(--gold-1); }
-.speed { margin-left: auto; color: var(--text-secondary); display: flex; gap: 6px; align-items: center; }
+.sound { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.sound input { width: 90px; accent-color: var(--gold-2); }
+#sound-toggle[aria-pressed="false"] { filter: grayscale(1); opacity: 0.7; }
+.speed { color: var(--text-secondary); display: flex; gap: 6px; align-items: center; }
 .speed select { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--gold-3); border-radius: 6px; padding: 3px 6px; }
 #scrubber { width: 100%; accent-color: var(--gold-2); }
 .position { color: var(--text-secondary); font-size: 14px; }

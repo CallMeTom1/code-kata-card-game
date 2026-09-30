@@ -47,6 +47,10 @@
               <button class="ctl" data-action="next" title="Événement suivant (→)" aria-label="Événement suivant">▶︎|</button>
               <button class="ctl" data-action="next-turn" title="Tour suivant (Maj+→)" aria-label="Tour suivant">⏩</button>
               <button class="ctl" data-action="end" title="Fin (End)" aria-label="Fin">⏭</button>
+              <div class="sound">
+                <button class="ctl" id="sound-toggle" aria-pressed="true" title="Son activé (M)" aria-label="Couper le son">🔊</button>
+                <input type="range" id="volume" min="0" max="100" value="60" aria-label="Volume">
+              </div>
               <label class="speed">Vitesse
                 <select id="speed">
                   <option value="1">×1</option>
@@ -87,10 +91,19 @@
   <script src="js/replay.js"></script>
   <script src="js/logformat.js"></script>
   <script src="js/stats.js"></script>
+  <script src="js/sound.js"></script>
   <script src="js/view-replay.js"></script>
   <script src="js/view-stats.js"></script>
   <script src="data/sample-match.js"></script>
   <script src="data/sample-stats.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    if (!window.Arena || !window.Arena.ReplayView) {
+      const box = document.getElementById("toast");
+      box.textContent = "Les scripts de la page n'ont pas pu être chargés. Ouvrez web/index.html dans Chrome, "
+        + "Edge ou Firefox depuis le dossier du projet (pas dans un aperçu), avec les dossiers js/, css/ et data/ à côté.";
+      box.hidden = false;
+    }
+  </script>
 </body>
 </html>

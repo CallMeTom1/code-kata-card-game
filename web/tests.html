@@ -30,10 +30,18 @@
   <script src="js/replay.js"></script>
   <script src="js/logformat.js"></script>
   <script src="js/stats.js"></script>
+  <script src="js/sound.js"></script>
   <script src="tests/replay.test.js"></script>
   <script src="tests/logformat.test.js"></script>
   <script src="tests/stats.test.js"></script>
+  <script src="tests/sound.test.js"></script>
   <script>
+    if (!window.Arena || !window.Arena.Test) {
+      document.getElementById("summary").textContent = "Les scripts n'ont pas pu être chargés. Ouvrez web/tests.html "
+        + "dans Chrome, Edge ou Firefox depuis le dossier du projet (pas dans un aperçu).";
+      document.getElementById("summary").className = "summary ko";
+      throw new Error("Arena scripts not loaded");
+    }
     const results = Arena.Test.run();
     const failed = results.filter((r) => !r.passed).length;
     const summary = document.getElementById("summary");

@@ -184,8 +184,11 @@
     </div>`;
   }
 
-  /** Creates the replay view bound to the page elements; returns the controls the app needs. */
-  function create() {
+  /**
+   * Creates the replay view bound to the page elements; returns the controls the app needs.
+   * options.onStep(event) is called each time the replay moves exactly one event forward (used for sounds).
+   */
+  function create(options = {}) {
     const el = {
       root: doc.getElementById("replay"), empty: doc.getElementById("replay-empty"), board: doc.getElementById("board"),
       log: doc.getElementById("log"), overlay: doc.getElementById("overlay"), scrubber: doc.getElementById("scrubber"),
@@ -212,8 +215,10 @@
 
     function go(target) {
       if (!timeline) return;
+      const previous = index;
       index = Math.max(0, Math.min(target, timeline.frames.length - 1));
       render();
+      if (index === previous + 1 && options.onStep) options.onStep(timeline.frames[index].event);
     }
 
     function render() {
@@ -360,7 +365,7 @@
       }
     });
 
-    return { load, action, isLoaded: () => !!timeline };
+    return { load, action, isLoaded: () => !!timeline, speed: () => Number(el.speed.value || 1) };
   }
 
   Arena.ReplayView = { create };

@@ -5,7 +5,8 @@ const vm = require("vm");
 
 const web = path.join(__dirname, "..");
 const files = ["tests/harness.js", "data/sample-match.js", "tests/expected-log.js", "js/replay.js",
-  "js/logformat.js", "js/stats.js", "tests/replay.test.js", "tests/logformat.test.js", "tests/stats.test.js"];
+  "js/logformat.js", "js/stats.js", "js/sound.js", "tests/replay.test.js", "tests/logformat.test.js", "tests/stats.test.js",
+  "tests/sound.test.js"];
 const context = vm.createContext({ console, structuredClone });
 context.globalThis = context;
 for (const file of files) {

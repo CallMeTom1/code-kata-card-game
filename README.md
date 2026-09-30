@@ -32,9 +32,10 @@ Plain HTML/CSS/JavaScript in [`web/`](web/): no framework, no build, no server, 
 2. Open `web/index.html` in a browser (double-click), then drag and drop the file(s) onto the page,
    or click **Exemples** to see the bundled sample.
 3. Replay: Hearthstone-like board, hands, minions, heroes, mana, statuses, the same log as the console,
-   play/pause, step by event or by turn (keys: Space, ←/→, Shift+←/→, Home/End), speed, scrubber.
+   play/pause, step by event or by turn (keys: Space, ←/→, Shift+←/→, Home/End), speed, scrubber,
+   and synthesized sounds for each event (Web Audio, no audio files; 🔊 button or key M, volume slider).
    Statistics: win split, first-player advantage, match lengths, end reasons, and a table of every match.
-4. Front tests: open `web/tests.html` (runs in the browser, no Node needed). With Node:
+4. Front tests: open `web/tests.html` in Chrome/Edge/Firefox (not in an editor preview; no Node needed). With Node:
    `node web/tests/run-node.js`.
 
 ## The brief's deliverables
