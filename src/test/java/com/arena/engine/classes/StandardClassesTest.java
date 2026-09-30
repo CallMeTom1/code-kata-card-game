@@ -74,4 +74,26 @@ class StandardClassesTest {
         assertThat(NeutralCards.THE_COIN.cost()).isZero();
         assertThat(NeutralCards.all()).doesNotContain(NeutralCards.THE_COIN);
     }
+
+    @Test
+    void given_every_card_and_the_coin_when_read_then_each_has_a_rules_text_for_the_web_replay() {
+        // Given
+        List<Card> all = Stream.concat(Stream.concat(NeutralCards.all().stream(), Stream.of(NeutralCards.THE_COIN)),
+                classes.all().stream().flatMap(c -> c.classCards().stream())).toList();
+
+        // When / Then
+        assertThat(all).allSatisfy(card -> assertThat(card.text()).as(card.name()).isNotBlank());
+    }
+
+    @Test
+    void given_fireball_when_reading_its_text_then_it_describes_the_design_effect() {
+        // Given
+        HeroClass mage = classes.byName("Mage").orElseThrow();
+
+        // When
+        Card fireball = mage.classCards().stream().filter(c -> c.name().equals("Fireball")).findFirst().orElseThrow();
+
+        // Then
+        assertThat(fireball.text()).isEqualTo("Deal 6 damage.");
+    }
 }

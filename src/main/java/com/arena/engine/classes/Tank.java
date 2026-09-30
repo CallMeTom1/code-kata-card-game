@@ -25,15 +25,15 @@ import static com.arena.engine.cards.NeutralCards.STRIKE;
 public final class Tank {
 
     static final List<Card> CARDS = List.of(
-            card("Shield Slam", 1, ATTACK).effect(new DamageEqualToArmor()).damageFromArmor().build(),
+            card("Shield Slam", 1, ATTACK).effect(new DamageEqualToArmor()).damageFromArmor().text("Deal damage equal to your Armor.").build(),
             card("Shield Block", 3, DEFENSE).effect(new GainArmor(4, 2).andThen(new DrawCards(1)))
-                    .immediate().armor(4).build(),
-            card("Fortress", 5, DEFENSE).effect(new GainArmor(8, 2)).armor(8).build(),
+                    .immediate().armor(4).text("Gain 4 Armor for 2 turns. Draw a card.").build(),
+            card("Fortress", 5, DEFENSE).effect(new GainArmor(8, 2)).armor(8).text("Gain 8 Armor for 2 turns.").build(),
             card("Iron Golem", 4, DEFENSE)
-                    .effect(new Summon(new MinionTemplate("Iron Golem", 0, 6, true), 1)).armor(6).taunt().build(),
+                    .effect(new Summon(new MinionTemplate("Iron Golem", 0, 6, true), 1)).armor(6).taunt().text("Summon a 0/6 Iron Golem with Taunt.").build(),
             card("War Chest", 2, RESOURCE).effect(new GainMaxMana(1).andThen(new GainArmor(2, 2)))
-                    .immediate().armor(2).build(),
-            card("Last Stand", 4, UTILITY).effect(new Heal(6)).heal(6).build());
+                    .immediate().armor(2).text("Gain an empty mana crystal and 2 Armor for 2 turns.").build(),
+            card("Last Stand", 4, UTILITY).effect(new Heal(6)).heal(6).text("Restore 6 HP.").build());
 
     private Tank() {
     }

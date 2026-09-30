@@ -17,6 +17,7 @@ public final class CardBuilder {
     private boolean attackBuff;
     private boolean usesAttackBonus;
     private boolean damageFromArmor;
+    private String text = "";
 
     private CardBuilder(String name, int cost, CardCategory category) {
         this.name = name;
@@ -61,6 +62,12 @@ public final class CardBuilder {
         return this;
     }
 
+    /** Rules text, as written in the DESIGN.md tables; the web replay shows it on hover. */
+    public CardBuilder text(String text) {
+        this.text = text;
+        return this;
+    }
+
     public CardBuilder heal(int amount) {
         this.heal = amount;
         return this;
@@ -83,6 +90,6 @@ public final class CardBuilder {
 
     public Card build() {
         return new Card(name, cost, category, effect, immediate,
-                new CardTraits(damage, heal, armor, taunt, attackBuff, usesAttackBonus, damageFromArmor));
+                new CardTraits(damage, heal, armor, taunt, attackBuff, usesAttackBonus, damageFromArmor), text);
     }
 }

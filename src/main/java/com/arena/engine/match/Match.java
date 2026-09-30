@@ -119,7 +119,7 @@ public final class Match {
         Contender c = seat.contender;
         HeroPower power = c.heroClass().heroPower();
         List<DeckEntry> deck = c.deck().stream()
-                .map(card -> new DeckEntry(card.name(), card.cost(), card.category().name())).toList();
+                .map(card -> new DeckEntry(card.name(), card.cost(), card.category().name(), card.text())).toList();
         events.publish(new PlayerSetUp(c.name(), c.bot().name(), c.heroClass().name(), c.classChoice(),
                 c.deckSource(), power.name(), power.cost(), power.description(), deck));
     }

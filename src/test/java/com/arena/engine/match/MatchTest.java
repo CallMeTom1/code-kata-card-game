@@ -337,4 +337,19 @@ class MatchTest {
         assertThat(listener.eventsOfType(DamageDealt.class)).first()
                 .isEqualTo(new DamageDealt("Strike", "P1", 4, 0, 30, 26, 0));
     }
+
+    @Test
+    void given_a_deck_with_card_texts_when_the_match_is_set_up_then_deck_entries_carry_the_text() {
+        // Given
+        Card fireball = com.arena.engine.cards.CardBuilder.card("Fireball", 4, CardCategory.ATTACK)
+                .effect(new DealDamage(6)).directDamage(6).text("Deal 6 damage.").build();
+        Match match = p1First(contender("P1", new ScriptedBot("P1"), deckOf(fireball, 20)), idle("P2"), events);
+
+        // When
+        match.play();
+
+        // Then
+        assertThat(listener.eventsOfType(com.arena.engine.events.PlayerSetUp.class).getFirst().deck().getFirst())
+                .isEqualTo(new com.arena.engine.events.DeckEntry("Fireball", 4, "ATTACK", "Deal 6 damage."));
+    }
 }
