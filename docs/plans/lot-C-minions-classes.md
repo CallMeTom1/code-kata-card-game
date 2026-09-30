@@ -1,7 +1,6 @@
 # Lot C — Minions, plateau et 3 classes
 
-**Responsable** : Personne 3 (binôme : Personne 4, lot D)
-**Branches** : `feature/C-board`, `feature/C-taunt`, `feature/C-aoe`, `feature/C-swordsman`, `feature/C-assassin`, `feature/C-cleric`
+**Mode** : mob, un seul PC — ce fichier est une partie du backlog commun (ordre : section I de `docs/00-PHASE-0-DECISIONS.md`)
 **Possède** : `engine.board`, `engine.classes` (Épéiste, Assassin, Clerc)
 
 **Dépendances** : le plateau ne dépend que des contrats du sprint 0. Les
@@ -16,7 +15,7 @@ attendant, commencez par le plateau (M1 et M2), puis les classes (M3).
 - [ ] `given_board_of_5_when_minion_summoned_then_summon_fizzles` (+ `SummonFizzled`)
 - [ ] `given_minion_at_1_hp_when_it_takes_2_damage_then_it_dies_and_leaves_board` (+ `MinionDied`)
 - [ ] Effet `Summon(minionTemplate, count)` dans `engine.effects` (fichier propre à C).
-- [ ] Ajouter `myBoard()` / `opponentBoard()` à `GameView` → **petite PR de contrat, prévenir l'équipe**.
+- [ ] Ajouter `myBoard()` / `opponentBoard()` à `GameView` → **commit de contrat séparé, validé par le groupe**.
 
 ### C.2 Attaque des minions (phase ajoutée au resolve phase — coordonner avec A)
 - [ ] `given_minion_summoned_this_turn_when_resolve_phase_then_it_does_not_attack` (mal d'invocation)

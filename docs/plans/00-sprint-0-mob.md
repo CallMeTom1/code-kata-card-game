@@ -6,7 +6,7 @@ règle du jeu** ici, seulement des contrats et des implémentations triviales.
 
 **Mode** : une seule personne pilote l'agent, les 3 autres relisent et
 proposent. On change de pilote toutes les 10 minutes. On commite directement
-sur `main` (exception à la règle, pour le sprint 0 uniquement).
+sur `main` (voir la décision C1 de la phase 0).
 
 ## Tâches
 
@@ -76,7 +76,7 @@ sur `main` (exception à la règle, pour le sprint 0 uniquement).
 
 ### 0.7 Fin du sprint 0
 - [ ] `mvn test` vert, push sur `main`.
-- [ ] Chacun crée sa première branche depuis `main` (voir son plan de lot).
+- [ ] On passe à la tâche A.1 du backlog.
 
 ## Arborescence visée
 ```

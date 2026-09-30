@@ -15,9 +15,10 @@
   works without having run it. Paste the test summary line in your answer.
 - DESIGN.md is the source of truth for rules, classes and card numbers;
   record any new decision there in the same change.
-- Work only inside your lot (see `docs/plans/`). Changing a shared contract
-  from sprint 0 needs team agreement: stop and ask. Team workflow:
-  `docs/TEAM_GUIDELINE.md`. Suggest a commit after each green step.
+- Work on one task of the backlog (`docs/plans/`) at a time. Changing a
+  shared contract from sprint 0 needs team agreement: stop and ask. Team
+  workflow (mob, one PC): `docs/TEAM_GUIDELINE.md`; decisions:
+  `docs/00-PHASE-0-DECISIONS.md`. Suggest a commit after each green step.
 
 ## Architecture
 - Root package `com.arena`; entry point `com.arena.Main`

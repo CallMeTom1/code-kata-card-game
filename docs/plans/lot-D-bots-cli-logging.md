@@ -1,7 +1,6 @@
 # Lot D — Bots, CLI, log console et statistiques
 
-**Responsable** : Personne 4 (binôme : Personne 3, lot C)
-**Branches** : `feature/D-console-renderer`, `feature/D-random-bot`, `feature/D-cli`, `feature/D-stats`, `feature/D-smart-bots`
+**Mode** : mob, un seul PC — ce fichier est une partie du backlog commun (ordre : section I de `docs/00-PHASE-0-DECISIONS.md`)
 **Possède** : `bots`, `cli`, `log`, `stats`, `Main`
 
 **Dépendances** : tout se teste sans le moteur. Le renderer et les
@@ -51,7 +50,7 @@ les bots reçoivent un faux `GameView`.
 - [ ] `given_hp_20_when_asked_then_behaves_like_aggressive`
 - [ ] Minions : un minion offensif vaut 2× son attaque (après le lot C).
 - [ ] Les bots ont besoin de connaître les dégâts d'une carte : ajouter au besoin
-      une méthode `estimatedDamage()` sur `Card` → **petite PR de contrat, prévenir l'équipe**.
+      une méthode `estimatedDamage()` sur `Card` → **commit de contrat séparé, validé par le groupe**.
 
 ## Jalon M3 — livrables et ouverture
 - [ ] Sauvegarder un log d'exemple dans `docs/sample-match.log` (livrable n°2 de l'énoncé).

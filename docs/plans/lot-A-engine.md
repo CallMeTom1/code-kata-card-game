@@ -1,7 +1,6 @@
 # Lot A — Moteur de match
 
-**Responsable** : Personne 1 (binôme : Personne 2, lot B)
-**Branches** : `feature/A-turn-loop`, `feature/A-armor`, `feature/A-tie-break`…
+**Mode** : mob, un seul PC — ce fichier est une partie du backlog commun (ordre : section I de `docs/00-PHASE-0-DECISIONS.md`)
 **Possède** : `engine.match` (hors `Bot`/`GameView`/`Action`), `engine.player`, `engine.combat`
 
 **Dépendances** : pour tester sans attendre le lot B, créez des cartes de

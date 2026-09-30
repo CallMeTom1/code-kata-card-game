@@ -1,7 +1,6 @@
 # Lot B — Effets, cartes neutres, Mage et Tank
 
-**Responsable** : Personne 2 (binôme : Personne 1, lot A)
-**Branches** : `feature/B-effects`, `feature/B-neutral-cards`, `feature/B-mage`, `feature/B-tank`
+**Mode** : mob, un seul PC — ce fichier est une partie du backlog commun (ordre : section I de `docs/00-PHASE-0-DECISIONS.md`)
 **Possède** : `engine.effects`, `engine.cards`, `engine.classes` (Mage, Tank)
 
 **Principe** : une carte n'a **pas** de code propre. C'est un nom, un coût,

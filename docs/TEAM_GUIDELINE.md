@@ -1,69 +1,43 @@
 # Guideline d'équipe — Skirmish Arena
 
-Ce document dit **comment on travaille à 4** sur ce projet. Les règles du jeu
-sont dans `DESIGN.md`, les consignes pour l'agent dans `CLAUDE.md`, et le
-détail de chaque lot dans `docs/plans/`.
+Ce document dit **comment on travaille à 4, en mob, sur un seul PC**. Les
+règles du jeu sont dans `DESIGN.md`, les consignes pour l'agent dans
+`CLAUDE.md`, les décisions de départ dans `docs/00-PHASE-0-DECISIONS.md`, et
+le backlog dans `docs/plans/`.
 
-## 1. Organisation de la journée
+## 1. Organisation de la journée (mob programming)
 
-| Étape | Qui | Durée | Contenu |
-|---|---|---|---|
-| Sprint 0 | Les 4, en mob | ~45 min | Squelette Maven + contrats partagés (`docs/plans/00-sprint-0-mob.md`) |
-| Jalon M1 | 4 lots en parallèle | ~2 h | Un match complet Random vs Random avec les cartes neutres, affiché en console |
-| Jalon M2 | 4 lots en parallèle | ~2 h | Mage et Tank, les minions, les bots Aggressive/Defensive, les statistiques |
-| Jalon M3 | selon l'avancement | reste | Autres classes, équilibrage avec le skill `run-simulation`, log d'exemple |
+- On commence par la **phase 0** : remplir `docs/00-PHASE-0-DECISIONS.md` ensemble.
+- Ensuite, **un seul PC, un seul agent**. Les rôles (driver, navigator,
+  relecteur de diff, gardien du process) tournent toutes les 15 minutes,
+  ou à la durée décidée en phase 0.
+- Les 4 fichiers `docs/plans/lot-*.md` ne sont plus attribués à des
+  personnes : ils forment **un seul backlog**, traité dans l'ordre de la
+  section I de la phase 0.
 
-À chaque jalon : **point de synchro de 10 minutes**, tout le monde merge
-`main` dans sa branche, et on lance ensemble `Main` pour voir le résultat.
+| Jalon | Contenu |
+|---|---|
+| Sprint 0 | Squelette Maven + contrats partagés (`docs/plans/00-sprint-0-mob.md`) |
+| M1 | Un match complet Random vs Random avec les cartes neutres, affiché en console |
+| M2 | Statistiques, Mage et Tank, bots Aggressive/Defensive |
+| M3 | Minions, autres classes, équilibrage avec le skill `run-simulation`, log d'exemple |
 
-### Les 4 lots
-
-| Lot | Responsable | Contenu | Plan |
-|---|---|---|---|
-| A | Personne 1 | Moteur : boucle de tour, phases, mana, pioche/fatigue, armure/Parry, fin de match, départage | `lot-A-engine.md` |
-| B | Personne 2 | Effets réutilisables, cartes neutres, Mage, Tank, pouvoirs héroïques | `lot-B-cards-effects.md` |
-| C | Personne 3 | Plateau et minions, Taunt, effets de zone, Épéiste, Assassin, Clerc | `lot-C-minions-classes.md` |
-| D | Personne 4 | Bots, `Main` (CLI), `MatchRunner`, log console, statistiques | `lot-D-bots-cli-logging.md` |
-
-### Binômes (l'énoncé impose pair ou mob programming)
-- **Paire 1 = A + B** : le moteur et les cartes sont très liés.
-- **Paire 2 = C + D** : les minions et les bots/le log se croisent beaucoup.
-
-Dans chaque paire, les deux font leur lot sur leur propre branche, **mais** :
-- on travaille côte à côte : l'un pilote l'agent pendant que l'autre relit le
-  diff, et on échange les rôles toutes les 25 minutes ;
-- le binôme est le **relecteur obligatoire** des PR de l'autre.
+À chaque jalon : 5 minutes de pause, on lance `Main` ensemble, on relit le
+backlog et on pousse.
 
 ## 2. Workflow git
 
-- Branche de base : `main`. On ne commite jamais directement dessus (sauf le sprint 0).
-- Une branche par sujet : `feature/<lot>-<sujet>`, par exemple
-  `feature/A-turn-loop`, `feature/B-neutral-cards`, `feature/D-console-renderer`.
-- Des branches **courtes** : une PR toutes les 1 à 2 heures maximum. Une grosse
-  PR en fin de journée = des conflits garantis.
-- Avant d'ouvrir une PR :
-  1. `git fetch origin && git merge origin/main`
-  2. `mvn test` est vert en local
-  3. le plan du lot est mis à jour (cases cochées)
-- PR : titre `[Lot X] <sujet>`, description = ce qui a été fait + la ligne de
-  résumé de `mvn test`. **Une relecture par le binôme** avant le merge.
+- Selon la décision C1 de la phase 0 : par défaut, on travaille **sur `main`**,
+  avec un commit par cycle TDD vert. On crée une branche seulement pour une
+  expérience risquée.
 - Messages de commit : impératif, en anglais, par exemple
-  `Add fatigue damage when deck is empty`. Un commit par cycle TDD vert,
-  c'est l'idéal : **l'historique git est évalué**.
-- Après chaque merge sur `main`, prévenez l'équipe pour que chacun merge `main`.
-
-### Éviter les conflits
-Les fichiers « chauds » sont connus. On les découpe pour que chacun ajoute
-des fichiers au lieu de modifier les mêmes :
-- **Événements** : un `record` par fichier dans `engine.events`. On n'édite
-  jamais l'événement d'un autre lot : on en crée un nouveau.
-- **Cartes** : un fichier par groupe (`NeutralCards`, `MageCards`, `TankCards`…).
-- **Classes** : un fichier par classe ; le registre `HeroClasses` n'a qu'une
-  ligne à ajouter par classe.
-- **DESIGN.md** : chaque lot ne modifie que ses propres sections.
+  `Add fatigue damage when deck is empty`. On ajoute les 4 membres en
+  `Co-authored-by:` : **l'historique git est évalué**.
+- Avant chaque commit : `mvn test` vert et case du plan cochée.
+- Push à chaque jalon et au moins toutes les 30 minutes.
 - **Contrats du sprint 0** (`Card`, `Effect`, `Champion`, `Bot`, `GameView`,
-  `Action`, `GameEvent`, `DamageResolver`) : toute modification se décide
-  à 4, en 2 minutes, puis passe par une petite PR dédiée, mergée tout de suite.
+  `Action`, `GameEvent`, `DamageResolver`) : on peut les faire évoluer, mais
+  dans un commit à part, avec un message clair.
 
 ## 3. TDD en Given / When / Then
 
@@ -141,16 +115,16 @@ enfermer le projet dans la console.
   > Lis `docs/plans/lot-X-....md`. Fais la tâche X.n en TDD : montre-moi
   > d'abord le test qui échoue, puis le code, puis le résultat de `mvn test`.
 - Une tâche du plan = un prompt = un ou quelques commits.
-- Si l'agent veut modifier un contrat partagé ou le lot d'un autre : **stop**, on en parle.
+- Si l'agent veut modifier un contrat partagé ou sortir de la tâche en cours : **stop**, on en parle.
 - Si `CLAUDE.md` n'est pas respecté, notez-le (quoi, quand) : c'est
   intéressant pour le débrief de la journée.
 
-## 7. Definition of Done (pour chaque PR)
+## 7. Definition of Done (pour chaque commit)
 
 - [ ] Chaque comportement ajouté a un test Given/When/Then écrit **avant** le code
-- [ ] `mvn test` vert, ligne de résumé collée dans la PR
+- [ ] `mvn test` vert, lancé pour de vrai par l'agent
 - [ ] Toute action qui change l'état publie un `GameEvent`
 - [ ] Aucun `System.out` hors de `Main` et `ConsoleRenderer`
 - [ ] `DESIGN.md` à jour si une règle ou un chiffre a été décidé
-- [ ] Les cases du plan du lot sont cochées
-- [ ] Relu et approuvé par le binôme
+- [ ] La case du backlog (`docs/plans/`) est cochée
+- [ ] Diff relu par le relecteur du moment avant d'être accepté
