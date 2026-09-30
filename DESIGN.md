@@ -165,4 +165,13 @@ power. Damage to minions and fatigue are excluded. Aggregates report the
 win rate per side, the draw rate, the first-player win rate, the average
 match length in turns, and the average damage dealt per match per side.
 
+## Logging
+The engine never prints. Every state change publishes an immutable
+`GameEvent` (turn started, card played, damage dealt, minion summoned…)
+that carries everything needed to display it. The console log, the stats
+and a future JSON export for an HTML/JS replay are all listeners. We chose
+this so we can add a front without touching the engine, and so that
+"everything is visible" can be checked by tests. `--log` prints the first
+match in full; the other matches only feed the stats.
+
 All numbers are a first draft, to rebalance with the `run-simulation` skill.
